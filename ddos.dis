@@ -1,0 +1,40 @@
+
+ddos.elf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+00000000 <_start>:
+   0:	e3a00207 	mov	r0, #1879048192	; 0x70000000
+   4:	e3800013 	orr	r0, r0, #19
+   8:	ee0f0f92 	mcr	15, 0, r0, cr15, cr2, {4}
+   c:	e59f0020 	ldr	r0, [pc, #32]	; 34 <halt+0x4>
+  10:	e3a01000 	mov	r1, #0
+  14:	e5801000 	str	r1, [r0]
+  18:	e59f0018 	ldr	r0, [pc, #24]	; 38 <halt+0x8>
+  1c:	e3a01801 	mov	r1, #65536	; 0x10000
+  20:	e5801000 	str	r1, [r0]
+  24:	e59f0010 	ldr	r0, [pc, #16]	; 3c <halt+0xc>
+  28:	e3a01000 	mov	r1, #0
+  2c:	e5801000 	str	r1, [r0]
+
+00000030 <halt>:
+  30:	eafffffe 	b	30 <halt>
+  34:	7e004000 	cdpvc	0, 0, cr4, cr0, cr0, {0}
+  38:	7f008800 	svcvc	0x00008800
+  3c:	7f008808 	svcvc	0x00008808
+
+Disassembly of section .ARM.attributes:
+
+00000000 <.ARM.attributes>:
+   0:	00002541 	andeq	r2, r0, r1, asr #10
+   4:	61656100 	cmnvs	r5, r0, lsl #2
+   8:	01006962 	tsteq	r0, r2, ror #18
+   c:	0000001b 	andeq	r0, r0, fp, lsl r0
+  10:	4d524105 	ldfmie	f4, [r2, #-20]	; 0xffffffec
+  14:	36373131 	undefined instruction 0x36373131
+  18:	2d465a4a 	vstrcs	s11, [r6, #-296]	; 0xfffffed8
+  1c:	09060053 	stmdbeq	r6, {r0, r1, r4, r6}
+  20:	01090108 	tsteq	r9, r8, lsl #2
+  24:	Address 0x00000024 is out of bounds.
+

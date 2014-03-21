@@ -1,16 +1,31 @@
-#               (C) 2014 HuangJinDong
+#               (C) 2014 JinDongHuang
 
-CC=arm-linux-gcc
-CFLAGS += -Wall
+CC       = arm-linux-gcc
+LD       = arm-linux-ld
+OBJCOPY  = arm-linux-objcopy
+OBJDUMP  = arm-linux-objdump
 
-BOOT=./boot
+CFLAGS  += -Wall
+LDFLAGS += -Ttext=0
+ODFLAGS += -D
+OCFLAGS += -O binary
 
-install:$(BOOT)/boot.o
-	$(CC) $(CFLAGS) $^ -o ddos 
+BOOT     = ./boot
 
-$(BOOT)/boot.o:$(BOOT)/boot.c
 
+install:ddos.bin
+
+ddos.bin:$(BOOT)/boot.o
+	$(LD) $(LDFLAGS) $< -o ddos.elf
+	$(OBJCOPY) $(OCFLAGS) ddos.elf $@
+	$(OBJDUMP) $(ODFLAGS) ddos.elf > ddos.dis
+
+$(BOOT)/boot.o:$(BOOT)/boot.s
+	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm -r $(BOOT)/*.o
+	rm -rf $(BOOT)/*.o
+	rm -rf *.elf
+	rm -rf *.bin
+	rm -rf *.dis
 
