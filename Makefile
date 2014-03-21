@@ -11,20 +11,26 @@ ODFLAGS += -D
 OCFLAGS += -O binary
 
 BOOT     = ./boot
-
+INIT     = ./init
 
 install:ddos.bin
 
-ddos.bin:$(BOOT)/boot.o
-	$(LD) $(LDFLAGS) $< -o ddos.elf
+ddos.bin:ddos.elf
 	$(OBJCOPY) $(OCFLAGS) ddos.elf $@
 	$(OBJDUMP) $(ODFLAGS) ddos.elf > ddos.dis
 
-$(BOOT)/boot.o:$(BOOT)/boot.s
+ddos.elf:$(BOOT)/boot.o $(INIT)/main.o
+	$(LD) $(LDFLAGS) $^ -o ddos.elf
+
+%.o/:%.s
+	$(CC) $(CFLAGS) -c $< -o $@
+
+%.o:%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
 	rm -rf $(BOOT)/*.o
+	rm -rf $(INIT)/*.o
 	rm -rf *.elf
 	rm -rf *.bin
 	rm -rf *.dis
