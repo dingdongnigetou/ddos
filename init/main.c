@@ -6,9 +6,7 @@
  * Initialize the os after boot.
  *
  */
-
-#define GPKCON0  (*(volatile unsigned long *)0x7F008800)
-#define GPKDAT   (*(volatile unsigned long *)0x7F008808)
+#include "s3c6410.h"
 
 int main(void)
 {
