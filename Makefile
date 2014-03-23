@@ -1,17 +1,20 @@
 #               (C) 2014 JinDongHuang
 
+BOOT     = ./boot
+INIT     = ./init
+INCLUDE  = ./include
+DRIVER   = ./driver
+
 CC       = arm-linux-gcc
 LD       = arm-linux-ld
 OBJCOPY  = arm-linux-objcopy
 OBJDUMP  = arm-linux-objdump
 
 CFLAGS  += -Wall
+CFLAGS  += -I$(INCLUDE)
 LDFLAGS += -Ttext=0
 ODFLAGS += -D
 OCFLAGS += -O binary
-
-BOOT     = ./boot
-INIT     = ./init
 
 install:ddos.bin
 
