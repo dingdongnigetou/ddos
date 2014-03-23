@@ -3,16 +3,19 @@
 @; boot from the nand flash in s3c6410 
 .global _start
 _start:
-	@; close the watch dog
-	ldr r0, =0x7E004000
-	mov r1, #0
-	str r1, [r0]
-	
-	@; set stack size == 4k
-	ldr sp, =0x0C000000
+	@; peripheral setting
+	ldr r0, =0x70000000 @; SROM_BW
+	orr r0,r0,#0x13
+	mcr p15,0,r0,c15,c2,4
 
-	@; jump to main function
+	@; set stack size == 4k
+	ldr sp, =1024 * 4
+
+	bl diable_watch_dog
+	bl clock_init
+_trampline:
 	bl  main 
+	b   _trampline
 
 halt:
 	b halt
