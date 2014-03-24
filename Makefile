@@ -22,7 +22,7 @@ ddos.bin:ddos.elf
 	$(OBJCOPY) $(OCFLAGS) ddos.elf $@
 	$(OBJDUMP) $(ODFLAGS) ddos.elf > ddos.dis
 
-ddos.elf:$(BOOT)/boot.o $(INIT)/main.o
+ddos.elf:$(BOOT)/boot.o $(BOOT)/init.o $(INIT)/main.o $(DRIVER)/serial.o
 	$(LD) $(LDFLAGS) $^ -o ddos.elf
 
 %.o/:%.s
