@@ -11,7 +11,7 @@ _start:
 	@; set stack size == 4k
 	ldr sp, =1024 * 4
 
-	bl diable_watch_dog
+	bl disable_watch_dog
 	bl clock_init
 _trampline:
 	bl  main 

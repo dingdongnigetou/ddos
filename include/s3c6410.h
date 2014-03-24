@@ -8,6 +8,9 @@
  */
 
 /* GPIO */
+#define GPACON      (*(volatile unsigned long *)0x7F008000)     
+#define GPADAT      (*(volatile unsigned long *)0x7F008004)
+#define GPAPUD      (*(volatile unsigned long *)0x7F008008)
 #define GPKCON0     (*(volatile unsigned long *)0x7F008800)
 #define GPKDAT      (*(volatile unsigned long *)0x7F008808)
 

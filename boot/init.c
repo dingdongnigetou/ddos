@@ -14,6 +14,11 @@ void clock_init();
 
 void disable_watch_dog()
 {
-	WATDOG = 0;
+	WTCON = 0;
+}
+
+void clock_init()
+{
+
 }
 
