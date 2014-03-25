@@ -13,7 +13,7 @@
 #define TXD0READY   (1<<2)
 #define RXD0READY   (1)
 
-#define PCLK            50000000 
+#define PCLK            66000000 
 #define UART_CLK        PCLK
 #define UART_BAUD_RATE  115200
 /* DIV_VAL = (PCLK / (b/s * 16)) - 1 */
@@ -28,7 +28,7 @@ void uart0_init(void)
     UCON0   = 0x05;     /* interrupt request or polling */
     UFCON0  = 0x00;     /* forbid FIFO */
     UMCON0  = 0x00;     /* forbid Medem */
-    UBRDIV0 = UART_BRD; /* baud rate is 115200 */
+    UBRDIV0 = UART_BRD;       /* baud rate is 115200 */
 }
 
 void uart0_putc(unsigned char c)

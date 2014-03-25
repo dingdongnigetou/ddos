@@ -4,3 +4,7 @@
  I light the first led in asm, next time I should 
  set the environment for C, just like the bootloader. 
 
+-Fue Mar 25, 2014
+ There are also couple problems occurred with UART
+ shit me. I think it may be the PCLK. 
+
