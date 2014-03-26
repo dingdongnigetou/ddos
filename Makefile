@@ -22,10 +22,10 @@ ddos.bin:ddos.elf
 	$(OBJCOPY) $(OCFLAGS) ddos.elf $@
 	$(OBJDUMP) $(ODFLAGS) ddos.elf > ddos.dis
 
-ddos.elf:$(BOOT)/boot.o $(BOOT)/init.o $(INIT)/main.o $(DRIVER)/serial.o
+ddos.elf:$(BOOT)/boot.o $(BOOT)/clock.o $(INIT)/main.o $(DRIVER)/uart.o $(DRIVER)/led.o
 	$(LD) $(LDFLAGS) $^ -o ddos.elf
 
-%.o/:%.s
+%.o/:%.S
 	$(CC) $(CFLAGS) -c $< -o $@
 
 %.o:%.c
@@ -34,7 +34,6 @@ ddos.elf:$(BOOT)/boot.o $(BOOT)/init.o $(INIT)/main.o $(DRIVER)/serial.o
 clean:
 	rm -rf $(BOOT)/*.o
 	rm -rf $(INIT)/*.o
-	rm -rf *.elf
-	rm -rf *.bin
-	rm -rf *.dis
+	rm -rf $(DRIVER)/*.o
+	rm -rf *.elf *.bin *.dis
 
