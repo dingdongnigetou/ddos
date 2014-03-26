@@ -8,3 +8,11 @@
  There are also couple problems occurred with UART
  shit me. I think it may be the PCLK. 
 
+-Wed Mar 26, 2014
+ Haha, my guess it right, I add the clock.S to initialize
+ the system clock and enable FIFO in UART so that s3c6410  
+ can connect with PC normally now. And, I found that there
+ are some difference between *.s and *.S. *.S file can  
+ precompile while *.s can not! So I change the *.s into *S.
+ next time try to enable the lcd at s3c6410.
+ 
