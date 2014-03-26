@@ -7,33 +7,24 @@
  *
  */
 #include "s3c6410.h"
-#include "serial.h"
-#include <stdio.h>
-
-void delay()
-{
-	int i, j;
-	for (i = 0;i < 50;i++)
-		for (j = 0;j < 100;j++);
-}
+#include "uart.h"
+#include "led.h"
 
 int main(void)
 {
-
-	GPKCON0 = 0x00010000; 
 	uart0_init();
+	unsigned char ch;
 
 	while(1)
 	{
+		ch = getc();
+		if (ch == '\r'){
+			putc('\n');
+			putc('\r');
+		}
+		putc(ch);
 
-		unsigned char ch;
-		ch = uart0_getc();
-		uart0_putc(3);
-
-			GPKDAT = 0;
-			delay();
-			GPKDAT = 0xFFFFFFFF;
-			delay();
+		ledone_flicker();
 	}
 
 	return 0;
