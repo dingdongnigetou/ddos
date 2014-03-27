@@ -13,11 +13,12 @@ _start:
 	mov r1, #0
 	str r1, [r0]
 
-	@; clock initialization
-	bl clock_init @; goto clock.s
-
+	
 	@; set stack size == 4k
 	ldr sp, =1024 * 4
+
+	@; clock initialization
+	bl clock_init  @; goto clock.c
 
 _trampline:
 	bl  main 
