@@ -16,3 +16,9 @@
  precompile while *.s can not! So I change the *.s into *S.
  next time try to enable the lcd at s3c6410.
  
+-Thu Mar 27, 2014
+ For make more simple, I change the clock.S into clock.c.
+ And, new a Makefile into driver/ in order to expand easily
+ in the future. OK, the lcd driver should be began in the  
+ next time. :-)
+
