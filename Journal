@@ -22,3 +22,13 @@
  in the future. OK, the lcd driver should be began in the  
  next time. :-)
 
+-Fri Mar 28, 2014
+ I made a git mistake yesterday. I use "git reset --hard HEAD^" 
+ to undo the last commit that wrong. So, my source back to the
+ older one... so that I should rewrite parts of them... Now I
+ see I should use "git reset --soft HEAD^" witch just undo the
+ commit though the source.  
+ I find that lcd driver is more difficult than uart driver. So 
+ it maybe takes me more time. But, I just like the work that
+ is not easily. :)
+
