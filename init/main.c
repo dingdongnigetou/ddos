@@ -18,10 +18,6 @@ int main(void)
 	while(1)
 	{
 		ch = getc();
-		if (ch == '\r'){
-			putc('\n');
-			putc('\r');
-		}
 		putc(ch);
 
 		ledone_flicker();
