@@ -35,6 +35,6 @@ $(DRIVERDIR)/drivers.a:
 	(cd $(DRIVERDIR); make)
 
 clean:
-	rm -rf $(BOOT)/*.o $(INIT)/*.o  *.elf *.bin *.dis
+	rm -rf $(BOOTDIR)/*.o $(INITDIR)/*.o  *.elf *.bin *.dis
 	(cd $(DRIVERDIR); make clean)
 
