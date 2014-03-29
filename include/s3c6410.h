@@ -11,8 +11,12 @@
 #define GPACON       (*(volatile unsigned long *)0x7F008000)     
 #define GPADAT       (*(volatile unsigned long *)0x7F008004)
 #define GPAPUD       (*(volatile unsigned long *)0x7F008008)
+#define GPFCON       (*(volatile unsigned long *)0x7F0080A0)
+#define GPFDAT       (*(volatile unsigned long *)0x7F0080A4)
 #define GPKCON0      (*(volatile unsigned long *)0x7F008800)
 #define GPKDAT       (*(volatile unsigned long *)0x7F008808)
+#define GPJCON       (*(volatile unsigned long *)0x7F008120)
+#define GPJDAT       (*(volatile unsigned long *)0x7F008124)
 #define SPCON        (*(volatile unsigned long *)0x7F0081A0)
 
 /* UART */
@@ -57,4 +61,9 @@
 
 /* Modem */
 #define MIFPCON      (*(volatile unsigned long *)0x7410800C)
+
+/* PWM */
+#define TCON         (*(volatile unsigned long *)0x7F006008)
+#define TCNTB3       (*(volatile unsigned long *)0x7F006030)
+#define TINI_CSTAT   (*(volatile unsigned long *)0x7F006044)
 
