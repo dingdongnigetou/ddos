@@ -1,8 +1,0 @@
-
-TB76E26C0 000:000 SEGGER J-Link V4.74 Log File (0000ms, 0000ms total)
-TB76E26C0 000:000 DLL Compiled: Jul 17 2013 11:52:31 (0000ms, 0000ms total)
-TB76E26C0 000:000 Logging started @ 2014-03-28 15:59 (0000ms, 0000ms total)
-TB76E26C0 000:000 JLINK_SetWarnOutHandler(...) (0001ms, 0001ms total)
-TB76E26C0 000:001 JLINK_SelectUSB(Port = 0)  returns 0x00 (0000ms, 0001ms total)
-TB76E26C0 000:001 JLINK_OpenEx(...)
-  ***** Error: Can not connect to J-Link via USB.  returns "Can not connect to J-Link via USB." (0000ms, 0001ms total)
