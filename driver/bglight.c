@@ -10,23 +10,116 @@
 #include "bglight.h"
 #include "s3c6410.h"
 
+#define TINT_CSTAT_INIMASK(n)      ((n & 0x1F))
 #define TIMER3_PENDING_CLEAR       (1 << 8)
 #define TIMER3_INTERRRUPT_ENABLE   (1 << 3)
 
+static void set_pin_as_input()
+{
+	GPFCON &= ~(3 << 30);
+}
+
+static void set_pin_as_ouput()
+{
+	GPFCON = (GPFCON & ~(3 << 30) | (1 << 30));
+}
+
+static void set_pin_value(int value)
+{
+	if (value)
+		GPFDAT |= (1 << 15);
+	else
+		GPFDAT &= ~(1 << 15);
+}
+
+static void get_pin_value()
+{
+	/* use !! to change data into 0 or 1 */
+	return ( !!(GPFDAT & (1 << 15)) );
+}
+
 static void timer_init()
 {
-	TCNTB3 = 
-	TINI_CSTAT |= TIMER3_PENDING_CLEAR;
-	TINI_CSTAT |= TIMER3_INTERRRUPT_ENABLE;
+	// TCNTB3 = ? 
+	TINI_CSTAT = TINT_CSTAT_INIMASK(TINT_CSTAT) | TIMER3_PENDING_CLEAR;
+	TINI_CSTAT = TINT_CSTAT_INIMASK(TINI_CSTAT) | TIMER3_INTERRRUPT_ENABLE;
 }
 
 static void timer_start()
 {
-
+	TCON &= ~(1 << 16); /* stop timer3 */
+	TCON |= (1 << 17);    /* update TCNTB3 */
+	TCON &= ~(1 << 17);
+	/* auto reload, start timer3 */
+	TCON |= ((1 << 19) | (1 << 16));
 }
 
 static void timer_stop()
 {
+	TCON &= ~(1 << 16);
+}
 
+static void waitTimerTick()
+{
+	while ((TINT_CSTAT & (1 << 8)) == 0);
+	TINT_CSTAT = TINT_CSTAT_INIMASK(TINT_CSTAT) | TIMER3_PENDING_CLEAR;
+}
+
+static unsigned char crc8(unsigned v, unsigned len)
+{
+	unsigned char crc = 0xAC;
+	while (len--){
+		if ((crc & 0x80) != 0){
+			crc <<= 1;
+			crc ^= 0x7;
+		}
+		else
+			crc <<= 1;
+		if ((v & (1 << 31)) != 0)
+			crc ^= 0x7;
+		v <<= 1;
+	}
+
+	return crc;
+}
+
+static int OneWireSession(unsigned char req, unsigned char res[])
+{
+	unsigned char Req;
+	unsigned char *Res;
+	unsigned int  i;
+	Req = (req << 24) | (crc8(req << 24, 8) << 16);
+	Res = (unsigned char *)res;
+	set_pin_value(1);
+	set_pin_as_ouput();
+	timer_start();
+	for (i = 0; i < 60; i++)
+		waitTimerTick();
+
+	set_pin_value(0);
+	for (i = 0; i < 2; i++)
+		waitTimerTick();
+
+	for (i = 0; i < 16; i++){
+		int value = !!(Req & (1 << 31));
+		Req <<= 1;
+		set_pin_value(value);
+		waitTimerTick();
+	}
+
+	waitTimerTick();
+	set_pin_as_input();
+	waitTimerTick();
+
+	for (i = 0; i < 32; i++){
+		(*Req) <<= 1;
+		(*Res) |=  get_pin_value();
+		waitTimerTick();
+	}
+	timer_stop();
+	set_pin_value(1);
+	set_pin_as_ouput();
+
+	return crc8(*Res, 24) == res[0];
 }
 
