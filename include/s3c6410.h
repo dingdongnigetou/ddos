@@ -65,5 +65,8 @@
 /* PWM */
 #define TCON         (*(volatile unsigned long *)0x7F006008)
 #define TCNTB3       (*(volatile unsigned long *)0x7F006030)
-#define TINI_CSTAT   (*(volatile unsigned long *)0x7F006044)
+#define TINT_CSTAT   (*(volatile unsigned long *)0x7F006044)
+
+/* Others */
+#define PCLK         66500000 
 
