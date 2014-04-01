@@ -11,7 +11,6 @@
 #include "uart.h"
 #include "s3c6410.h"
 
-#define PCLK            66500000 
 #define UART_CLK        PCLK
 #define UART_BAUD_RATE  115200
 /* DIV_VAL = (PCLK / (b/s * 16)) - 1 */

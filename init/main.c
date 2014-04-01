@@ -9,10 +9,13 @@
 #include "s3c6410.h"
 #include "uart.h"
 #include "led.h"
+#include "bglight.h"
 
 int main(void)
 {
 	uart0_init();
+	set_bglight(10);
+
 	unsigned char ch;
 
 	while(1)
