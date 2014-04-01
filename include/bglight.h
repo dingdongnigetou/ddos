@@ -13,7 +13,7 @@
 #define _BGLIGHT_H_
 
 /* set the background light of LCD with brightness */
-void set_bglight(unsigned brightness);
+int set_bglight(unsigned brightness);
 
 #endif /* _BGLIGHT_H_ */
 
