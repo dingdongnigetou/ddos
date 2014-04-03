@@ -13,5 +13,7 @@
 /* Initialize lcd */
 void lcd_init();
 
+void display_red();
+
 #endif /* _LCD_H */
 
