@@ -101,7 +101,7 @@ static int OneWireSession(unsigned char req, unsigned char res[])
 	set_pin_value(1);
 	set_pin_as_ouput();
 	timer_start();
-	for (i = 0; i < 60; i++)
+       	for (i = 0; i < 60; i++)
 		waitTimerTick();
 
 	set_pin_value(0);
@@ -154,7 +154,7 @@ int GetInfo(unsigned char *lcd, unsigned short *firmwareVer)
 	return TRUE;
 }
 
-int set_bglight(unsigned brightness) 
+int set_bglight(unsigned char brightness) 
 {
 	unsigned char res[4];
 	int ret;

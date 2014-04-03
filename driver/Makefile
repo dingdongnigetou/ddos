@@ -11,7 +11,7 @@ CFLAGS  = -Wall -I$(INCLUDEDIR) -nostdinc
 %.o:%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-OBJS    = uart.o led.o bglight.o
+OBJS    = uart.o led.o bglight.o lcd.o
 
 drivers.a:$(OBJS)
 	$(AR) rcs $@ $^

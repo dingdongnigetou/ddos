@@ -10,11 +10,14 @@
 #include "uart.h"
 #include "led.h"
 #include "bglight.h"
+#include "lcd.h"
 
 int main(void)
 {
 	uart0_init();
-	set_bglight(10);
+	set_bglight(50);
+	lcd_init();
+	display_red();
 
 	unsigned char ch;
 
@@ -22,7 +25,6 @@ int main(void)
 	{
 		ch = getc();
 		putc(ch);
-
 		ledone_flicker();
 	}
 
