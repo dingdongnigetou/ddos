@@ -25,7 +25,10 @@ void clock_init(void)
 	EPLL_LOCK = 0xffff;
 
 	/* set async mode */
-	OTHERS &= ~0xc0; while ((OTHERS & 0xf00) != 0); CLK_DIV0 = (ARM_RATIO) | (MPLL_RATIO << 4) | (HCLK_RATIO << 8) | (HCLKX2_RATIO << 9) | (PCLK_RATIO << 12);
+	OTHERS &= ~0xc0; 
+	while ((OTHERS & 0xf00) != 0); 
+	CLK_DIV0 = (ARM_RATIO) | (MPLL_RATIO << 4) | (HCLK_RATIO << 8) 
+		    | (HCLKX2_RATIO << 9) | (PCLK_RATIO << 12);
 	
 	APLL_CON = APLL_CON_VAL;  /* 500MHz */
 	MPLL_CON = MPLL_CON_VAL;  /* 500MHz */

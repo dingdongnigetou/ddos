@@ -26,14 +26,14 @@
 #define  RightBotX   479
 #define  RightBotY   271
 
-#define  FRAME_BUFFER   0x54000000
+#define  FRAME_BUFFER   0x00010000
 
 unsigned int fb_base_addr;
 unsigned int bpp;
 unsigned int xsize;
 unsigned int ysize;
 
-void palette_init(void)
+void palette_init()
 {
 	int i;
 	volatile unsigned long *p = (volatile unsigned long *)WIN0_PALENTRY0;
@@ -57,7 +57,7 @@ void palette_init(void)
 	WPALCON &= ~(1<<9);
 }
 
-void clean_screem(void)
+void clean_screem()
 {
 	int x;
 	int y;
@@ -69,18 +69,18 @@ void clean_screem(void)
 			p[cnt++] = 0;
 }
 
-void lcd_init(void)
+void lcd_init()
 {
-	GPICON = 0xaaaaaaaa;  
-	GPJCON = 0xaaaaaaa;   		
+	GPICON = 0xAAAAAAAA;  
+	GPJCON = 0xAAAAAAAA;   		
 
 	GPECON &= ~(0xf);
 	GPECON |= (0x1);
 
 	MIFPCON &= ~(1<<3);   /* Normal mode */
 
-	SPCON    &= ~(0x3);
-	SPCON    |= 0x1;      /* RGB I/F style */
+	SPCON   &= ~(0x3);
+	SPCON   |= 0x1;      /* RGB I/F style */
 
 	VIDCON0 &= ~((3<<26) | (3<<17) | (0xff<<6)  | (3<<2));     /* RGB I/F, RGB Parallel format,  */
 	VIDCON0 |= ((14<<6) | (1<<4) );  /* vclk== HCLK / (CLKVAL+1) = 133/15 = 9MHz */
@@ -102,51 +102,58 @@ void lcd_init(void)
 	VIDW00ADD0B0 = FRAME_BUFFER;
 	VIDW00ADD1B0 =  (((HOZVAL + 1)*1 + 0) * (LINEVAL + 1)) & (0xffffff);
 
-	palette_init();	
+//	palette_init();	
 									
 	fb_base_addr = FRAME_BUFFER;
 	xsize = HOZVAL + 1;
 	ysize = LINEVAL + 1;
 	bpp   = 8;
 
-	clean_screem();
+//	clean_screem();
 }
 
 
-void backlight_enable(void)
+void backlight_enable()
 {
-	//GPFDAT |= (1<<14);
+	GPFDAT |= (1<<14);
 }
 
-void backlight_disable(void)
+void backlight_disable()
 {
-	//GPFDAT &= ~(1<<14);
+	GPFDAT &= ~(1<<14);
 }
 
 
-void lcd_on(void)
+void lcd_on()
 {
 	GPEDAT |= (1<<0);
 }
 
-void lcd_off(void)
+void lcd_off()
 {
 	GPEDAT &= ~(1<<0);
 }
 
-void displaycon_on(void)
+void lcd_enable()
+{
+	lcd_on();
+	backlight_enable();
+	displaycon_on();
+}
+
+void displaycon_on()
 {
 	VIDCON0 |= 0x3;
 	WINCON0 |= 1;
 }
 
-void displaycon_off(void)
+void displaycon_off()
 {
 	VIDCON0 &= ~0x3;
 	WINCON0 &= ~1;
 }
 
-void display_red(void)
+void display_red()
 {
 	volatile unsigned char *p = (volatile unsigned char *)FRAME_BUFFER;
 	int x, y;
