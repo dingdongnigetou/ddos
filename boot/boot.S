@@ -1,9 +1,9 @@
 @;                 (C) 2014 JinDongHuang
 
-@; boot from the nand flash in s3c6410 
 .global _start
 _start:
 	@; peripheral setting
+	@; tell CPU peripheral where is  
 	ldr r0, =0x70000000 @; SROM_BW
 	orr r0,r0,#0x13
 	mcr p15,0,r0,c15,c2,4
@@ -13,17 +13,42 @@ _start:
 	mov r1, #0
 	str r1, [r0]
 
-	
-	@; set stack size == 4k
-	ldr sp, =1024 * 4
+	@; set stack size == 8k
+	@; 8K is the MAX, but enough
+	ldr sp, = 1024 * 8 
 
 	@; clock initialization
 	bl clock_init  @; goto clock.c
+	bl sdram_init  @; goto sdram.c
 
-_trampline:
-	bl  main 
-	b   _trampline @; avoid main function return here
+        @; relocate the code
+	@; copy code and data segment to it's link address
+	adr r0, _start     @; current address -> 0 
+	ldr r1, =_start    @; _start link address -> 0x50000000
+	
+	ldr r2, =bss_start @; bss link address	
 
-halt:
-	b halt
+	cmp r0,r1
+	beq clean_bss
+copy_loop:
+	ldr r3, [r0], #4
+	str r3, [r1], #4
+	cmp r1, r2
+	bne copy_loop	
+
+	@; clean the bss
+clean_bss:
+	ldr r0, =bss_start
+	ldr r1, =bss_end
+	mov r3, #0
+	cmp r0, r1
+	beq on_ddr
+clean_loop:
+	str r3, [r0], #4
+	cmp r0, r1	
+	bne clean_loop	
+
+	@; jump into DDR
+on_ddr:
+	ldr pc, =main @; pc == main link address  
 
