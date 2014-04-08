@@ -43,3 +43,12 @@
 -Thu Apr 3, 2014
  So difficult... Fight!!! 
 
+-Sat Apr 5, 2014
+ I find that I should learn the hardware coding of ARM seriously~
+ Let's watch the teaching video. :)
+
+-Tue Apr 8, 2014
+ Now, it read code(just 8K) from nand flash into memory, and then copy 
+ itself into DDR.
+ I initialize the DDR, so I have 512M memory that under my control.
+
