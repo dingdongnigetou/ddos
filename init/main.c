@@ -14,7 +14,7 @@
 
 int main(void)
 {
-	uart0_init();
+	lcd_init();
 	set_bglight(50);
 
 	unsigned char ch;

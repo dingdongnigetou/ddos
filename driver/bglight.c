@@ -141,19 +141,6 @@ static int TryOneWireSession(unsigned char req, unsigned char res[])
 	return FLASE;
 }
 
-int GetInfo(unsigned char *lcd, unsigned short *firmwareVer)
-{
-	unsigned char res[4];
-
-	if (!TryOneWireSession(REQ_INFO, res))
-		return FLASE;
-
-	*lcd = res[3];
-	*firmwareVer = res[2] * 100 + res[1];
-
-	return TRUE;
-}
-
 int set_bglight(unsigned char brightness) 
 {
 	unsigned char res[4];

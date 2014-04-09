@@ -1,5 +1,5 @@
 /*
- * (C) 2014 JinDongHuang
+ * (C) 2014 Jindong Huang
  *
  * boot/clock.c
  *
@@ -34,7 +34,5 @@ void clock_init(void)
 	MPLL_CON = MPLL_CON_VAL;  /* 500MHz */
 
 	CLK_SRC = 0x03;
-
-	return;
 }
 
