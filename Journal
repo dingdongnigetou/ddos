@@ -52,3 +52,6 @@
  itself into DDR.
  I initialize the DDR, so I have 512M memory that under my control.
 
+-Wed Apr 9, 2014
+ OK, the lcd is working well now! Next time write character into lcd.
+
