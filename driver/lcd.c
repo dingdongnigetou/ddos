@@ -10,63 +10,57 @@
 #include "lcd.h"
 #include "s3c6410.h"
 
-#define  VSPW          9
-#define  VBPD          1
-#define  LINEVAL     271
-#define  VFPD          1
+#define  VSPW       9
+#define  VBPD       1
+#define  LINEVAL    768
+#define  VFPD       1
 
-#define  HSPW         40    
-#define  HBPD          1
-#define  HOZVAL      479
-#define  HFPD          1
+#define  HSPW       40    
+#define  HBPD       1
+#define  HOZVAL     1024
+#define  HFPD       1
 
-#define  LeftTopX      0
-#define  LeftTopY      0
+#define  LeftTopX   0
+#define  LeftTopY   0
 
-#define  RightBotX   479
-#define  RightBotY   271
+#define  RightBotX  1024
+#define  RightBotY  768
 
-#define  FRAME_BUFFER   0x00010000
+#define  FRAME_BUFFER   0x54000000
 
-unsigned int fb_base_addr;
-unsigned int bpp;
-unsigned int xsize;
-unsigned int ysize;
-
-void palette_init()
+/*
+ * LCD controller fetch 24bits data from here
+ * but not frame_buffer. frame_buffer store the
+ * index so that save memory.
+ */
+static void palette_init()
 {
-	int i;
 	volatile unsigned long *p = (volatile unsigned long *)WIN0_PALENTRY0;
 	
 	WPALCON |= (1<<9);
 
 	WPALCON &= ~(0x7);
-	WPALCON |= 1; /* 24-bit ( 8:8:8 ) */
+	WPALCON |= 1;    /* 24-bit ( 8:8:8 ) */
 
-	p[0] = 0x000000;
-	p[1] = 0x00ff00;
+	p[0] = 0xffffff; /* black */
+	p[1] = 0x00ff00; 
 	p[2] = 0xff0000;
 	p[3] = 0x0000ff;
 	p[4] = 0xffffff;
 
-	for (i = 0; i <256; i++)
-	{
-		//p[i] = ;
-	}
-	
 	WPALCON &= ~(1<<9);
 }
 
-void clean_screem()
+static void clean_screem()
 {
 	int x;
 	int y;
 	int cnt = 0;
 	
-	volatile unsigned char *p = (volatile unsigned char *)fb_base_addr;
+	volatile unsigned char *p = (volatile unsigned char *)FRAME_BUFFER;
 	for (x = 0; x <=HOZVAL; x++)
 		for (y = 0; y <= LINEVAL; y++)
-			p[cnt++] = 0;
+			p[cnt++] = 255; /* black */
 }
 
 void lcd_init()
@@ -77,10 +71,13 @@ void lcd_init()
 	GPECON &= ~(0xf);
 	GPECON |= (0x1);
 
+	VIDCON0 |= 0x3;       /* display on */
+	WINCON0 |= 1;
+
 	MIFPCON &= ~(1<<3);   /* Normal mode */
 
 	SPCON   &= ~(0x3);
-	SPCON   |= 0x1;      /* RGB I/F style */
+	SPCON   |= 0x1;       /* RGB I/F style */
 
 	VIDCON0 &= ~((3<<26) | (3<<17) | (0xff<<6)  | (3<<2));     /* RGB I/F, RGB Parallel format,  */
 	VIDCON0 |= ((14<<6) | (1<<4) );  /* vclk== HCLK / (CLKVAL+1) = 133/15 = 9MHz */
@@ -93,84 +90,16 @@ void lcd_init()
 	VIDTCON2 = (LINEVAL << 11) | (HOZVAL << 0);
 
 	WINCON0 &= ~(0xf << 2);
-	WINCON0 |= (0x3<<2) | (1<<17);    /* 8 BPP (palletized), byte swap */
+	WINCON0 |= (0x3<<2) | (1<<17);   /* 8 BPP (palletized), byte swap */
 
 	VIDOSD0A = (LeftTopX<<11) | (LeftTopY << 0);
 	VIDOSD0B = (RightBotX<<11) | (RightBotY << 0);
 	VIDOSD0C = (LINEVAL + 1) * (HOZVAL + 1) / 4;
 
 	VIDW00ADD0B0 = FRAME_BUFFER;
-	VIDW00ADD1B0 =  (((HOZVAL + 1)*1 + 0) * (LINEVAL + 1)) & (0xffffff);
+	VIDW00ADD1B0 = (((HOZVAL + 1)*1 + 0) * (LINEVAL + 1)) & (0xffffff);
 
-//	palette_init();	
-									
-	fb_base_addr = FRAME_BUFFER;
-	xsize = HOZVAL + 1;
-	ysize = LINEVAL + 1;
-	bpp   = 8;
-
-//	clean_screem();
-}
-
-
-void backlight_enable()
-{
-	GPFDAT |= (1<<14);
-}
-
-void backlight_disable()
-{
-	GPFDAT &= ~(1<<14);
-}
-
-
-void lcd_on()
-{
-	GPEDAT |= (1<<0);
-}
-
-void lcd_off()
-{
-	GPEDAT &= ~(1<<0);
-}
-
-void lcd_enable()
-{
-	lcd_on();
-	backlight_enable();
-	displaycon_on();
-}
-
-void displaycon_on()
-{
-	VIDCON0 |= 0x3;
-	WINCON0 |= 1;
-}
-
-void displaycon_off()
-{
-	VIDCON0 &= ~0x3;
-	WINCON0 &= ~1;
-}
-
-void display_red()
-{
-	volatile unsigned char *p = (volatile unsigned char *)FRAME_BUFFER;
-	int x, y;
-	int cnt = 0;
-	unsigned char colors[] = {0, 1, 2, 3};
-	static int color_idx = 0;
-	
-	for (y = 0; y <= LINEVAL; y++)
-	{
-		for (x = 0; x <= HOZVAL; x++)
-		{
-			p[cnt++] =colors[color_idx] ;  /* red */
-		}
-	}
-
-	color_idx++;
-	if (color_idx == 5)
-		color_idx = 0;
+	palette_init();
+	clean_screem();
 }
 
