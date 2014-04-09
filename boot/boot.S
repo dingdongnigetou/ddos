@@ -4,6 +4,7 @@
 _start:
 	@; peripheral setting
 	@; tell CPU peripheral where is  
+	@; 256M -> 0x70000000 - 0x7FFFFFFF
 	ldr r0, =0x70000000 @; SROM_BW
 	orr r0,r0,#0x13
 	mcr p15,0,r0,c15,c2,4
@@ -17,9 +18,10 @@ _start:
 	@; 8K is the MAX, but enough
 	ldr sp, = 1024 * 8 
 
-	@; clock initialization
+	@; initialization
 	bl clock_init  @; goto clock.c
 	bl sdram_init  @; goto sdram.c
+	bl uart0_init  @; goto uart.c
 
         @; relocate the code
 	@; copy code and data segment to it's link address
@@ -27,7 +29,6 @@ _start:
 	ldr r1, =_start    @; _start link address -> 0x50000000
 	
 	ldr r2, =bss_start @; bss link address	
-
 	cmp r0,r1
 	beq clean_bss
 copy_loop:
