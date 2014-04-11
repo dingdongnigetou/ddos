@@ -72,7 +72,11 @@
 #define MIFPCON        (*(volatile unsigned long *)0x7410800C)
 
 /* PWM */
+#define TCFG0          (*(volatile unsigned long *)0x7F006008)
+#define TCFG1          (*(volatile unsigned long *)0x7F006004)
 #define TCON           (*(volatile unsigned long *)0x7F006008)
+#define TCNTB0         (*(volatile unsigned long *)0x7F00600C)
+#define TCMPB0         (*(volatile unsigned long *)0x7F006010)
 #define TCNTB3         (*(volatile unsigned long *)0x7F006030)
 #define TINT_CSTAT     (*(volatile unsigned long *)0x7F006044)
 
@@ -103,7 +107,9 @@
 #define P1DIRECTCMD    (*(volatile unsigned long *)0x7E001008)
 
 /* Others */
-#define PCLK            66500000 
+#define PCLK           66500000 
+#define TRUE           1
+#define FLASE          0 
 
 #endif /* _S3C6410_H_ */
 

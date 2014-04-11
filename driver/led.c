@@ -7,7 +7,6 @@
  *
  */
 
-#include "led.h"
 #include "s3c6410.h"
 
 void delay()

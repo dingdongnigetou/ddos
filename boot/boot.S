@@ -22,6 +22,7 @@ _start:
 	bl clock_init  @; goto clock.c
 	bl sdram_init  @; goto sdram.c
 	bl uart0_init  @; goto uart.c
+	bl lcd_init    @; goto lcd.c
 
         @; relocate the code
 	@; copy code and data segment to it's link address

@@ -8,7 +8,6 @@
  *
  */
 
-#include "uart.h"
 #include "s3c6410.h"
 
 #define UART_CLK        PCLK

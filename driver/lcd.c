@@ -7,8 +7,8 @@
  *
  */
 
-#include "lcd.h"
 #include "s3c6410.h"
+#include "pwm.h"
 
 #define  VSPW       9
 #define  VBPD       1
@@ -24,8 +24,7 @@
 #define  LeftTopY   0
 
 #define  RightBotX  1024
-#define  RightBotY  768
-
+#define  RightBotY  768 
 #define  FRAME_BUFFER   0x54000000
 
 /*
@@ -58,21 +57,19 @@ static void clean_screem()
 	int cnt = 0;
 	
 	volatile unsigned char *p = (volatile unsigned char *)FRAME_BUFFER;
-	for (x = 0; x <=HOZVAL; x++)
-		for (y = 0; y <= LINEVAL; y++)
-			p[cnt++] = 255; /* black */
+	for (x = 0; x <=HOZVAL * 4; x++)
+		for (y = 0; y <= LINEVAL * 4; y++)
+			p[cnt++] = 100; /* black */
 }
 
 void lcd_init()
 {
 	GPICON = 0xAAAAAAAA;  
-	GPJCON = 0xAAAAAAAA;   		
+	GPJCON = 0xAAAAAAA;   		
+
 
 	GPECON &= ~(0xf);
 	GPECON |= (0x1);
-
-	VIDCON0 |= 0x3;       /* display on */
-	WINCON0 |= 1;
 
 	MIFPCON &= ~(1<<3);   /* Normal mode */
 
@@ -90,16 +87,21 @@ void lcd_init()
 	VIDTCON2 = (LINEVAL << 11) | (HOZVAL << 0);
 
 	WINCON0 &= ~(0xf << 2);
-	WINCON0 |= (0x3<<2) | (1<<17);   /* 8 BPP (palletized), byte swap */
+	WINCON0 |= (0xb << 2); /* 24bits -> from FRAME_BUFFER */
+	//WINCON0 |= (0x3<<2) | (1<<17);   /* 8 BPP (palletized), byte swap */
 
 	VIDOSD0A = (LeftTopX<<11) | (LeftTopY << 0);
 	VIDOSD0B = (RightBotX<<11) | (RightBotY << 0);
 	VIDOSD0C = (LINEVAL + 1) * (HOZVAL + 1) / 4;
 
 	VIDW00ADD0B0 = FRAME_BUFFER;
-	VIDW00ADD1B0 = (((HOZVAL + 1)*1 + 0) * (LINEVAL + 1)) & (0xffffff);
+	VIDW00ADD1B0 = (((HOZVAL + 1)*4 + 0) * (LINEVAL + 1)) & (0xffffff);
 
-	palette_init();
-	clean_screem();
+//	palette_init();
+//	clean_screem();
+	GPEDAT  |= (1 << 0);  /* lcd on */
+	VIDCON0 |= 0x3;       /* display on */
+	WINCON0 |= 1;
+
 }
 
