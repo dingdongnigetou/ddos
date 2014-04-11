@@ -55,3 +55,9 @@
 -Wed Apr 9, 2014
  OK, the lcd is working well now! Next time write character into lcd.
 
+-Thu Apr 10, 2014
+ Shit, I found the error that can not write character on lcd finally.
+ The size of bin is more than 8K... So, we should initialize the nand 
+ flash so that we can read data form it and copy them into DDR. Because 
+ the hardware always read the first 8K data in nand flash.
+
