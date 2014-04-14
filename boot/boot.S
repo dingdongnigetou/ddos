@@ -22,21 +22,20 @@ _start:
 	bl clock_init  @; goto clock.c
 	bl sdram_init  @; goto sdram.c
 	bl uart0_init  @; goto uart.c
-	bl lcd_init    @; goto lcd.c
+@;	bl lcd_init    @; goto lcd.c
 
-        @; relocate the code
-	@; copy code and data segment to it's link address
-	adr r0, _start     @; current address -> 0 
-	ldr r1, =_start    @; _start link address -> 0x50000000
-	
-	ldr r2, =bss_start @; bss link address	
-	cmp r0,r1
+	@; copy data form nand to ddr
+	@; by call copy2ddr
+	adr r0, _start  @; nand_start -> 0
+	ldr r1, =_start @; ddr_start -> 0x50000000
+	@; len
+	ldr r2, = bss_start	
+	sub r2, r2, r1
+	cmp r0, r1
 	beq clean_bss
-copy_loop:
-	ldr r3, [r0], #4
-	str r3, [r1], #4
-	cmp r1, r2
-	bne copy_loop	
+	bl copy2ddr
+	cmp r0, #0     @; error
+	bne halt
 
 	@; clean the bss
 clean_bss:
@@ -53,4 +52,6 @@ clean_loop:
 	@; jump into DDR
 on_ddr:
 	ldr pc, =main @; pc == main link address  
+halt:
+	b halt
 
