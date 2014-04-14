@@ -12,7 +12,7 @@ CFLAGS  = -Wall -I$(INCLUDEDIR) -nostdinc
 	$(CC) $(CFLAGS) -c $< -o $@
 
 OBJS    = sdram.o clock.o uart.o led.o bglight.o lcd.o \
-	  pwm.o
+	  pwm.o nand.o
 
 drivers.a:$(OBJS)
 	$(AR) rcs $@ $^
