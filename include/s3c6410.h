@@ -106,6 +106,15 @@
 #define P1MEMCCMD      (*(volatile unsigned long *)0x7E001004)
 #define P1DIRECTCMD    (*(volatile unsigned long *)0x7E001008)
 
+/* Nand Flash */
+#define MEM_SYS_CFG    (*(volatile unsigned long *)0x7E00F120)
+#define NFCONF         (*(volatile unsigned long *)0x70200000)
+#define NFCONT         (*(volatile unsigned long *)0x70200004)
+#define NFCMMD         (*(volatile unsigned long *)0x70200008)
+#define NFADDR         (*(volatile unsigned long *)0x7020000C)
+#define NFDATA         (*(volatile unsigned char *)0x70200010)
+#define NFSTAT         (*(volatile unsigned long *)0x70200028)
+
 /* Others */
 #define PCLK           66500000 
 #define TRUE           1
