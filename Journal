@@ -61,3 +61,7 @@
  flash so that we can read data form it and copy them into DDR. Because 
  the hardware always read the first 8K data in nand flash.
 
+-Mon Apr 14, 2014
+ The nand flash driver doesn't work! I can't find the fault today.
+ Everything will be OK. :)
+ 
