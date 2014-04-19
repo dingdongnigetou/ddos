@@ -14,25 +14,31 @@ _start:
 	mov r1, #0
 	str r1, [r0]
 
+	msr cpsr, #0xdf
+
 	@; set stack size == 8k
 	@; 8K is the MAX, but enough
 	ldr sp, = 1024 * 8 
 
 	@; initialization
 	bl clock_init  @; goto clock.c
-	bl sdram_init  @; goto sdram.c
 	bl uart0_init  @; goto uart.c
+	bl sdram_init  @; goto sdram.c
+	bl main
 @;	bl lcd_init    @; goto lcd.c
 
 	@; copy data form nand to ddr
 	@; by call copy2ddr
 	adr r0, _start  @; nand_start -> 0
 	ldr r1, =_start @; ddr_start -> 0x50000000
+
 	@; len
 	ldr r2, = bss_start	
 	sub r2, r2, r1
+
 	cmp r0, r1
 	beq clean_bss
+
 	bl copy2ddr
 	cmp r0, #0     @; error
 	bne halt

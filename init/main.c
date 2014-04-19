@@ -11,15 +11,15 @@
 #include "led.h"
 #include "bglight.h"
 
-int main(void)
+int main()
 {
-	set_bglight(25);
+//	set_bglight(25);
 
 	while(1)
 	{
 		unsigned char ch;
 		ch = getc();
-		putc(ch);
+		putc(test(ch));
 		ledone_flicker();
 	}
 
