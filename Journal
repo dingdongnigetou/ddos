@@ -65,3 +65,6 @@
  The nand flash driver doesn't work! I can't find the fault today.
  Everything will be OK. :)
  
+-Sat Apr 19, 2014
+ Nand flash read function can't work!!! But the erase function works well.
+ 
