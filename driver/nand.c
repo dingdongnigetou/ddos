@@ -9,18 +9,18 @@
 
 #include "s3c6410.h"
 
-#define TACLS     0
-#define TWRPH0    1
+#define TACLS     1  
+#define TWRPH0    0
 #define TWRPH1    0
 
-static void nand_select(void)
+static void nand_select()
 {
 	NFCONT &= ~(1<<1);
 }
 
-static void nand_deselect(void)
+static void nand_deselect()
 {
-	NFCONT |= (1<<1);
+	NFCONT |= (1<<1); 
 }
 
 static void nand_cmd(unsigned char cmd)
@@ -33,22 +33,22 @@ static void nand_addr(unsigned char addr)
 	NFADDR = addr;
 }
 
-static unsigned char nand_get_data(void)
+static unsigned char nand_get_data()
 {
 	return NFDATA;
 }
 
-static nand_send_data(unsigned char data)
+static void nand_send_data(unsigned char data)
 {
 	NFDATA = data;
 }
 
-static wait_ready(void)
+static void wait_ready()
 {
 	while ((NFSTAT & 0x1) == 0);
 }
 
-static void nand_reset(void)
+static void nand_reset()
 {
 	nand_select();
 	nand_cmd(0xff);
@@ -56,7 +56,7 @@ static void nand_reset(void)
 	nand_deselect(); /* cancel selection */
 }
 
-static void nand_init(void)
+void nand_init()
 {
 	/* xm0csn2 is the chip select pin of nand flash cs0 */
 	MEM_SYS_CFG &= ~(1<<1);
@@ -73,11 +73,11 @@ static void nand_init(void)
 
 static void nand_send_addr(unsigned int addr)
 {
-	/* row address -> which page */
+	/* col address */
 	nand_addr(addr & 0xff);         /* a0~a7 */
 	nand_addr((addr >> 8) & 0x7);   /* a8~a10 */
 
-	/* col address -> address in page */
+	/* row address */
 	nand_addr((addr >> 11) & 0xff); /* a11~a18 */
 	nand_addr((addr >> 19) & 0xff); /* a19~a26 */
 	nand_addr((addr >> 27) & 0xff); /* a27 */
@@ -88,7 +88,7 @@ static int nand_read(unsigned int nand_start, unsigned int ddr_start,
 		unsigned int len)
 {
 	unsigned int addr = nand_start;
-	int i = nand_start % 2048; /* from which page */
+	int i ;
 	int count = 0;
 	unsigned char *dest = (unsigned char *)ddr_start;
 	
@@ -102,19 +102,34 @@ static int nand_read(unsigned int nand_start, unsigned int ddr_start,
 		wait_ready();
 
 		/* read data */
-		for (; i < 2048 && count < len; i++)
-		{
+		for (i = 0; i < 2048 && count < len; i++)
 			dest[count++] = nand_get_data();
-			addr++;
-		}
-		i = 0;
+
+		addr += 2048;
 	}
 
 	nand_deselect();
 	return 0;
 }
 
-static int nand_erase_block(unsigned long addr)
+unsigned char test(int addr)
+{
+
+	unsigned char temp;
+	nand_init();
+
+	nand_select();
+	nand_cmd(0x00);
+	nand_send_addr(addr);
+	nand_cmd(0x30);
+	wait_ready();
+	temp = nand_get_data();
+	nand_deselect();
+
+	return temp;
+}
+
+int nand_erase_block(unsigned long addr)
 {
 	int page = addr / 2048;
 	
