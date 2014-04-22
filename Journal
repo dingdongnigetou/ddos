@@ -64,7 +64,12 @@
 -Mon Apr 14, 2014
  The nand flash driver doesn't work! I can't find the fault today.
  Everything will be OK. :)
- 
+iiiiikjadfkjai 
 -Sat Apr 19, 2014
  Nand flash read function can't work!!! But the erase function works well.
  
+-Mon Apr 21, 2014
+ OK, the nand flash driver works well now! I set TWRPH0 as 2 so the problem
+ is done. By the way, I find that the Jlink just load the bin file into 
+ memory but not nandflash so that I should use SD to load the bin file.
+
