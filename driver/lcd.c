@@ -59,14 +59,13 @@ static void clean_screem()
 	volatile unsigned char *p = (volatile unsigned char *)FRAME_BUFFER;
 	for (x = 0; x <=HOZVAL * 4; x++)
 		for (y = 0; y <= LINEVAL * 4; y++)
-			p[cnt++] = 100; /* black */
+			p[cnt++] = 0; /* black */
 }
 
 void lcd_init()
 {
 	GPICON = 0xAAAAAAAA;  
 	GPJCON = 0xAAAAAAA;   		
-
 
 	GPECON &= ~(0xf);
 	GPECON |= (0x1);
@@ -88,7 +87,7 @@ void lcd_init()
 
 	WINCON0 &= ~(0xf << 2);
 	WINCON0 |= (0xb << 2); /* 24bits -> from FRAME_BUFFER */
-	//WINCON0 |= (0x3<<2) | (1<<17);   /* 8 BPP (palletized), byte swap */
+//	WINCON0 |= (0x3<<2) | (1<<17);   /* 8 BPP (palletized), byte swap */
 
 	VIDOSD0A = (LeftTopX<<11) | (LeftTopY << 0);
 	VIDOSD0B = (RightBotX<<11) | (RightBotY << 0);
@@ -98,10 +97,9 @@ void lcd_init()
 	VIDW00ADD1B0 = (((HOZVAL + 1)*4 + 0) * (LINEVAL + 1)) & (0xffffff);
 
 //	palette_init();
-//	clean_screem();
+	clean_screem();
 	GPEDAT  |= (1 << 0);  /* lcd on */
 	VIDCON0 |= 0x3;       /* display on */
 	WINCON0 |= 1;
-
 }
 

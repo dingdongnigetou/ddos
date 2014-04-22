@@ -13,13 +13,14 @@
 
 int main()
 {
-//	set_bglight(25);
+	set_bglight(100);
+	int i;
 
 	while(1)
 	{
 		unsigned char ch;
 		ch = getc();
-		putc(test(ch));
+		putc(ch);
 		ledone_flicker();
 	}
 

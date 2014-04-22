@@ -24,8 +24,7 @@ _start:
 	bl clock_init  @; goto clock.c
 	bl uart0_init  @; goto uart.c
 	bl sdram_init  @; goto sdram.c
-	bl main
-@;	bl lcd_init    @; goto lcd.c
+	bl lcd_init    @; goto lcd.c
 
 	@; copy data form nand to ddr
 	@; by call copy2ddr
