@@ -9,8 +9,8 @@
 
 #include "s3c6410.h"
 
-#define TACLS     1  
-#define TWRPH0    0
+#define TACLS     0
+#define TWRPH0    2  /* shit me long time... */
 #define TWRPH1    0
 
 static void nand_select()
@@ -56,7 +56,7 @@ static void nand_reset()
 	nand_deselect(); /* cancel selection */
 }
 
-void nand_init()
+static void nand_init()
 {
 	/* xm0csn2 is the chip select pin of nand flash cs0 */
 	MEM_SYS_CFG &= ~(1<<1);
@@ -73,14 +73,14 @@ void nand_init()
 
 static void nand_send_addr(unsigned int addr)
 {
-	/* col address */
+	/* col address 12bits -> 2K + 64Bytes */
 	nand_addr(addr & 0xff);         /* a0~a7 */
-	nand_addr((addr >> 8) & 0x7);   /* a8~a10 */
+	nand_addr((addr >> 8) & 0xff);  /* a8~a11 */
 
-	/* row address */
-	nand_addr((addr >> 11) & 0xff); /* a11~a18 */
-	nand_addr((addr >> 19) & 0xff); /* a19~a26 */
-	nand_addr((addr >> 27) & 0xff); /* a27 */
+	/* row address 17bits -> 128K pages */
+	nand_addr((addr >> 11) & 0xff); /* a12~a19 */
+	nand_addr((addr >> 19) & 0xff); /* a20~a27 */
+	nand_addr((addr >> 27) & 0xff); /* a28 */
 }
 
 /* read data form nand flash to ddr */
@@ -112,24 +112,7 @@ static int nand_read(unsigned int nand_start, unsigned int ddr_start,
 	return 0;
 }
 
-unsigned char test(int addr)
-{
-
-	unsigned char temp;
-	nand_init();
-
-	nand_select();
-	nand_cmd(0x00);
-	nand_send_addr(addr);
-	nand_cmd(0x30);
-	wait_ready();
-	temp = nand_get_data();
-	nand_deselect();
-
-	return temp;
-}
-
-int nand_erase_block(unsigned long addr)
+void nand_erase_block(unsigned long addr)
 {
 	int page = addr / 2048;
 	
@@ -146,9 +129,10 @@ int nand_erase_block(unsigned long addr)
 	nand_deselect();
 }
 
-static void nand_write(unsigned int nand_start, unsigned char * buf, 
+void nand_write(unsigned int nand_start, unsigned char * buf, 
 		unsigned int len)
 {
+	nand_init();
 	unsigned long count = 0;
 	unsigned long addr  = nand_start;
 	int i = nand_start % 2048; /* form which page */
