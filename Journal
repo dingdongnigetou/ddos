@@ -73,3 +73,7 @@ iiiiikjadfkjai
  is done. By the way, I find that the Jlink just load the bin file into 
  memory but not nandflash so that I should use SD to load the bin file.
 
+-Wed Apr 23, 2014
+ The lcd draw still doesn't work, next time I think I should learn the irq
+ first.
+
