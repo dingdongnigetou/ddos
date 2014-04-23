@@ -1,6 +1,6 @@
 @;                 (C) 2014 JinDongHuang
 
-.global _start
+.global _start 
 _start:
 	@; peripheral setting
 	@; tell CPU peripheral where is  

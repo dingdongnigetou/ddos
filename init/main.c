@@ -10,17 +10,19 @@
 #include "uart.h"
 #include "led.h"
 #include "bglight.h"
+#include "lcdop.h"
 
 int main()
 {
-	set_bglight(100);
-	int i;
+	unsigned char ch;
 
 	while(1)
 	{
-		unsigned char ch;
 		ch = getc();
 		putc(ch);
+		set_bglight(ch);
+		lcd_putc(ch);
+		draw_line(0, 0, 1024, 768, 255);
 		ledone_flicker();
 	}
 

@@ -1,7 +1,7 @@
 /*
  * (C) 2014 Jindong Huang
  *
- * driver/bglight.c
+ * driver/lcd/bglight.c
  *
  * The implement of set background light.
  *

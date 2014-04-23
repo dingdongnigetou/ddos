@@ -50,16 +50,16 @@ static void palette_init()
 	WPALCON &= ~(1<<9);
 }
 
-static void clean_screem()
+static void clean_screem(unsigned char color)
 {
 	int x;
 	int y;
 	int cnt = 0;
 	
-	volatile unsigned char *p = (volatile unsigned char *)FRAME_BUFFER;
-	for (x = 0; x <=HOZVAL * 4; x++)
+	volatile unsigned char *p = (volatile unsigned char *)fb_base_addr;
+	for (x = 0; x <= HOZVAL * 4; x++)
 		for (y = 0; y <= LINEVAL * 4; y++)
-			p[cnt++] = 0; /* black */
+			p[cnt++] = color;
 }
 
 void lcd_init()
@@ -96,8 +96,8 @@ void lcd_init()
 	VIDW00ADD0B0 = FRAME_BUFFER;
 	VIDW00ADD1B0 = (((HOZVAL + 1)*4 + 0) * (LINEVAL + 1)) & (0xffffff);
 
-//	palette_init();
-	clean_screem();
+	clean_screem(0);
+
 	GPEDAT  |= (1 << 0);  /* lcd on */
 	VIDCON0 |= 0x3;       /* display on */
 	WINCON0 |= 1;
