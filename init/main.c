@@ -10,7 +10,7 @@
 #include "uart.h"
 #include "led.h"
 #include "bglight.h"
-#include "lcdop.h"
+#include "lcd.h"
 
 int main()
 {
@@ -22,7 +22,7 @@ int main()
 		putc(ch);
 		set_bglight(ch);
 		lcd_putc(ch);
-		draw_line(0, 0, 1024, 768, 255);
+	//	draw_line(0, 0, 1024, 768, ch);
 		ledone_flicker();
 	}
 

@@ -8,7 +8,7 @@ CC      = arm-linux-gcc
 CFLAGS  = -Wall -I$(INCLUDEDIR) -nostdinc
 OBJS    = sdram.o clock.o uart.o led.o pwm.o nand.o \
 	  $(LCDDIR)/bglight.o $(LCDDIR)/lcd.o       \
-	  $(LCDDIR)/lcdop.o $(LCDDIR)/font_8x8.o
+	  $(LCDDIR)/font_8x8.o
 
 %.o:%.c
 	$(CC) $(CFLAGS) -c $< -o $@

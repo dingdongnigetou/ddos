@@ -42,4 +42,5 @@ $(LIBDIR)/lib.a:
 clean:
 	rm -rf $(BOOTDIR)/*.o $(INITDIR)/*.o  *.elf *.bin *.dis
 	(cd $(DRIVERDIR); make clean)
+	(cd $(LIBDIR); make clean)
 
