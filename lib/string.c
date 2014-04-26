@@ -8,6 +8,32 @@
  */
 
 /*
+ * find the length of a length-limited string
+ *
+ */
+unsigned int strnlen(const char *s, unsigned int count)
+{
+	const char *sc;
+
+	for (sc = s; count-- && *sc != '\0'; ++sc);
+
+	return sc - s;
+}
+
+/*
+ * count the length of string
+ *
+ */
+unsigned int strlen(const char *s)
+{
+	const char *sc;
+
+	for (sc = s; *sc != '\0'; ++sc);
+
+	return sc -s;
+}
+
+/*
  * set continuous area's value as data.
  *
  */
@@ -62,4 +88,5 @@ void *memmove(void *dest, const void *src, unsigned int size)
 
 	return dest;
 }
+
 
