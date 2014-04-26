@@ -77,3 +77,6 @@ iiiiikjadfkjai
  The lcd draw still doesn't work, next time I think I should learn the irq
  first.
 
+-Sat Apr 26, 2014
+ Add the printf() and scanf(), but they doesn't work well.
+

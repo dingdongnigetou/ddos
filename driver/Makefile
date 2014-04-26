@@ -5,7 +5,7 @@ LCDDIR      = ./lcd
 
 AR      = arm-linux-ar
 CC      = arm-linux-gcc
-CFLAGS  = -Wall -I$(INCLUDEDIR) -nostdinc
+CFLAGS  = -Wall -I$(INCLUDEDIR)
 OBJS    = sdram.o clock.o uart.o led.o pwm.o nand.o \
 	  $(LCDDIR)/bglight.o $(LCDDIR)/lcd.o       \
 	  $(LCDDIR)/font_8x8.o

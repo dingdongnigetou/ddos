@@ -11,18 +11,19 @@
 #include "led.h"
 #include "bglight.h"
 #include "lcd.h"
+#include "io.h"
 
 int main()
 {
 	unsigned char ch;
 
+	lcd_init();
+
 	while(1)
 	{
-		ch = getc();
-		putc(ch);
-		set_bglight(ch);
-		lcd_putc(ch);
-	//	draw_line(0, 0, 1024, 768, ch);
+		printf("Hello World%d\n", 10);
+		scanf("%c", &ch);
+		putc(65);
 		ledone_flicker();
 	}
 
