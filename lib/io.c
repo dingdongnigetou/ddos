@@ -3,60 +3,58 @@
  *
  * lib/io.c
  *
- * The implement of printf and scanf.
- * just the shell for vsprintf and vsscanf.
+ * The implementation of input and output
+ * functions.
  *
  */
 
-#include "vsprintf.h"
+#include "ioformat.h"
+#include "string.h"
+#include "common.h"
 #include "uart.h"
-
-#define	OUTBUFSIZE	1024
-#define	INBUFSIZE	1024
-
-static unsigned char g_pcOutBuf[OUTBUFSIZE];
-static unsigned char g_pcInBuf[INBUFSIZE];
 
 int printf(const char *fmt, ...)
 {
-	int i;
-	int len;
-	va_list args;
 
-	va_start(args, fmt);
-	len = vsprintf(g_pcOutBuf,fmt,args);
-	va_end(args);
-	for (i = 0; i < strlen(g_pcOutBuf); i++)
-		putc(g_pcOutBuf[i]);
-
-	return len;
 }
 
 int scanf(const char * fmt, ...)
 {
-	int      i = 0;
-	unsigned char c;
-	va_list  args;
-	
-	while(1){
-		c = getc();
 
-		if((c == '\r') || (c == '\n')){
-			putc('\n');
-			putc('\r');
-			g_pcInBuf[i] = '\0';
-			break;
-		}
-		else{
-			g_pcInBuf[i++] = c;
-			putc(c);
-		}
+}
+
+int puts(const char *s)
+{
+	if (s == NULL)
+		return -1; 
+
+	int i;
+	int len = strlen(s);
+	for (i = 0; i < len; i++){
+		if (s[i] == NEWLINE)
+			putc(RETURN);
+		putc(s[i]);
 	}
-	
-	va_start(args,fmt);
-	i = vsscanf(g_pcInBuf,fmt,args);
-	va_end(args);
 
-	return i;
+	return len;
+}
+
+int gets(char *buf)
+{
+	if (buf == NULL)
+		return -1;
+
+	int len = 0;
+	unsigned char c;
+	while ((c = getc()) != RETURN){
+		putc(c);
+		buf[len++] = c;
+	}
+	buf[len++] = NEWLINE;
+	buf[len++] = '\0'; /* string ending */
+	putc(NEWLINE);
+	putc(RETURN);
+
+	return len;
 }
 
