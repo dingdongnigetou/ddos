@@ -5,7 +5,7 @@ INCLUDEDIR  = ../include
 AR      = arm-linux-ar
 CC      = arm-linux-gcc
 CFLAGS  = -Wall -I$(INCLUDEDIR)
-OBJS    = string.o vsprintf.o io.o div64.o
+OBJS    = string.o io.o
 
 %.o:%.c
 	$(CC) $(CFLAGS) -c $< -o $@

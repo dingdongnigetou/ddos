@@ -15,15 +15,15 @@
 
 int main()
 {
-	unsigned char ch;
 
-	lcd_init();
+	char buf[1024];
 
+	puts("hello world\n");
 	while(1)
 	{
-		printf("Hello World%d\n", 10);
-		scanf("%c", &ch);
-		putc(65);
+
+		gets(buf);
+		puts(buf);
 		ledone_flicker();
 	}
 

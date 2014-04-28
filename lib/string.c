@@ -7,10 +7,6 @@
  * 
  */
 
-/*
- * find the length of a length-limited string
- *
- */
 unsigned int strnlen(const char *s, unsigned int count)
 {
 	const char *sc;
@@ -20,23 +16,15 @@ unsigned int strnlen(const char *s, unsigned int count)
 	return sc - s;
 }
 
-/*
- * count the length of string
- *
- */
 unsigned int strlen(const char *s)
 {
 	const char *sc;
 
 	for (sc = s; *sc != '\0'; ++sc);
 
-	return sc -s;
+	return sc - s;
 }
 
-/*
- * set continuous area's value as data.
- *
- */
 void *memset(void *dest, int data, unsigned int size)
 {
 	char *d = (char *)dest;
@@ -47,10 +35,6 @@ void *memset(void *dest, int data, unsigned int size)
 	return dest;
 }
 
-/*
- * Copy data from src to dest.
- *
- */
 void *memcpy(void *dest, const void *src, unsigned int size)
 {
 	char       *d = (char *)dest;
@@ -62,12 +46,6 @@ void *memcpy(void *dest, const void *src, unsigned int size)
 	return dest;
 }
 
-/*
- * Copy data form src to dest. 
- * Unlike memcpy(), memmove can 
- * handle the overlapped area 
- *
- */
 void *memmove(void *dest, const void *src, unsigned int size)
 {
 	char       *d = (char *)dest;
@@ -88,5 +66,4 @@ void *memmove(void *dest, const void *src, unsigned int size)
 
 	return dest;
 }
-
 

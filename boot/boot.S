@@ -14,15 +14,13 @@ _start:
 	mov r1, #0
 	str r1, [r0]
 
-	msr cpsr, #0xdf
-
 	@; set stack size == 8k
 	@; 8K is the MAX, but enough
 	ldr sp, = 1024 * 8 
 
 	@; initialization
 	bl clock_init  @; goto clock.c
-	bl uart0_init  @; goto uart.c
+	bl uart_init  @; goto uart.c
 	bl sdram_init  @; goto sdram.c
 
 	@; copy data form nand to ddr

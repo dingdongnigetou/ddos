@@ -15,7 +15,7 @@
 /* DIV_VAL = (PCLK / (b/s * 16)) - 1 */
 #define UART_BRD        ((UART_CLK  / (UART_BAUD_RATE * 16)) - 1)
 
-void uart0_init(void)
+void uart_init(void)
 {
 	GPACON  &= ~0xff;
 	GPACON  |= 0x22;    /* enable RXD0 and TXD0 */
@@ -37,8 +37,8 @@ void putc(unsigned char c)
 
 unsigned char getc()
 {
-	/* don't receive c if receive FIFO is full */
-	while( (UFSTAT0 & 0x7f) ==0 );
+	/* don't receive c if receive FIFO is empty */
+	while( (UFSTAT0 & 0x7f) == 0 );
 	return URXH0;
 }
 
