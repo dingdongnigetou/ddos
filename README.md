@@ -1,20 +1,20 @@
-                     (C)   2014  Jindong Huang
+                                     &copy;  2014  Jindong Huang
 
-# DESCRIPTION
+## DESCRIPTION
   It is a simple OS for S3C6410. (Tiny6410-A)
 
-# INSTALLATION
+## INSTALLATION
   * make clean
   * make install
 
-# DOCUMENTATION
+## DOCUMENTATION
   Not finish
 
-# CONTRIBUTERS
-  Jindong Huang
-  Zhensheng Zhou
+## CONTRIBUTERS
+  * Jindong Huang
+  * Zhensheng Zhou
 
-# CONTACT WITH US
-  dingdongnigetou@gmail.com
-  ol.zhouzhensheng@gmail.com
+## CONTACT WITH US
+  * dingdongnigetou@gmail.com
+  * ol.zhouzhensheng@gmail.com
   
