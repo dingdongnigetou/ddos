@@ -112,7 +112,7 @@ static int nand_read(unsigned int nand_start, unsigned int ddr_start,
 	return 0;
 }
 
-void nand_erase_block(unsigned long addr)
+static void nand_erase_block(unsigned long addr)
 {
 	int page = addr / 2048;
 	
@@ -127,6 +127,14 @@ void nand_erase_block(unsigned long addr)
 	wait_ready();
 
 	nand_deselect();
+}
+
+void nand_erase_all()
+{
+	int i;
+
+	for (i = 0; i < 128 * 1024; i++) 
+		nand_erase_block(i);
 }
 
 void nand_write(unsigned int nand_start, unsigned char * buf, 
