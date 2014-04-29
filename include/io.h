@@ -24,6 +24,19 @@ int printf(const char *fmt, ...);
 int scanf(const char *fmt, ...);
 
 /*
+ * The shell of uart_putc() and lcd_putc()
+ * handle the '\r' and '\n'
+ *
+ */
+void putc(unsigned char c);
+
+/*
+ * The shell of uart_getc()
+ *
+ */
+unsigned char getc();
+
+/*
  * Output the string on screen. 
  *
  * if successful

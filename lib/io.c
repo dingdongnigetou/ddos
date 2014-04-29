@@ -8,10 +8,11 @@
  *
  */
 
-#include "ioformat.h"
+#include "io_format.h"
 #include "string.h"
 #include "common.h"
 #include "uart.h"
+#include "lcd.h"
 
 int printf(const char *fmt, ...)
 {
@@ -21,6 +22,26 @@ int printf(const char *fmt, ...)
 int scanf(const char * fmt, ...)
 {
 
+}
+
+void putc(unsigned char c)
+{
+	if (c == RETURN){
+		uart_putc(NEWLINE);
+		lcd_putc(NEWLINE);
+	}
+	if (c == NEWLINE){
+		uart_putc(RETURN);
+		lcd_putc(RETURN);
+	}
+
+	uart_putc(c);
+	lcd_putc(c);
+}
+
+unsigned char getc()
+{
+	return uart_getc();
 }
 
 int puts(const char *s)
