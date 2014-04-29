@@ -14,29 +14,30 @@
 
 #define  VSPW           9
 #define  VBPD           1
-#define  LINEVAL        768
+#define  LINEVAL        479
 #define  VFPD           1
 
 #define  HSPW           40    
 #define  HBPD           1
-#define  HOZVAL         1024
+#define  HOZVAL         799
 #define  HFPD           1
 
 #define  LeftTopX       0
 #define  LeftTopY       0
 
-#define  RightBotX      1024
-#define  RightBotY      768 
+#define  RightBotX      HOZVAL
+#define  RightBotY      LINEVAL
 #define  FRAME_BUFFER   0x54000000
 
 #define  FONTDATAMAX    2048
-#define  FRAME_BUFFER_P ( (unsigned char *)FRAME_BUFFER )
-#define  XSIZE          (1024 + 1)
-#define  YSIZE          (768 + 1)
+#define  FRAME_BUFFER_P ((unsigned char *)FRAME_BUFFER)
+#define  XSIZE          (HOZVAL + 1)
+#define  YSIZE          (LINEVAL + 1)
 
 /* from font8x8.c */
 extern const unsigned char fontdata_8x8[FONTDATAMAX];
 
+/* global var to store current cursor position */
 static int lcd_x = 0;
 static int lcd_y = 0;
 
@@ -59,20 +60,32 @@ static void palette_init()
 	p[2] = 0xff0000;
 	p[3] = 0x0000ff;
 	p[4] = 0xffffff;
+	p[255] = 0xffffff;
 
 	WPALCON &= ~(1<<9); /* LCD controller access */
+}
+
+/*
+ * put color into (x, y)
+ *
+ */
+static void put_pixel(unsigned int x, unsigned int y, unsigned int color)
+{
+	unsigned char *addr = FRAME_BUFFER_P + (y * XSIZE + x);
+	//*addr = color; /* 24 bits */
+	*addr = (unsigned char) color; /* 8 bits */ 
 }
 
 void clean_screem(unsigned char color)
 {
 	int x;
 	int y;
-	int cnt = 0;
+	int i = 0;
 	
 	volatile unsigned char *p = (volatile unsigned char *)FRAME_BUFFER;
 	for (x = 0; x <= HOZVAL; x++)
 		for (y = 0; y <= LINEVAL; y++)
-			p[cnt++] = color;
+			p[i++] = color;
 }
 
 void lcd_init()
@@ -111,22 +124,11 @@ void lcd_init()
 
 	palette_init();
 
-	clean_screem(0);
+	clean_screem(4);
 
 	GPEDAT  |= (1 << 0);  /* lcd on */
 	VIDCON0 |= 0x3;       /* display on */
 	WINCON0 |= 1;
-}
-
-/*
- * put color into (x, y)
- *
- */
-static void put_pixel(unsigned int x, unsigned int y, unsigned int color)
-{
-	unsigned char *addr = FRAME_BUFFER_P + (y * XSIZE + x);
-	//*addr = color; /* 24 bits */
-	*addr = (unsigned char) color; /* 8 bits */ 
 }
 
 /*
@@ -136,13 +138,13 @@ static void put_pixel(unsigned int x, unsigned int y, unsigned int color)
 static void draw_line(int x1, int y1, int x2, int y2, int color)
 {
 	int dx, dy, e;
-	dx = x2-x1; 
-	dy = y2-y1;
+	dx = x2 - x1; 
+	dy = y2 - y1;
 
 	if(dx >= 0){
 		if(dy >= 0){
 			if(dx >= dy){
-				e = dy-dx/2;
+				e = dy - dx / 2;
 				while (x1 <= x2){
 					put_pixel(x1, y1, color);
 					if (e > 0){
@@ -154,7 +156,7 @@ static void draw_line(int x1, int y1, int x2, int y2, int color)
 				}
 			}
 			else{
-				e = dx-dy/2;
+				e = dx - dy / 2;
 				while (y1 <= y2){
 					put_pixel(x1, y1, color);
 					if (e > 0){
@@ -170,7 +172,7 @@ static void draw_line(int x1, int y1, int x2, int y2, int color)
 			dy = -dy;   /* dy=abs(dy) */
 
 			if(dx >= dy){
-				e = dy-dx/2;
+				e = dy - dx / 2;
 				while(x1 <= x2){
 					put_pixel(x1, y1, color);
 					if(e > 0){
@@ -200,7 +202,7 @@ static void draw_line(int x1, int y1, int x2, int y2, int color)
 		dx = -dx;  /* dx=abs(dx) */
 		if (dy >= 0){
 			if (dx >= dy){
-				e = dy-dx/2;
+				e = dy - dx / 2;
 				while (x1 >= x2){
 					put_pixel(x1, y1, color);
 					if (e > 0){
@@ -261,8 +263,9 @@ static void draw_line(int x1, int y1, int x2, int y2, int color)
  */
 static void hide_cursor()
 {
-	draw_line(lcd_x, lcd_y, lcd_x, lcd_y+8, 0);
-	draw_line(lcd_x+1, lcd_y, lcd_x+1, lcd_y+8, 0);
+	draw_line(lcd_x, lcd_y, lcd_x, lcd_y + 8, 4);
+	draw_line(lcd_x + 1, lcd_y, lcd_x + 1, lcd_y + 8, 4);
+	draw_line(lcd_x + 2, lcd_y, lcd_x + 2, lcd_y + 8, 4);
 }
 
 /*
@@ -271,8 +274,9 @@ static void hide_cursor()
  */
 static void show_cursor()
 {
-	draw_line(lcd_x, lcd_y, lcd_x, lcd_y+8, 4);
-	draw_line(lcd_x+1, lcd_y, lcd_x+1, lcd_y+8, 4);
+	draw_line(lcd_x, lcd_y, lcd_x, lcd_y + 8, 0);
+	draw_line(lcd_x + 1, lcd_y, lcd_x + 1, lcd_y + 8, 0);
+	draw_line(lcd_x + 2, lcd_y, lcd_x + 2, lcd_y + 8, 0);
 }
 
 void lcd_putc(unsigned char c)
@@ -283,20 +287,23 @@ void lcd_putc(unsigned char c)
 	unsigned char *char_dots = fontdata_8x8 + c * 8;	
 
 	//cursor_timer_stop();
-	//hide_cursor();
+	hide_cursor();
 
 	if (c == '\n'){
 		lcd_y += 8;
-		if (lcd_y >= 768){
-			lcd_y = 768 - 8;
-			memmove(FRAME_BUFFER_P, FRAME_BUFFER_P + 8*1024, (768-8) * 1024);
-			memset(FRAME_BUFFER_P + (768-8)*1024, 0, 8*1024);
+		if (lcd_y >= YSIZE){
+			lcd_y = YSIZE - 8;
+			memmove(FRAME_BUFFER_P, FRAME_BUFFER_P + 8 * XSIZE, 
+					(YSIZE - 8) * XSIZE);
+			/* keep background */
+			memset(FRAME_BUFFER_P + (YSIZE - 8) * XSIZE, 4, 
+					8 * XSIZE);
 		}
-		//goto exit;
+		goto exit;
 	}
 	else if (c == '\r'){
 		lcd_x = 0;
-		//goto exit;
+		goto exit;
 	}
 
 	for (i = 0; i < 8; i++)	{
@@ -304,22 +311,25 @@ void lcd_putc(unsigned char c)
 
 		for (j = 0; j < 8; j++){
 			if (line_dots & (0x80 >> j))
-				put_pixel(lcd_x + j, lcd_y + i, 65); 
-			//else
-			//	put_pixel(lcd_x + j, lcd_y + i, 0);  
+				put_pixel(lcd_x + j, lcd_y + i, 0); 
+			else
+				put_pixel(lcd_x + j, lcd_y + i, 4);  
 		}
 	}
 
 	lcd_x += 8;
-	if (lcd_x >= 1024)
+	if (lcd_x >= XSIZE)
 		lcd_x = 0;
 
 	if (lcd_x == 0){
 		lcd_y += 8;
-		if (lcd_y >= 768){
-			lcd_y = 768 - 8;
-			memmove(FRAME_BUFFER_P, FRAME_BUFFER_P + 8*1024, (768-8) * 1024);
-			memset(FRAME_BUFFER_P + (768-8)*1024, 0, 8*1024);
+		if (lcd_y >= YSIZE){
+			lcd_y = YSIZE - 8;
+			memmove(FRAME_BUFFER_P, FRAME_BUFFER_P + 8 * XSIZE, 
+					(YSIZE - 8) * XSIZE);
+			/* keep background */
+			memset(FRAME_BUFFER_P + (YSIZE - 8) * XSIZE, 4, 
+					8 * XSIZE);
 		}
 	}
 

@@ -7,23 +7,22 @@
  *
  */
 #include "s3c6410.h"
-#include "uart.h"
-#include "led.h"
-#include "bglight.h"
+#include "bg_light.h"
+#include "nand.h"
 #include "lcd.h"
+#include "led.h"
 #include "io.h"
 
 int main()
 {
 
-	char buf[1024];
+	char ch;
 
-	puts("hello world\n");
 	while(1)
 	{
+		ch = getc();
+		putc(ch);
 
-		gets(buf);
-		puts(buf);
 		ledone_flicker();
 	}
 

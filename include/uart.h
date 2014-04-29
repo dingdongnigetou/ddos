@@ -13,13 +13,13 @@
  * put data into UTXH0 
  *
  */
-void putc(unsigned char c);
+void uart_putc(unsigned char c);
 
 /* 
  * pick up data from URXH0 
  *
  */
-unsigned char getc();               
+unsigned char uart_getc();               
 
 #endif /* _SERIAL_H_ */
 

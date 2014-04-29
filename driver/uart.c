@@ -28,14 +28,14 @@ void uart_init(void)
 	UBRDIV0 = UART_BRD; /* baud rate is 115200 */
 }
 
-void putc(unsigned char c)
+void uart_putc(unsigned char c)
 {
 	/* don't send c if send FIFO is full */
 	while ( UFSTAT0 & (1 << 14) );
 	UTXH0 = c;
 }
 
-unsigned char getc()
+unsigned char uart_getc()
 {
 	/* don't receive c if receive FIFO is empty */
 	while( (UFSTAT0 & 0x7f) == 0 );

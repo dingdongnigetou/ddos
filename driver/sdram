@@ -1,0 +1,22 @@
+              (C)  2014  Jindong Huang
+
+Initialization
+==============
+  We should initialize the DRAM controller first. Folowing steps:
+  * Program memc_cmd to '3'b100', which makes DRAM controller enter
+    'conifg' state.
+  * Write memory timing parameter, chip configuration, and id 
+    configuration register.
+  * Wait 200us to allow SDRAM power and clock to stabilize. However,
+    when Cpu starts working, power and clock would already be stabilized.
+  * Execute memory initialization sequence.
+  * Check memory status field in memc_stat until memory status becomes
+    '2'b01', which means 'Ready'.
+  
+  You can see the details in S3C610X.pdf.
+
+Interface
+=============
+   * Only the sdram_init() for now. Called when boot.
+
+

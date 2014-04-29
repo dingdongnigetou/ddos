@@ -19,9 +19,10 @@ _start:
 	ldr sp, = 1024 * 8 
 
 	@; initialization
-	bl clock_init  @; goto clock.c
-	bl uart_init  @; goto uart.c
-	bl sdram_init  @; goto sdram.c
+	bl clock_init
+	bl uart_init 
+	bl sdram_init
+	bl lcd_init
 
 	@; copy data form nand to ddr
 	@; by call copy2ddr
