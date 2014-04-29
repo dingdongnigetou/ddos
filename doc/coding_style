@@ -1,0 +1,88 @@
+                   (C)   2014  Jindong Huang
+
+  It is the coding style for our OS. Following the gun coding standards 
+and Linux coding style.
+
+Naming
+======
+     * Including variables, functions and files. 
+
+     * Keeping it's meaning simple and clear.
+
+     * Naming it with separated word like tot_len /* total length */ 
+       but not like TotLen.
+
+     * Using capital letters instead of lowercase for macro such 
+       as MAXLEN.
+
+Indentation
+===========
+     * Tab set as 8
+
+     * Specially, "switch" and "case" labels in the same column  
+       eg:
+       switch (ch){
+       case 'A':
+       case 'B':
+         .
+         .
+         .
+       }
+
+     * Don't let multiple statements on a single line.
+       if (conditions) do_something; /* bad */
+       if (conditions) 
+	     do_something;           /* right */
+
+Space
+=====
+     * use a space after these keywords: 
+              if, switch, case, for, do, while
+       but not do it with sizeof, typeof.
+
+     * Do not add spaces around (inside) parenthesized expressions.
+
+     * Use one space around (on each side of) most binary and ternary operators,
+       such as any of these:
+	      =  +  -  <  >  *  /  %  |  &  ^  <=  >=  ==  !=  ?  :
+       but no space after unary operators:
+	      &  *  +  -  ~  !  sizeof  typeof defined
+       no space before the postfix increment & decrement unary operators:
+	      ++  --
+       no space after the prefix increment & decrement unary operators:
+	      ++  --
+       and no space around the '.' and "->" structure member operators.
+
+     * Do not leave trailing whitespace at the ends of lines. 
+    
+     * Use like this /* ... */ but not /*...*/
+
+Commenting
+==========
+     * Use /* ... */ but not // ...
+
+     * We also can use the macro define like 
+       #if 0
+            something needed to commenting
+       else
+            do_dosomething;
+       #endif
+
+Structure
+=========
+     * Use typedef to make it simple when define.
+      typedef struct _SOME{
+          /* something; */
+      }SOME;
+      
+      SOME ex; /* more simpler than struct SOME ex;  */
+
+Others
+======
+     * Don't use bool variables because it's not clear. 
+       Use macro or enum instead of it.
+       #define TRUE 1
+       #define FALSE 0
+       (See, it's simple and clear.)
+
+

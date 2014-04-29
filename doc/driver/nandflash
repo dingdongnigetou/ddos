@@ -1,0 +1,22 @@
+             (C)  2014  Jindong Huang
+
+Interface
+=========
+  * void nand_erase_block(unsigned long addr);
+    You can use this to erase number addr block.  
+    We have 128 * 1024 blocks. So if we want erase the 
+    all nandflash:
+    for (i = 0; i < 128 * 1024; i++)
+             nand_erase_block(i);
+
+  * void nand_write(unsigned int nand_start, unsigned char * buf, 
+                    unsigned int len);
+    Write the data in buf into nandflash.
+
+  * int copy2ddr(unsigned int nand_start, unsigned int ddr_start, 
+		unsigned int len);
+    Copy program form ddr into nand flash. It's called when boot.
+    
+  * We set nand_read() and other functions as static because they
+    are not necessary for us.
+
