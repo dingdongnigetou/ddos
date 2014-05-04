@@ -12,8 +12,10 @@
 #ifndef _BGLIGHT_H_
 #define _BGLIGHT_H_
 
+#include <types.h>
+
 /* set the background light of LCD with brightness */
-int set_bglight(unsigned char brightness);
+int set_bglight(u_char brightness);
 
 #endif /* _BGLIGHT_H_ */
 

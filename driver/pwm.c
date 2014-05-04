@@ -1,5 +1,5 @@
 
-#include "s3c6410.h"
+#include <s3c6410.h>
 
 #define TINT_CSTAT_INIMASK(n)      ((n & 0x1F))
 #define TIMER3_PENDING_CLEAR       (1 << 8)

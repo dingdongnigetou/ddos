@@ -8,9 +8,10 @@
  *
  */
 
-#include "s3c6410.h"
-#include "string.h"
-#include "pwm.h"
+#include <s3c6410.h>
+#include <string.h>
+#include <common.h>
+#include <types.h>
 
 #define  VSPW           9
 #define  VBPD           1
@@ -27,15 +28,15 @@
 
 #define  RightBotX      HOZVAL
 #define  RightBotY      LINEVAL
-#define  FRAME_BUFFER   0x54000000
+#define  FRAME_BUFFER   0x55000000
 
 #define  FONTDATAMAX    2048
-#define  FRAME_BUFFER_P ((unsigned char *)FRAME_BUFFER)
+#define  FRAME_BUFFER_P ((u_char *)FRAME_BUFFER)
 #define  XSIZE          (HOZVAL + 1)
 #define  YSIZE          (LINEVAL + 1)
 
 /* from font8x8.c */
-extern const unsigned char fontdata_8x8[FONTDATAMAX];
+extern const u_char fontdata_8x8[FONTDATAMAX];
 
 /* global var to store current cursor position */
 static int lcd_x = 0;
@@ -48,7 +49,7 @@ static int lcd_y = 0;
  */
 static void palette_init()
 {
-	volatile unsigned long *p = (volatile unsigned long *)WIN0_PALENTRY0;
+	volatile u_long *p = (volatile u_long *)WIN0_PALENTRY0;
 	
 	WPALCON |= (1<<9); /* ARM access */
 
@@ -69,20 +70,20 @@ static void palette_init()
  * put color into (x, y)
  *
  */
-static void put_pixel(unsigned int x, unsigned int y, unsigned int color)
+static void put_pixel(u_int x, u_int y, u_int color)
 {
-	unsigned char *addr = FRAME_BUFFER_P + (y * XSIZE + x);
+	u_char *addr = FRAME_BUFFER_P + (y * XSIZE + x);
 	//*addr = color; /* 24 bits */
-	*addr = (unsigned char) color; /* 8 bits */ 
+	*addr = (u_char) color; /* 8 bits */ 
 }
 
-void clean_screem(unsigned char color)
+void clean_screem(u_char color)
 {
 	int x;
 	int y;
 	int i = 0;
 	
-	volatile unsigned char *p = (volatile unsigned char *)FRAME_BUFFER;
+	volatile u_char *p = (volatile u_char *)FRAME_BUFFER;
 	for (x = 0; x <= HOZVAL; x++)
 		for (y = 0; y <= LINEVAL; y++)
 			p[i++] = color;
@@ -102,7 +103,7 @@ void lcd_init()
 	SPCON   |= 0x1;       /* RGB I/F style */
 
 	VIDCON0 &= ~((3<<26) | (3<<17) | (0xff<<6)); /* RGB I/F, RGB Parallel format,  */
-	VIDCON0 |= ((3<<6) | (1<<4));  /* vclk== HCLK / (CLKVAL+1) = 133/(3+1) = 33MHz */
+	VIDCON0 |= ((0<<6) | (1<<4));  /* vclk== HCLK / (CLKVAL+1) = 133/(0+1) = 133MHz */
 
 	VIDCON1 &= ~(1<<7);
 	VIDCON1 |= ((1<<6) | (1<<5));
@@ -164,11 +165,7 @@ static void draw_line(int x1, int y1, int x2, int y2, int color)
 						e -= dy;
 					}   
 					y1 += 1;
-					e  += dx;
-				}
-			}
-		}
-		else{
+					e  += dx; } } } else{
 			dy = -dy;   /* dy=abs(dy) */
 
 			if(dx >= dy){
@@ -279,17 +276,17 @@ static void show_cursor()
 	draw_line(lcd_x + 2, lcd_y, lcd_x + 2, lcd_y + 8, 0);
 }
 
-void lcd_putc(unsigned char c)
+void lcd_putc(u_char c)
 {
 	int i, j;
-	unsigned char line_dots;
+	u_char line_dots;
 
-	unsigned char *char_dots = fontdata_8x8 + c * 8;	
+	u_char *char_dots = fontdata_8x8 + c * 8;	
 
 	//cursor_timer_stop();
 	hide_cursor();
 
-	if (c == '\n'){
+	if (c == NEWLINE){
 		lcd_y += 8;
 		if (lcd_y >= YSIZE){
 			lcd_y = YSIZE - 8;
@@ -301,11 +298,12 @@ void lcd_putc(unsigned char c)
 		}
 		goto exit;
 	}
-	else if (c == '\r'){
+	else if (c == RETURN){
 		lcd_x = 0;
 		goto exit;
 	}
 
+	/* write ch */
 	for (i = 0; i < 8; i++)	{
 		line_dots = char_dots[i];
 

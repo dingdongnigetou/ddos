@@ -10,17 +10,19 @@
 #ifndef _STRING_H_
 #define _STRING_H_
 
+#include <types.h>
+
 /*
  * return the length of a length-limited string
  * 
  */
-unsigned int strnlen(const char * s, unsigned int count);
+size_t strnlen(const char * s, size_t count);
 
 /*
  * return the length of string
  *
  */
-unsigned int strlen(const char *s);
+size_t strlen(const char *s);
 
 /*
  * Copy data form src to dest. 
@@ -28,19 +30,25 @@ unsigned int strlen(const char *s);
  * handle the overlapped area 
  *
  */
-void *memmove(void *dest, const void *src, unsigned int size);
+void *memmove(void *dest, const void *src, size_t size);
+
+/*
+ * set the first size bytes of dest as 0.
+ *
+ */
+void *bzero(void *dest, size_t size);
 
 /*
  * Set continuous area's value as data.
  *
  */
-void *memset(void *dest, int data, unsigned int size);
+void *memset(void *dest, int data, size_t size);
 
 /*
  * Copy data from src to dest.
  *
  */
-void *memcpy(void *dest, const void *src, unsigned int size);
+void *memcpy(void *dest, const void *src, size_t size);
 
 #endif /* _STRING_H_ */
 

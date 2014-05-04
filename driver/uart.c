@@ -8,7 +8,8 @@
  *
  */
 
-#include "s3c6410.h"
+#include <s3c6410.h>
+#include <types.h>
 
 #define UART_CLK        PCLK
 #define UART_BAUD_RATE  115200
@@ -28,14 +29,14 @@ void uart_init(void)
 	UBRDIV0 = UART_BRD; /* baud rate is 115200 */
 }
 
-void uart_putc(unsigned char c)
+void uart_putc(u_char c)
 {
 	/* don't send c if send FIFO is full */
 	while ( UFSTAT0 & (1 << 14) );
 	UTXH0 = c;
 }
 
-unsigned char uart_getc()
+u_char uart_getc()
 {
 	/* don't receive c if receive FIFO is empty */
 	while( (UFSTAT0 & 0x7f) == 0 );

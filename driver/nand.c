@@ -7,7 +7,8 @@
  *
  */
 
-#include "s3c6410.h"
+#include <s3c6410.h>
+#include <types.h>
 
 #define TACLS     0
 #define TWRPH0    2  /* shit me long time... */
@@ -23,22 +24,22 @@ static void nand_deselect()
 	NFCONT |= (1<<1); 
 }
 
-static void nand_cmd(unsigned char cmd)
+static void nand_cmd(u_char cmd)
 {
 	NFCMMD = cmd;
 }
 
-static void nand_addr(unsigned char addr)
+static void nand_addr(u_char addr)
 {
 	NFADDR = addr;
 }
 
-static unsigned char nand_get_data()
+static u_char nand_get_data()
 {
 	return NFDATA;
 }
 
-static void nand_send_data(unsigned char data)
+static void nand_send_data(u_char data)
 {
 	NFDATA = data;
 }
@@ -71,7 +72,7 @@ static void nand_init()
 	nand_reset();
 }
 
-static void nand_send_addr(unsigned int addr)
+static void nand_send_addr(u_int addr)
 {
 	/* col address 12bits -> 2K + 64Bytes */
 	nand_addr(addr & 0xff);         /* a0~a7 */
@@ -84,13 +85,12 @@ static void nand_send_addr(unsigned int addr)
 }
 
 /* read data form nand flash to ddr */
-static int nand_read(unsigned int nand_start, unsigned int ddr_start, 
-		unsigned int len)
+static int nand_read(u_int nand_start, u_int ddr_start, u_int len)
 {
-	unsigned int addr = nand_start;
+	u_int addr = nand_start;
 	int i ;
 	int count = 0;
-	unsigned char *dest = (unsigned char *)ddr_start;
+	u_char *dest = (u_char *)ddr_start;
 	
 	nand_select();
 
@@ -112,7 +112,7 @@ static int nand_read(unsigned int nand_start, unsigned int ddr_start,
 	return 0;
 }
 
-static void nand_erase_block(unsigned long addr)
+static void nand_erase_block(u_int addr)
 {
 	int page = addr / 2048;
 	
@@ -137,12 +137,11 @@ void nand_erase_all()
 		nand_erase_block(i);
 }
 
-void nand_write(unsigned int nand_start, unsigned char * buf, 
-		unsigned int len)
+void nand_write(u_int nand_start, u_char * buf, u_int len)
 {
 	nand_init();
-	unsigned long count = 0;
-	unsigned long addr  = nand_start;
+	u_long count = 0;
+	u_long addr  = nand_start;
 	int i = nand_start % 2048; /* form which page */
 	
 	nand_select();
@@ -166,8 +165,7 @@ void nand_write(unsigned int nand_start, unsigned char * buf,
 }
 
 /* called at boot.S */
-int copy2ddr(unsigned int nand_start, unsigned int ddr_start, 
-		unsigned int len)
+int copy2ddr(u_int nand_start, u_int ddr_start, u_int len)
 {
 	int ret;
 

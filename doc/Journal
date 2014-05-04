@@ -1,4 +1,4 @@
-                      (C) 2014 JinDongHuang
+                      (C) 2014 Jindong Huang
 
 -Fri Mar 21, 2014
  I light the first led in asm, next time I should 
@@ -93,5 +93,4 @@ iiiiikjadfkjai
  to find that my lcd is 800 * 480, so the problem is fixed. Before that, I
  try the 1024 * 768 and so on. But either them is right. But it still have
  some problems. Go ahead :)
-
 

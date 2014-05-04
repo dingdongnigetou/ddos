@@ -7,12 +7,13 @@
  *
  */
 
-#include "s3c6410.h"
-#include "pwm.h"
+#include <s3c6410.h>
+#include <types.h>
+#include <pwm.h>
 
-static unsigned char crc8(unsigned v, unsigned len)
+static u_char crc8(u_int v, u_int len)
 {
-	unsigned char crc = 0xAC;
+	u_char crc = 0xAC;
 	while (len--){
 		if ((crc & 0x80) != 0){
 			crc <<= 1;
@@ -28,14 +29,14 @@ static unsigned char crc8(unsigned v, unsigned len)
 	return crc;
 }
 
-static int OneWireSession(unsigned char req, unsigned char res[])
+static int OneWireSession(u_char req, u_char res[])
 {
-	unsigned  int Req;
-	unsigned  *Res;
-	unsigned int  i;
+	u_int Req;
+	u_int *Res;
+	u_int i;
 
 	Req = (req << 24) | (crc8(req << 24, 8) << 16);
-	Res = (unsigned *)res;
+	Res = (u_int *)res;
 	GPFDAT |= (1 << 15); /* set 1 */
 	/* set pin as output */
 	GPFCON = ((GPFCON & ~(3 << 30)) | (1 << 30));
@@ -78,7 +79,7 @@ static int OneWireSession(unsigned char req, unsigned char res[])
 	return crc8(*Res, 24) == res[0];
 }
 
-static int TryOneWireSession(unsigned char req, unsigned char res[])
+static int TryOneWireSession(u_char req, u_char res[])
 {
 	int i;
 	for (i = 0; i < 3; i++)
@@ -88,9 +89,9 @@ static int TryOneWireSession(unsigned char req, unsigned char res[])
 	return FLASE;
 }
 
-int set_bglight(unsigned char brightness) 
+int set_bglight(u_char brightness) 
 {
-	unsigned char res[4];
+	u_char res[4];
 	int ret;
 
 	timer_init();

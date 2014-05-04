@@ -10,6 +10,7 @@
 #ifndef _LCDOP_H_
 #define _LCDOP_H_
 
+#include <types.h>
 
 /*
  * initialize the lcd
@@ -21,13 +22,13 @@ void lcd_init();
  * clear the screen with color.
  *
  */
-void clean_screem(unsigned char color);
+void clean_screem(u_char color);
 
 /*
  * put the c into lcd screen
  *
  */
-void lcd_putc(unsigned char c);
+void lcd_putc(u_char c);
 
 #endif /* _LCDOP_H_ */
 

@@ -7,7 +7,7 @@
  *
  */
 
-#include "s3c6410.h"
+#include <s3c6410.h>
 
 #define ARM_RATIO     0   /* ARMCLK = DOUTAPLL / (ARM_RATIO + 1) */
 #define HCLKX2_RATIO  1   /* HCLKX2 = HCLKX2IN / (HCLKX2_RATIO + 1) */

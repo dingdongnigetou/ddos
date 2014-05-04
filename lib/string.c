@@ -7,7 +7,9 @@
  * 
  */
 
-unsigned int strnlen(const char *s, unsigned int count)
+#include <types.h>
+
+size_t strnlen(const char *s, size_t count)
 {
 	const char *sc;
 
@@ -16,7 +18,7 @@ unsigned int strnlen(const char *s, unsigned int count)
 	return sc - s;
 }
 
-unsigned int strlen(const char *s)
+size_t strlen(const char *s)
 {
 	const char *sc;
 
@@ -25,7 +27,17 @@ unsigned int strlen(const char *s)
 	return sc - s;
 }
 
-void *memset(void *dest, int data, unsigned int size)
+void *bzero(void *dest, size_t size)
+{
+	char *d = (char *)dest;
+
+	while (size--)
+		*d++ = 0;
+
+	return dest;
+}
+
+void *memset(void *dest, int data, size_t size)
 {
 	char *d = (char *)dest;
 
@@ -35,7 +47,7 @@ void *memset(void *dest, int data, unsigned int size)
 	return dest;
 }
 
-void *memcpy(void *dest, const void *src, unsigned int size)
+void *memcpy(void *dest, const void *src, size_t size)
 {
 	char       *d = (char *)dest;
 	const char *s = (const char *)src;
@@ -46,7 +58,7 @@ void *memcpy(void *dest, const void *src, unsigned int size)
 	return dest;
 }
 
-void *memmove(void *dest, const void *src, unsigned int size)
+void *memmove(void *dest, const void *src, size_t size)
 {
 	char       *d = (char *)dest;
 	const char *s = (const char *)src;

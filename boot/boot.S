@@ -1,4 +1,4 @@
-@;                 (C) 2014 JinDongHuang
+@;                 (C) 2014 Jindong Huang
 
 .global _start 
 _start:

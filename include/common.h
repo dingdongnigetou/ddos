@@ -16,6 +16,9 @@
 #define RETURN    13
 #define SPACE     32
 
+#define TRUE  1
+#define FALSE 0
+
 #define NULL (void *)0
 
 #endif /* _COMMON_H */

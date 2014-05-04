@@ -8,11 +8,11 @@
  *
  */
 
-#include "io_format.h"
-#include "string.h"
-#include "common.h"
-#include "uart.h"
-#include "lcd.h"
+#include <io_format.h>
+#include <string.h>
+#include <common.h>
+#include <uart.h>
+#include <lcd.h>
 
 int printf(const char *fmt, ...)
 {
@@ -24,7 +24,7 @@ int scanf(const char * fmt, ...)
 
 }
 
-void putc(unsigned char c)
+void putc(u_char c)
 {
 	if (c == RETURN){
 		uart_putc(NEWLINE);
@@ -39,7 +39,7 @@ void putc(unsigned char c)
 	lcd_putc(c);
 }
 
-unsigned char getc()
+u_char getc()
 {
 	return uart_getc();
 }
@@ -65,8 +65,8 @@ int gets(char *buf)
 	if (buf == NULL)
 		return -1;
 
-	int len = 0;
-	unsigned char c;
+	int    len = 0;
+	u_char c;
 	while ((c = getc()) != RETURN){
 		putc(c);
 		buf[len++] = c;

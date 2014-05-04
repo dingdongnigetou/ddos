@@ -7,7 +7,7 @@
  *
  */
 
-#include "s3c6410.h"
+#include <s3c6410.h>
 
 void delay()
 {

@@ -4,7 +4,7 @@ INCLUDEDIR  = ../include
 
 AR      = arm-linux-ar
 CC      = arm-linux-gcc
-CFLAGS  = -Wall -I$(INCLUDEDIR)
+CFLAGS  = -Wall -I$(INCLUDEDIR) -nostdinc
 OBJS    = string.o io.o
 
 %.o:%.c

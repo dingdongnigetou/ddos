@@ -9,17 +9,19 @@
 #ifndef _SERIAL_H_ 
 #define _SERIAL_H_
 
+#include <types.h>
+
 /* 
  * put data into UTXH0 
  *
  */
-void uart_putc(unsigned char c);
+void uart_putc(u_char c);
 
 /* 
  * pick up data from URXH0 
  *
  */
-unsigned char uart_getc();               
+u_char uart_getc();               
 
 #endif /* _SERIAL_H_ */
 

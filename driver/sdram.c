@@ -1,5 +1,6 @@
 
-#include "s3c6410.h"
+#include <s3c6410.h>
+#include <types.h>
 
 #define set_zero( addr, bit ) ( addr &= ( ~ ( 1 << (bit) ) ) )
 #define set_one( addr, bit )  ( addr |= ( 1 << ( bit ) ) )
@@ -25,11 +26,11 @@ void sdram_init()
 	P1T_RAS  = nstoclk(45);
 	P1T_RC   = nstoclk(68);		
 
-	unsigned int trcd = nstoclk(23);
+	u_int trcd = nstoclk(23);
 	P1T_RCD  = trcd | ( ( trcd - 3 ) << 3 );
-	unsigned int trfc = nstoclk(80);
+	u_int trfc = nstoclk(80);
 	P1T_RFC  = trfc | ( ( trfc-3 ) << 5 );   
-	unsigned int trp = nstoclk(23);
+	u_int trp = nstoclk(23);
 	P1T_RP   = trp | ( ( trp - 3 ) << 3 ); 
 	P1T_RRD  = nstoclk(15);
 	P1T_WR   = nstoclk(15);
