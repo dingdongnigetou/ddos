@@ -2,46 +2,50 @@
 
 .global _start 
 _start:
-
 	b reset  @; 0x00
-	ldr pc, =undefined_instruction @; 0x04 miss undefined instruction 
-	ldr pc, _swi            @; 0x08 when run swi      
-	ldr pc, _prefetch_abort @; 0x0C prefetch abort exception
-	ldr pc, _data_abort     @; 0x10 data access exception
-	ldr pc, _not_used       @; 0x14 not used 
-	ldr pc, _irq            @; 0x18 interrupt exception 
-	ldr pc, _fiq            @; 0x1C fast interrupt exception 
+	ldr pc, __undefined_instruction @; 0x04 miss undefined instruction 
+	ldr pc, __swi            @; 0x08 when run swi      
+	ldr pc, __prefetch_abort @; 0x0C prefetch abort exception
+	ldr pc, __data_abort     @; 0x10 data access exception
+	ldr pc, __not_used       @; 0x14 not used 
+	ldr pc, __irq            @; 0x18 interrupt exception 
+	ldr pc, __fiq            @; 0x1C fast interrupt exception 
 
-
-_swi:
+__undefined_instruction:
+	.word undefined_instruction
+__swi:
 	.word swi
-_prefetch_abort:
+__prefetch_abort:
 	.word prefetch_abort
-_data_abort:
+__data_abort:
 	.word data_abort
-_not_used:
+__not_used:
 	.word not_used
-_irq:
+__irq:
 	.word irq
-_fiq:
+__fiq:
 	.word fiq
 
 undefined_instruction:
 	@; save spot
-	ldr sp, =0x56000000
+	ldr sp, =0x57000000
 	stmdb sp!, {r0-r12, lr}
 
 	@; handle exception
+	mov r0, #0x44 
+	bl uart_putc
 
 	@; resume
 	ldmia sp!, {r0-r12, pc}^ @; ^ is resume spsr to cpsr
 
 swi:
 	@; save spot
-	ldr sp, =0x55000000
+	ldr sp, =0x56000000
 	stmdb sp!, {r0-r12, lr}  @; lr is the instruction after swi
 
 	@; handle exception
+	mov r0, #0x42
+	bl uart_putc
 
 	@; resume
 	ldmia sp!, {r0-r12, pc}^ @; ^ is resume spsr to cpsr
@@ -55,9 +59,12 @@ data_abort:
 not_used:
 	b halt
 
+fiq:
+	b halt
+
 irq:
 	@; save spot
-	ldr sp, =0x54000000
+	ldr sp, =1024 * 0x55000000
 	sub lr, lr, #4
 	stmdb sp!, {r0-r12, lr}
 
@@ -65,9 +72,6 @@ irq:
 	
 	@; resume
 	ldmia sp!, {r0-r12, pc}^ @; ^ is resume spsr to cpsr
-
-
-fiq:
 
 reset:
 	@; peripheral setting
@@ -84,12 +88,13 @@ reset:
 
 	@; set stack size == 8k
 	@; 8K is the MAX, but enough
-	ldr sp, = 1024 * 8 
+	ldr sp, =1024 * 8 
 
 	@; initialization
 	bl clock_init
 	bl uart_init 
 	bl sdram_init
+@;	bl lcd_init
 
 	@; copy data form nand to ddr
 	@; by call copy2ddr
@@ -97,7 +102,7 @@ reset:
 	ldr r1, =_start @; ddr_start -> 0x50000000
 
 	@; len
-	ldr r2, = bss_start	
+	ldr r2, =bss_start	
 	sub r2, r2, r1
 
 	cmp r0, r1
@@ -113,21 +118,41 @@ reset:
 	cmp r0, r1
 	beq on_ddr
 
-	@; clean bss
+@; clean bss
 clean_bss:
 	ldr r0, =bss_start
 	ldr r1, =bss_end
 	mov r3, #0
 	cmp r0, r1
 	beq on_ddr
-clean_loop:
+clean_loop: 
 	str r3, [r0], #4
 	cmp r0, r1	
 	bne clean_loop	
 
-	@; jump into DDR
+@; jump into DDR
 on_ddr:
-	ldr pc, = main       @; pc == main link address  
+	@; exchange to user mode 
+	mrs r0, cpsr
+	bic r0, r0, #0x9f
+	orr r0, r0, #0x10
+	msr cpsr, r0 
+
+	ldr sp, =0x58000000
+
+	swi 0 @; swi exception
+
+	@; put 'C'
+	mov r0, #0x43
+	bl uart_putc
+
+	@; undefined exception
+undef:
+	.word 0xff000000
+
+swi_ret:
+	ldr pc, =main       @; pc == main link address  
+
 halt:
 	b halt
 
