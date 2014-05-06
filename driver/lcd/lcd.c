@@ -28,19 +28,22 @@
 
 #define  RightBotX      HOZVAL
 #define  RightBotY      LINEVAL
-#define  FRAME_BUFFER   0x55000000
+#define  FRAME_BUFFER   0x54000000
 
 #define  FONTDATAMAX    2048
 #define  FRAME_BUFFER_P ((u_char *)FRAME_BUFFER)
 #define  XSIZE          (HOZVAL + 1)
 #define  YSIZE          (LINEVAL + 1)
 
+#define  FRONT          50    /* front color */
+#define  BACKGROUND     255   /* background color */
+
 /* from font8x8.c */
 extern const u_char fontdata_8x8[FONTDATAMAX];
 
 /* global var to store current cursor position */
-static int lcd_x = 0;
-static int lcd_y = 0;
+static int lcd_x = 2;
+static int lcd_y = 13;
 
 /*
  * LCD controller fetch 24bits data from here
@@ -49,6 +52,8 @@ static int lcd_y = 0;
  */
 static void palette_init()
 {
+	WIN0_PALENTRY0 = 0x56000000;
+
 	volatile u_long *p = (volatile u_long *)WIN0_PALENTRY0;
 	
 	WPALCON |= (1<<9); /* ARM access */
@@ -61,7 +66,6 @@ static void palette_init()
 	p[2] = 0xff0000;
 	p[3] = 0x0000ff;
 	p[4] = 0xffffff;
-	p[255] = 0xffffff;
 
 	WPALCON &= ~(1<<9); /* LCD controller access */
 }
@@ -77,22 +81,19 @@ static void put_pixel(u_int x, u_int y, u_int color)
 	*addr = (u_char) color; /* 8 bits */ 
 }
 
-void clean_screem(u_char color)
+void clean_screen()
 {
-	int x;
-	int y;
-	int i = 0;
-	
-	volatile u_char *p = (volatile u_char *)FRAME_BUFFER;
-	for (x = 0; x <= HOZVAL; x++)
-		for (y = 0; y <= LINEVAL; y++)
-			p[i++] = color;
+	memset(FRAME_BUFFER_P, BACKGROUND, XSIZE * YSIZE);
+
+	/* resume the globals' cursor */
+	lcd_x = 2;
+	lcd_y = 13;
 }
 
 void lcd_init()
 {
 	GPICON = 0xAAAAAAAA;  
-	GPJCON = 0xAAAAAAA;   		
+	GPJCON = 0xAAAAAAAA;   		
 
 	GPECON &= ~(0xf);
 	GPECON |= (0x1);
@@ -102,8 +103,11 @@ void lcd_init()
 	SPCON   &= ~(0x3);
 	SPCON   |= 0x1;       /* RGB I/F style */
 
-	VIDCON0 &= ~((3<<26) | (3<<17) | (0xff<<6)); /* RGB I/F, RGB Parallel format,  */
-	VIDCON0 |= ((0<<6) | (1<<4));  /* vclk== HCLK / (CLKVAL+1) = 133/(0+1) = 133MHz */
+	/* RGB I/F, RGB Parallel format,  */
+	VIDCON0 &= ~((3<<26) | (3<<17) | (0xff<<6)); 
+
+	/* vclk== HCLK / (CLKVAL+1) = 133/(0+1) = 133MHz */
+	VIDCON0 |= ((0<<6) | (1<<4));  
 
 	VIDCON1 &= ~(1<<7);
 	VIDCON1 |= ((1<<6) | (1<<5));
@@ -113,19 +117,19 @@ void lcd_init()
 	VIDTCON2 = (LINEVAL << 11) | (HOZVAL << 0);
 
 	WINCON0 &= ~(0xf << 2);
-//	WINCON0 |= (0xb << 2);         /* 24bits -> from FRAME_BUFFER */
-	WINCON0 |= (0x3<<2) | (1<<17); /* 8 BPP (palletized), byte swap */
+
+	/* 8 BPP (palletized), byte swap */
+	WINCON0 |= (0x3<<2) | (1<<17); 
 
 	VIDOSD0A = (LeftTopX<<11) | (LeftTopY << 0);
 	VIDOSD0B = (RightBotX<<11) | (RightBotY << 0);
 	VIDOSD0C = (LINEVAL + 1) * (HOZVAL + 1) / 4;
 
 	VIDW00ADD0B0 = FRAME_BUFFER;
-	VIDW00ADD1B0 = ( (HOZVAL + 1) * (LINEVAL + 1) ) & (0xffffff);
+	VIDW00ADD1B0 = ((HOZVAL + 1) * (LINEVAL + 1)) & 0xffffff;
 
 	palette_init();
-
-	clean_screem(4);
+	clean_screen();
 
 	GPEDAT  |= (1 << 0);  /* lcd on */
 	VIDCON0 |= 0x3;       /* display on */
@@ -260,9 +264,9 @@ static void draw_line(int x1, int y1, int x2, int y2, int color)
  */
 static void hide_cursor()
 {
-	draw_line(lcd_x, lcd_y, lcd_x, lcd_y + 8, 4);
-	draw_line(lcd_x + 1, lcd_y, lcd_x + 1, lcd_y + 8, 4);
-	draw_line(lcd_x + 2, lcd_y, lcd_x + 2, lcd_y + 8, 4);
+	draw_line(lcd_x, lcd_y, lcd_x, lcd_y + 8, BACKGROUND);
+	draw_line(lcd_x + 1, lcd_y, lcd_x + 1, lcd_y + 8, BACKGROUND);
+	draw_line(lcd_x + 2, lcd_y, lcd_x + 2, lcd_y + 8, BACKGROUND);
 }
 
 /*
@@ -271,63 +275,74 @@ static void hide_cursor()
  */
 static void show_cursor()
 {
-	draw_line(lcd_x, lcd_y, lcd_x, lcd_y + 8, 0);
-	draw_line(lcd_x + 1, lcd_y, lcd_x + 1, lcd_y + 8, 0);
-	draw_line(lcd_x + 2, lcd_y, lcd_x + 2, lcd_y + 8, 0);
+	draw_line(lcd_x, lcd_y, lcd_x, lcd_y + 8, FRONT);
+	draw_line(lcd_x + 1, lcd_y, lcd_x + 1, lcd_y + 8, FRONT);
+	draw_line(lcd_x + 2, lcd_y, lcd_x + 2, lcd_y + 8, FRONT);
 }
 
 void lcd_putc(u_char c)
 {
-	int i, j;
+	int    i, j;
+	int    old_lcd_x;  /* save the old lcd x position */
 	u_char line_dots;
-
 	u_char *char_dots = fontdata_8x8 + c * 8;	
 
 	//cursor_timer_stop();
 	hide_cursor();
 
 	if (c == NEWLINE){
-		lcd_y += 8;
+		lcd_y += 10;
 		if (lcd_y >= YSIZE){
-			lcd_y = YSIZE - 8;
-			memmove(FRAME_BUFFER_P, FRAME_BUFFER_P + 8 * XSIZE, 
-					(YSIZE - 8) * XSIZE);
+			lcd_y = YSIZE - 10;
+			memmove(FRAME_BUFFER_P, FRAME_BUFFER_P + 10 * XSIZE, 
+					(YSIZE - 10) * (XSIZE - 2));
 			/* keep background */
-			memset(FRAME_BUFFER_P + (YSIZE - 8) * XSIZE, 4, 
-					8 * XSIZE);
+			memset(FRAME_BUFFER_P + (YSIZE - 10) * (XSIZE - 2), 4, 
+					10 * XSIZE);
 		}
 		goto exit;
 	}
 	else if (c == RETURN){
-		lcd_x = 0;
+		lcd_x = 2;
+		goto exit;
+	}
+	else if (c == BACKSPACE){
+		if (lcd_x > 2)
+			lcd_x -= 8; /* back one ch */
+
+		/* hide the front ch */
+		for (i = 0; i < 8; i++)
+			for (j = 0; j < 8; j++)
+				put_pixel(lcd_x + j, lcd_y + i, BACKGROUND);
+
 		goto exit;
 	}
 
-	/* write ch */
+	/* print ch */
 	for (i = 0; i < 8; i++)	{
 		line_dots = char_dots[i];
 
 		for (j = 0; j < 8; j++){
 			if (line_dots & (0x80 >> j))
-				put_pixel(lcd_x + j, lcd_y + i, 0); 
+				put_pixel(lcd_x + j, lcd_y + i, FRONT); 
 			else
-				put_pixel(lcd_x + j, lcd_y + i, 4);  
+				put_pixel(lcd_x + j, lcd_y + i, BACKGROUND);  
 		}
 	}
 
 	lcd_x += 8;
 	if (lcd_x >= XSIZE)
-		lcd_x = 0;
+		lcd_x = 2;
 
-	if (lcd_x == 0){
-		lcd_y += 8;
+	if (lcd_x == 2){
+		lcd_y += 10;
 		if (lcd_y >= YSIZE){
-			lcd_y = YSIZE - 8;
-			memmove(FRAME_BUFFER_P, FRAME_BUFFER_P + 8 * XSIZE, 
-					(YSIZE - 8) * XSIZE);
+			lcd_y = YSIZE - 10;
+			memmove(FRAME_BUFFER_P, FRAME_BUFFER_P + 10 * XSIZE, 
+					(YSIZE - 10) * (XSIZE - 2));
 			/* keep background */
-			memset(FRAME_BUFFER_P + (YSIZE - 8) * XSIZE, 4, 
-					8 * XSIZE);
+			memset(FRAME_BUFFER_P + (YSIZE - 10) * (XSIZE - 2), 4, 
+					10 * XSIZE);
 		}
 	}
 

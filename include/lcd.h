@@ -19,10 +19,10 @@
 void lcd_init();
 
 /*
- * clear the screen with color.
+ * clear the screen.
  *
  */
-void clean_screem(u_char color);
+void clean_screen();
 
 /*
  * put the c into lcd screen
