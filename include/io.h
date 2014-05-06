@@ -39,10 +39,7 @@ unsigned char getc();
 /*
  * Output the string on screen. 
  *
- * if successful
- *      return the length of string.
- * else
- *      return -1
+ * return the length of string.
  *
  */
 int puts(const char *s);
@@ -50,10 +47,7 @@ int puts(const char *s);
 /*
  * Input the string into buf.
  *
- * if successful
- *      return the length of input string.
- * else
- *      return -1
+ * return the length of input string.
  *
  */
 int gets(char *buf);

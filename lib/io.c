@@ -26,17 +26,22 @@ int scanf(const char * fmt, ...)
 
 void putc(u_char c)
 {
+	uart_putc(c);
+	lcd_putc(c);
+
 	if (c == RETURN){
 		uart_putc(NEWLINE);
 		lcd_putc(NEWLINE);
 	}
-	if (c == NEWLINE){
+	else if (c == NEWLINE){
 		uart_putc(RETURN);
 		lcd_putc(RETURN);
 	}
+	else if (c == BACKSPACE){
+		uart_putc(SPACE);
+		uart_putc(BACKSPACE);
+	}
 
-	uart_putc(c);
-	lcd_putc(c);
 }
 
 u_char getc()
@@ -46,30 +51,33 @@ u_char getc()
 
 int puts(const char *s)
 {
-	if (s == NULL)
-		return -1; 
+	int len;
 
-	int i;
-	int len = strlen(s);
-	for (i = 0; i < len; i++){
-		if (s[i] == NEWLINE)
+	for (len = 0; s[len] != '\0'; len++){
+		if (s[len] == NEWLINE)
 			putc(RETURN);
-		putc(s[i]);
+		putc(s[len]);
 	}
 
-	return len;
+	return (len + 1);
 }
 
 int gets(char *buf)
 {
-	if (buf == NULL)
-		return -1;
-
 	int    len = 0;
 	u_char c;
+
 	while ((c = getc()) != RETURN){
 		putc(c);
-		buf[len++] = c;
+
+		/* don't put ch when miss backspace */
+		if (c != BACKSPACE)
+			buf[len++] = c;
+		else{
+			/* back one ch */
+			if (--len < 0)
+				len = 0;  
+		}
 	}
 	buf[len++] = NEWLINE;
 	buf[len++] = '\0'; /* string ending */
