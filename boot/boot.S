@@ -2,6 +2,74 @@
 
 .global _start 
 _start:
+
+	b reset  @; 0x00
+	ldr pc, =undefined_instruction @; 0x04 miss undefined instruction 
+	ldr pc, _swi            @; 0x08 when run swi      
+	ldr pc, _prefetch_abort @; 0x0C prefetch abort exception
+	ldr pc, _data_abort     @; 0x10 data access exception
+	ldr pc, _not_used       @; 0x14 not used 
+	ldr pc, _irq            @; 0x18 interrupt exception 
+	ldr pc, _fiq            @; 0x1C fast interrupt exception 
+
+
+_swi:
+	.word swi
+_prefetch_abort:
+	.word prefetch_abort
+_data_abort:
+	.word data_abort
+_not_used:
+	.word not_used
+_irq:
+	.word irq
+_fiq:
+	.word fiq
+
+undefined_instruction:
+	@; save spot
+	ldr sp, =0x56000000
+	stmdb sp!, {r0-r12, lr}
+
+	@; handle exception
+
+	@; resume
+	ldmia sp!, {r0-r12, pc}^ @; ^ is resume spsr to cpsr
+
+swi:
+	@; save spot
+	ldr sp, =0x55000000
+	stmdb sp!, {r0-r12, lr}  @; lr is the instruction after swi
+
+	@; handle exception
+
+	@; resume
+	ldmia sp!, {r0-r12, pc}^ @; ^ is resume spsr to cpsr
+
+prefetch_abort:
+	b halt
+
+data_abort:
+	b halt
+
+not_used:
+	b halt
+
+irq:
+	@; save spot
+	ldr sp, =0x54000000
+	sub lr, lr, #4
+	stmdb sp!, {r0-r12, lr}
+
+	@; handle exception
+	
+	@; resume
+	ldmia sp!, {r0-r12, pc}^ @; ^ is resume spsr to cpsr
+
+
+fiq:
+
+reset:
 	@; peripheral setting
 	@; tell CPU peripheral where is  
 	@; 256M -> 0x70000000 - 0x7FFFFFFF
@@ -22,7 +90,6 @@ _start:
 	bl clock_init
 	bl uart_init 
 	bl sdram_init
-	bl lcd_init
 
 	@; copy data form nand to ddr
 	@; by call copy2ddr
@@ -40,7 +107,13 @@ _start:
 	cmp r0, #0     @; error
 	bne halt
 
-	@; clean the bss
+	ldr r0, =bss_start
+	ldr r1, =bss_end
+	mov r3, #0
+	cmp r0, r1
+	beq on_ddr
+
+	@; clean bss
 clean_bss:
 	ldr r0, =bss_start
 	ldr r1, =bss_end
@@ -54,7 +127,7 @@ clean_loop:
 
 	@; jump into DDR
 on_ddr:
-	ldr pc, =main @; pc == main link address  
+	ldr pc, = main       @; pc == main link address  
 halt:
 	b halt
 
