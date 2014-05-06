@@ -32,14 +32,34 @@ void uart_init(void)
 void uart_putc(u_char c)
 {
 	/* don't send c if send FIFO is full */
-	while ( UFSTAT0 & (1 << 14) );
+	while (UFSTAT0 & (1 << 14));
 	UTXH0 = c;
 }
 
 u_char uart_getc()
 {
 	/* don't receive c if receive FIFO is empty */
-	while( (UFSTAT0 & 0x7f) == 0 );
+	while((UFSTAT0 & 0x7f) == 0);
 	return URXH0;
+}
+
+int uart_getc_nowait(u_char *pch)
+{
+	if ((UFSTAT0 & 0x7f) == 0)
+		return -1;
+
+	*pch = URXH0;
+
+	return 0;
+}
+
+int uart_putc_nowait(u_char c)
+{
+	if (UFSTAT0 & (1 << 14))
+		return -1;
+
+	UTXH0 = c;
+
+	return 0;
 }
 

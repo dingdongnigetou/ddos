@@ -23,5 +23,23 @@ void uart_putc(u_char c);
  */
 u_char uart_getc();               
 
+/*
+ * get ch no wait.
+ *
+ * if successful then return 0;
+ * else return -1;
+ *
+ */
+int uart_getc_nowait(u_char *pch);
+
+/*
+ * put ch no wait.
+ *
+ * if successful then return 0;
+ * else return -1;
+ *
+ */
+int uart_putc_nowait(u_char c);
+
 #endif /* _SERIAL_H_ */
 
