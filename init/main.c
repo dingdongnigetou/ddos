@@ -18,15 +18,10 @@ int main()
 {
 	char ch;
 
-	lcd_init();
-
 	while(1)
 	{
-		ch = getc();
-		putc(ch);
-
-		if (ch == 12)
-			clean_screen();
+		ch = uart_getc();
+		uart_putc(ch);
 	}
 
 	return 0;
