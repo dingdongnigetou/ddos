@@ -2,6 +2,7 @@
 
 .global _start 
 _start:
+	@; The table of exception vector
 	b reset  @; 0x00
 	ldr pc, __undefined_instruction @; 0x04 miss undefined instruction 
 	ldr pc, __swi            @; 0x08 when run swi      
@@ -26,52 +27,48 @@ __irq:
 __fiq:
 	.word fiq
 
+swi_str:
+	.word 0x00697773  /* swi */
+und_str:
+	.word 0x00646e75  /* und */
+usr_str:
+	.word 0x00727375  /* usr */
+
 undefined_instruction:
 	@; save spot
-	ldr sp, =0x57000000
+	ldr sp, =0x50300000
 	stmdb sp!, {r0-r12, lr}
 
 	@; handle exception
-	mov r0, #0x44 
-	bl uart_putc
+	ldr r0, =und_str 
+	bl puts
 
 	@; resume
 	ldmia sp!, {r0-r12, pc}^ @; ^ is resume spsr to cpsr
 
 swi:
 	@; save spot
-	ldr sp, =0x56000000
+	ldr sp, =0x50200000
 	stmdb sp!, {r0-r12, lr}  @; lr is the instruction after swi
 
 	@; handle exception
-	mov r0, #0x42
-	bl uart_putc
+	ldr r0, =swi_str
+	bl puts
 
 	@; resume
 	ldmia sp!, {r0-r12, pc}^ @; ^ is resume spsr to cpsr
 
+@; maybe useful in the future
 prefetch_abort:
 	b halt
-
 data_abort:
 	b halt
-
 not_used:
 	b halt
-
 fiq:
 	b halt
-
 irq:
-	@; save spot
-	ldr sp, =1024 * 0x55000000
-	sub lr, lr, #4
-	stmdb sp!, {r0-r12, lr}
-
-	@; handle exception
-	
-	@; resume
-	ldmia sp!, {r0-r12, pc}^ @; ^ is resume spsr to cpsr
+	b halt
 
 reset:
 	@; peripheral setting
@@ -94,7 +91,6 @@ reset:
 	bl clock_init
 	bl uart_init 
 	bl sdram_init
-@;	bl lcd_init
 
 	@; copy data form nand to ddr
 	@; by call copy2ddr
@@ -138,19 +134,8 @@ on_ddr:
 	orr r0, r0, #0x10
 	msr cpsr, r0 
 
-	ldr sp, =0x58000000
+	ldr sp, =0x50400000 @; suppose os is 4M for now
 
-	swi 0 @; swi exception
-
-	@; put 'C'
-	mov r0, #0x43
-	bl uart_putc
-
-	@; undefined exception
-undef:
-	.word 0xff000000
-
-swi_ret:
 	ldr pc, =main       @; pc == main link address  
 
 halt:
