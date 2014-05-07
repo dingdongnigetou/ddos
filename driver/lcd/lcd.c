@@ -12,6 +12,7 @@
 #include <string.h>
 #include <common.h>
 #include <types.h>
+#include <font_8x8.h>
 
 #define  VSPW           9
 #define  VBPD           1
@@ -28,18 +29,14 @@
 
 #define  RightBotX      HOZVAL
 #define  RightBotY      LINEVAL
-#define  FRAME_BUFFER   0x54000000
+#define  FRAME_BUFFER   0x51000000
 
-#define  FONTDATAMAX    2048
 #define  FRAME_BUFFER_P ((u_char *)FRAME_BUFFER)
 #define  XSIZE          (HOZVAL + 1)
 #define  YSIZE          (LINEVAL + 1)
 
 #define  FRONT          50    /* front color */
 #define  BACKGROUND     255   /* background color */
-
-/* from font8x8.c */
-extern const u_char fontdata_8x8[FONTDATAMAX];
 
 /* global var to store current cursor position */
 static int lcd_x = 2;

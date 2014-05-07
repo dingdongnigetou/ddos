@@ -9,7 +9,7 @@
 
 #define FONTDATAMAX 2048
 
-const u_char fontdata_8x8[FONTDATAMAX] = {
+static u_char fontdata_8x8[FONTDATAMAX] = {
 
 	/* 0 0x00 '^@' */
 	0x00, /* 00000000 */

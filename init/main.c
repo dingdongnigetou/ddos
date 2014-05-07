@@ -16,12 +16,15 @@
 
 int main()
 {
+
+	lcd_init();
+
 	char ch;
 
 	while(1)
 	{
-		ch = uart_getc();
-		uart_putc(ch);
+		ch = getc();
+		putc(ch);
 	}
 
 	return 0;
