@@ -103,3 +103,10 @@ iiiiikjadfkjai
  Now, the OS can handle each exception include interrupt. Next time finish 
  the interrupt.
 
+-Wed May 7, 2014
+ I decide to do nothing about irq because it maybe not useful. The most 
+ useful exception instruction is swi (software interrupt) which can trap
+ into kernel so that can execute the system call. But there is no system
+ call now, we will got them in the future. Next time to begin to code the
+ MMU.
+
