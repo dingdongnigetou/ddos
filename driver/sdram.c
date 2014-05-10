@@ -1,4 +1,3 @@
-
 #include <s3c6410.h>
 #include <types.h>
 
@@ -38,13 +37,13 @@ void sdram_init()
 	P1T_XP   = 0x2;
 	P1T_XSR  = nstoclk(120);
 	P1T_ESR  = nstoclk(120);
-	
+
 	/* set mem cfg */
 	set_nbit( P1MEMCFG, 0, 3, 0x2 );  /* 10 column address */
 	set_nbit( P1MEMCFG, 3, 3, 0x2 );  /* 13 row address */
 	set_zero( P1MEMCFG, 6 );	  /* A10/AP */
 	set_nbit( P1MEMCFG, 15, 3, 0x2 ); /* Burst 4 */
-	
+
 	set_nbit( P1MEMCFG2, 0, 4, 0x5 );
 	set_2bit( P1MEMCFG2, 6, 0x1 );	  /* 32 bit */
 	set_nbit( P1MEMCFG2, 8, 3, 0x3 ); /* Mobile DDR SDRAM */
@@ -61,11 +60,10 @@ void sdram_init()
 	P1DIRECTCMD = 0x80032;  /* MRS */
 
 	MEM_SYS_CFG = 0x0;
-					
+
 	/* set dramc to "go" status */
 	P1MEMCCMD   = 0x000;
 
 	/* wait ready */
 	while( !((P1MEMSTAT & 0x3 ) == 0x1) );
 }
-

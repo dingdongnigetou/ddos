@@ -27,16 +27,12 @@ __irq:
 __fiq:
 	.word fiq
 
-swi_str:
-	.word 0x00697773  /* swi */
 und_str:
-	.word 0x00646e75  /* und */
-usr_str:
-	.word 0x00727375  /* usr */
+	.word 0x00646e75  @; "und"
 
 undefined_instruction:
 	@; save spot
-	ldr sp, =0x50300000
+	ldr sp, =0x5001FFFF @; stack == 1k
 	stmdb sp!, {r0-r12, lr}
 
 	@; handle exception
@@ -48,12 +44,10 @@ undefined_instruction:
 
 swi:
 	@; save spot
-	ldr sp, =0x50200000
+	ldr sp, =0x5001FC00 @; stack == 2K
 	stmdb sp!, {r0-r12, lr}  @; lr is the instruction after swi
 
 	@; handle exception
-	ldr r0, =swi_str
-	bl puts
 
 	@; resume
 	ldmia sp!, {r0-r12, pc}^ @; ^ is resume spsr to cpsr
@@ -98,7 +92,7 @@ reset:
 	ldr r1, =_start @; ddr_start -> 0x50000000
 
 	@; len
-	ldr r2, =bss_start	
+	ldr r2, =bss_start
 	sub r2, r2, r1
 
 	cmp r0, r1
@@ -123,8 +117,8 @@ clean_bss:
 	beq on_ddr
 clean_loop: 
 	str r3, [r0], #4
-	cmp r0, r1	
-	bne clean_loop	
+	cmp r0, r1
+	bne clean_loop
 
 @; jump into DDR
 on_ddr:
@@ -134,7 +128,7 @@ on_ddr:
 	orr r0, r0, #0x10
 	msr cpsr, r0 
 
-	ldr sp, =0x50400000 @; suppose os is 4M for now
+	ldr sp, =0x5001F400 @; follow the exception stack
 
 	ldr pc, =main       @; pc == main link address  
 

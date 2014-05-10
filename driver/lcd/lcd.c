@@ -29,14 +29,14 @@
 
 #define  RightBotX      HOZVAL
 #define  RightBotY      LINEVAL
-#define  FRAME_BUFFER   0x51000000
+#define  FRAME_BUFFER   0x51000000 
 
 #define  FRAME_BUFFER_P ((u_char *)FRAME_BUFFER)
 #define  XSIZE          (HOZVAL + 1)
 #define  YSIZE          (LINEVAL + 1)
 
-#define  FRONT          50    /* front color */
-#define  BACKGROUND     255   /* background color */
+#define  FRONT          0    /* front color */
+#define  BACKGROUND     4    /* background color */
 
 /* global var to store current cursor position */
 static int lcd_x = 2;
@@ -49,7 +49,7 @@ static int lcd_y = 13;
  */
 static void palette_init()
 {
-	WIN0_PALENTRY0 = 0x56000000;
+	WIN0_PALENTRY0 = 0x51320000;
 
 	volatile u_long *p = (volatile u_long *)WIN0_PALENTRY0;
 	
