@@ -7,12 +7,12 @@
  *
  */
 
-int ddprintf(char *buf, const char *fmt, char *args)
+int dzprintf(char *buf, const char *fmt, char *args)
 {
 
 }
 
-int ddscanf(char *buf, const char *fmt, char *args)
+int dzscanf(char *buf, const char *fmt, char *args)
 {
 
 }

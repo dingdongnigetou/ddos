@@ -19,7 +19,7 @@
  *      return -1
  *
  */
-int ddprintf(char *buf, const char *fmt, char *args);
+int dzprintf(char *buf, const char *fmt, char *args);
 
 /*
  * Unformat the buf into the args with the fmt.
@@ -30,7 +30,7 @@ int ddprintf(char *buf, const char *fmt, char *args);
  *      return -1
  *
  */
-int ddscanf(char *buf, const char *fmt, char *args);
+int dzscanf(char *buf, const char *fmt, char *args);
 
 #endif /* _IOFORMAT_H */
 

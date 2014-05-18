@@ -15,14 +15,13 @@
 
 int main()
 {
-	lcd_init();
-
 	char ch;
 
 	while(1)
 	{
 		ch = getc();
 		putc(ch);
+		ledone_flicker();
 	}
 
 	return 0;

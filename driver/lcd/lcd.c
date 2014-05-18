@@ -12,7 +12,6 @@
 #include <string.h>
 #include <common.h>
 #include <types.h>
-#include <font_8x8.h>
 
 #define  VSPW           9
 #define  VBPD           1
@@ -29,7 +28,7 @@
 
 #define  RightBotX      HOZVAL
 #define  RightBotY      LINEVAL
-#define  FRAME_BUFFER   0x51000000 
+#define  FRAME_BUFFER   0x50060000 
 
 #define  FRAME_BUFFER_P ((u_char *)FRAME_BUFFER)
 #define  XSIZE          (HOZVAL + 1)
@@ -37,6 +36,9 @@
 
 #define  FRONT          0    /* front color */
 #define  BACKGROUND     4    /* background color */
+
+#define FONTDATAMAX 2048
+extern const u_char fontdata_8x8[FONTDATAMAX];
 
 /* global var to store current cursor position */
 static int lcd_x = 2;
@@ -49,8 +51,6 @@ static int lcd_y = 13;
  */
 static void palette_init()
 {
-	WIN0_PALENTRY0 = 0x51320000;
-
 	volatile u_long *p = (volatile u_long *)WIN0_PALENTRY0;
 	
 	WPALCON |= (1<<9); /* ARM access */
@@ -71,11 +71,10 @@ static void palette_init()
  * put color into (x, y)
  *
  */
-static void put_pixel(u_int x, u_int y, u_int color)
+static void put_pixel(u_int x, u_int y, u_char color)
 {
 	u_char *addr = FRAME_BUFFER_P + (y * XSIZE + x);
-	//*addr = color; /* 24 bits */
-	*addr = (u_char) color; /* 8 bits */ 
+	*addr = color; 
 }
 
 void clean_screen()
@@ -280,11 +279,8 @@ static void show_cursor()
 void lcd_putc(u_char c)
 {
 	int    i, j;
-	int    old_lcd_x;  /* save the old lcd x position */
 	u_char line_dots;
-	u_char *char_dots = fontdata_8x8 + c * 8;	
 
-	//cursor_timer_stop();
 	hide_cursor();
 
 	if (c == NEWLINE){
@@ -317,14 +313,11 @@ void lcd_putc(u_char c)
 
 	/* print ch */
 	for (i = 0; i < 8; i++)	{
-		line_dots = char_dots[i];
+		line_dots = fontdata_8x8[c * 8 + i];
 
-		for (j = 0; j < 8; j++){
+		for (j = 0; j < 8; j++)
 			if (line_dots & (0x80 >> j))
 				put_pixel(lcd_x + j, lcd_y + i, FRONT); 
-			else
-				put_pixel(lcd_x + j, lcd_y + i, BACKGROUND);  
-		}
 	}
 
 	lcd_x += 8;
@@ -344,7 +337,6 @@ void lcd_putc(u_char c)
 	}
 
 exit:
-//	cursor_timer_start();
 	show_cursor();	
 }
 

@@ -5,6 +5,7 @@ INITDIR     = ./init
 INCLUDEDIR  = ./include
 DRIVERDIR   = ./driver
 LIBDIR      = ./lib
+MMDIR       = ./mm
 LDSFILE     = ddos.lds
 
 CC          = arm-linux-gcc
@@ -24,7 +25,7 @@ ddos.bin:ddos.elf
 	$(OBJDUMP) $(ODFLAGS) ddos.elf > ddos.dis
 
 ddos.elf:$(BOOTDIR)/boot.o $(INITDIR)/main.o $(DRIVERDIR)/drivers.a \
-	 $(LIBDIR)/lib.a
+	 $(LIBDIR)/lib.a $(MMDIR)/mm.a
 	$(LD) $(LDFLAGS) $^ -o $@
 
 %.o:%.S
@@ -38,6 +39,9 @@ $(DRIVERDIR)/drivers.a:
 
 $(LIBDIR)/lib.a:
 	(cd $(LIBDIR); make)
+
+$(MMDIR)/mm.a:
+	(cd $(MMDIR); make)
 
 clean:
 	rm -rf $(BOOTDIR)/*.o $(INITDIR)/*.o  *.elf *.bin *.dis

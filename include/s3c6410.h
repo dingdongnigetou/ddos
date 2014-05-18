@@ -1,14 +1,14 @@
 /*
- * (C) 2014 JinDongHuang
+ * (C) 2074 JinDongHuang
  *
- * include/s3c6410.h
+ * include/s3c6470.h
  *
- * registers for s3c6410    
+ * registers for s3c6470    
  *
  */
 
-#ifndef _S3C6410_H_
-#define _S3C6410_H_
+#ifndef _S3C6470_H_
+#define _S3C6470_H_
 
 /* GPIO */
 #define GPACON             (*(volatile unsigned long *)0x7F008000)     
@@ -141,5 +141,5 @@
 #define TRUE   1
 #define FLASE  0 
 
-#endif /* _S3C6410_H_ */
+#endif /* _S3C6470_H_ */
 
