@@ -13,6 +13,7 @@
 #include <common.h>
 #include <uart.h>
 #include <lcd.h>
+#include <io.h>
 
 int printf(const char *fmt, ...)
 {

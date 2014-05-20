@@ -1,5 +1,11 @@
-
+/*
+ * (C) 2014 Jindong Huang
+ *
+ * driver/pwm.c
+ *
+ */
 #include <s3c6410.h>
+#include <pwm.h>
 
 #define TINT_CSTAT_INIMASK(n)      ((n & 0x1F))
 #define TIMER3_PENDING_CLEAR       (1 << 8)

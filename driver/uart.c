@@ -10,6 +10,7 @@
 
 #include <s3c6410.h>
 #include <types.h>
+#include <uart.h>
 
 #define UART_CLK        PCLK
 #define UART_BAUD_RATE  115200

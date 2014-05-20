@@ -8,6 +8,8 @@
  */
 
 #include <s3c6410.h>
+#include <bg_light.h>
+#include <common.h>
 #include <types.h>
 #include <pwm.h>
 
@@ -86,7 +88,7 @@ static int TryOneWireSession(u_char req, u_char res[])
 		if (OneWireSession(req, res))
 			return TRUE;
 
-	return FLASE;
+	return FALSE;
 }
 
 int set_bglight(u_char brightness) 

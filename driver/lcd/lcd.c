@@ -12,6 +12,7 @@
 #include <string.h>
 #include <common.h>
 #include <types.h>
+#include <lcd.h>
 
 #define  VSPW           9
 #define  VBPD           1

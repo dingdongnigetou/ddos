@@ -8,6 +8,7 @@
  */
 
 #include <s3c6410.h>
+#include <led.h>
 
 void delay()
 {

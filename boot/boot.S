@@ -32,19 +32,17 @@ und_str:
 
 undefined_instruction:
 	@; save spot
-	ldr sp, =0x0005FFFF @; stack == 1k
+	ldr sp, =0xC005FFFF @; stack == 1k
 	stmdb sp!, {r0-r12, lr}
 
 	@; handle exception
-	ldr r0, =und_str 
-	bl puts
 
 	@; resume
 	ldmia sp!, {r0-r12, pc}^ @; ^ is resume spsr to cpsr
 
 swi:
 	@; save spot
-	ldr sp, =0x0005FC00 @; stack == 2K
+	ldr sp, =0xC005FC00 @; stack == 2K
 	stmdb sp!, {r0-r12, lr}  @; lr is the instruction after swi
 
 	@; handle exception
@@ -85,7 +83,6 @@ reset:
 	bl clock_init
 	bl uart_init 
 	bl sdram_init
-	bl lcd_init
 
 	@; copy data form nand to ddr
 	@; by call copy2ddr
@@ -131,7 +128,7 @@ on_ddr:
 	orr r0, r0, #0x10
 	msr cpsr, r0 
 
-	ldr sp, =0x0005F400 @; follow the exception stack
+	ldr sp, =0xC005F400 @; follow the exception stack
 	
 	ldr pc, =main       @; pc == main link address  
 halt:

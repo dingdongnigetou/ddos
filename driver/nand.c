@@ -9,6 +9,7 @@
 
 #include <s3c6410.h>
 #include <types.h>
+#include <nand.h>
 
 #define TACLS     0
 #define TWRPH0    2  /* shit me long time... */
