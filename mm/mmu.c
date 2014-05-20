@@ -53,20 +53,28 @@ __asm__ (
 	);
 }
 
+static void memory_map(volatile unsigned long *table)
+{
+	int i;
+
+	/* va: 0x00000000 => pa: 0 */
+	table[0x000] = 0 | MMU_SECDESC_WB;  
+
+	/* 
+	 * 256M peripheral
+	 * va: 0x10000000~0x1FF00000 => 0x70000000 ~ 0x7FF00000
+	 */
+	for (i = 0; i < 256; i++)
+		table[0x100 + i] = (0x70000000 + i) | MMU_SECDESC_WB;
+
+	table[0xC00] = 0x50000000;
+}
+
 void mmu_init(void)
 {
 	volatile unsigned long *table = (volatile unsigned long *)MMU_BASE;
-
-	/* 
-	 * build page table 
-	 *
-	 */
-
-	/* va: 0x00000000 => pa: 0x50000000*/
-	table[0x000] = 0x50000000 | MMU_SECDESC_WB;  
-	table[0x100] = 0x70000000 | MMU_SECDESC_WB;  	
-
+	
+	memory_map(table);
 	mmu_enable((unsigned long)table);
 }
-
 
