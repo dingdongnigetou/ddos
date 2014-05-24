@@ -7,7 +7,6 @@
  * 
  */
 
-#define REGISTER_USE_CACHE    0
 #define MMU_BASE              0x50360000
 
 #define MMU_FULL_ACCESS       (3 << 10)  /* access permission */
@@ -45,7 +44,12 @@ __asm__ (
 	"orr r1, r1, #3\n"            /* domain 0, Accesses are not checked */
 	"mcr p15, 0, r1, c3, c0, 0\n" /* write domain 15:0 access permissions */
 	"mrc p15, 0, r1, c1, c0, 0\n" /* Read control register */
+
+	"orr r1, r1, #(1<<2)\n"       /* Data cache enable */
+	"orr r1, r1, #(1<<12)\n"      /* Instruction cache enable */
+	"orr r1, r1, #(1<<14)\n"      /* Round robin replacement */
 	"orr r1, r1, #(1<<0)\n"       /* MMU enable */
+
 	"mcr p15,0,r1,c1, c0,0\n"     /* write control register */
 	:
 	: "r" (table)
@@ -65,9 +69,12 @@ static void memory_map(volatile unsigned long *table)
 	 * va: 0x10000000~0x1FF00000 => 0x70000000 ~ 0x7FF00000
 	 */
 	for (i = 0; i < 256; i++)
-		table[0x100 + i] = (0x70000000 + i) | MMU_SECDESC_WB;
+		table[0x100 + i] = (0x70000000 + (i << 20)) | MMU_SECDESC_WB;
 
-	table[0xC00] = 0x50000000;
+	table[0xC00] = 0x50000000 | MMU_SECDESC_WB;
+	table[0xC01] = 0x50100000 | MMU_SECDESC_WB;
+	table[0xC02] = 0x50200000 | MMU_SECDESC_WB;
+	table[0xC03] = 0x50300000 | MMU_SECDESC_WB;
 }
 
 void mmu_init(void)
