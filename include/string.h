@@ -31,6 +31,7 @@ size_t strlen(const char *s);
  *
  */
 void *memmove(void *dest, const void *src, size_t size);
+void *mem32move(void *dest, const void *src, size_t size);
 
 /*
  * set the first size bytes of dest as 0.
@@ -43,6 +44,7 @@ void *bzero(void *dest, size_t size);
  *
  */
 void *memset(void *dest, int data, size_t size);
+void *mem32set(void *dest, int data, size_t size);
 
 /*
  * Copy data from src to dest.

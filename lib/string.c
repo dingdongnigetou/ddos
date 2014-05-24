@@ -47,9 +47,19 @@ void *memset(void *dest, int data, size_t size)
 	return dest;
 }
 
+void *mem32set(void *dest, int data, size_t size)
+{
+	u_int *d = (u_int *)dest;
+
+	while (size--)
+		*d++ = data;
+
+	return dest;
+}
+
 void *memcpy(void *dest, const void *src, size_t size)
 {
-	char       *d = (char *)dest;
+	int       *d = (char *)dest;
 	const char *s = (const char *)src;
 
 	while (size--) 
@@ -58,10 +68,31 @@ void *memcpy(void *dest, const void *src, size_t size)
 	return dest;
 }
 
+void *mem32move(void *dest, const void *src, size_t size)
+{
+	u_int       *d = (u_int *)dest;
+	const u_int *s = (const u_int *)src;
+
+	/* from the front */
+	if (src > dest)
+		while (size--)
+			*d++ = *s++;
+
+	/* from the end */
+	if (dest > src){
+		d = d + size - 1;
+		s = s + size - 1;
+		while (size--)
+			*d-- = *s--;
+	}
+
+	return dest;
+}
+
 void *memmove(void *dest, const void *src, size_t size)
 {
 	char       *d = (char *)dest;
-	const char *s = (const char *)src;
+	const u_int *s = (const char *)src;
 
 	/* from the front */
 	if (src > dest)
