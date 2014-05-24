@@ -13,6 +13,7 @@
 /* key code */
 #define BACKSPACE 8
 #define NEWLINE   10
+#define CLEAN     12
 #define RETURN    13
 #define SPACE     32
 

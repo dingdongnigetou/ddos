@@ -20,7 +20,6 @@ int main()
 	while (1){
 		c = getc();
 		putc(c);
-		ledone_flicker();
 	}
 
 	return 0;

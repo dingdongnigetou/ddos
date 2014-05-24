@@ -7,7 +7,8 @@
  * 
  */
 
-#define MMU_BASE              0x50360000
+/* after the frame buffer */
+#define MMU_BASE              0x50C00000
 
 #define MMU_FULL_ACCESS       (3 << 10)  /* access permission */
 #define MMU_DOMAIN            (0 << 5)   /* which domain */
