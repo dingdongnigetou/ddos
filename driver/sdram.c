@@ -1,3 +1,11 @@
+/*
+ * (C) 2014 Jindong Huang
+ *
+ * driver/sdram.c
+ *
+ * initialize the ddr
+ *
+ */
 #include <s3c6410.h>
 #include <types.h>
 

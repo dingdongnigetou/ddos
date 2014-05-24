@@ -14,13 +14,13 @@
 #include <io.h>
 
 int main()
-{
-	char ch;
+{	
+	char c;
 
-	while(1)
-	{
-		ch = uart_getc();
-		uart_putc(ch);
+	while (1){
+		c = getc();
+		putc(c);
+		ledone_flicker();
 	}
 
 	return 0;

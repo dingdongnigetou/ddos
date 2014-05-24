@@ -29,7 +29,7 @@
 
 #define  RightBotX      HOZVAL
 #define  RightBotY      LINEVAL
-#define  FRAME_BUFFER   0x50060000 
+#define  FRAME_BUFFER   0xC0060000 
 
 #define  FRAME_BUFFER_P ((u_char *)FRAME_BUFFER)
 #define  XSIZE          (HOZVAL + 1)
@@ -125,7 +125,7 @@ void lcd_init()
 	VIDW00ADD0B0 = FRAME_BUFFER;
 	VIDW00ADD1B0 = ((HOZVAL + 1) * (LINEVAL + 1)) & 0xffffff;
 
-	palette_init();
+	/* palette_init(); */
 	clean_screen();
 
 	GPEDAT  |= (1 << 0);  /* lcd on */
