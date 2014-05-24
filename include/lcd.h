@@ -19,12 +19,6 @@
 void lcd_init();
 
 /*
- * clear the screen.
- *
- */
-void clean_screen();
-
-/*
  * put the c into lcd screen
  *
  */
