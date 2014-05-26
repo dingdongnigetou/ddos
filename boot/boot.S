@@ -27,12 +27,9 @@ __irq:
 __fiq:
 	.word fiq
 
-und_str:
-	.word 0x00646e75  @; "und"
-
 undefined_instruction:
 	@; save spot
-	ldr sp, =0x5005FFFF @; stack == 1k
+	ldr sp, =0xC0200000 @; stack == 1k
 	stmdb sp!, {r0-r12, lr}
 
 	@; handle exception
@@ -42,7 +39,7 @@ undefined_instruction:
 
 swi:
 	@; save spot
-	ldr sp, =0x5005FC00 @; stack == 2K
+	ldr sp, =0xC01FFC00 @; stack == 2K
 	stmdb sp!, {r0-r12, lr}  @; lr is the instruction after swi
 
 	@; handle exception
@@ -50,17 +47,55 @@ swi:
 	@; resume
 	ldmia sp!, {r0-r12, pc}^ @; ^ is resume spsr to cpsr
 
-@; maybe useful in the future
 prefetch_abort:
-	b halt
+	@; save spot	
+	ldr sp, =0xC01FF800 @; stack == 1K
+	stmdb sp!, {r0-r12, lr}
+
+	@; handle exception
+
+	@; resume
+	ldmia sp!, {r0-r12, pc}^ @; ^ is resume spsr to cpsr
+
 data_abort:
-	b halt
+	@; save spot	
+	ldr sp, =0xC01FF400 @; stack == 1K
+	stmdb sp!, {r0-r12, lr}
+
+	@; handle exception
+
+	@; resume
+	ldmia sp!, {r0-r12, pc}^ @; ^ is resume spsr to cpsr
+
 not_used:
-	b halt
-fiq:
-	b halt
+	@; save spot	
+	ldr sp, =0xC01FEC00 @; stack == 1K
+	stmdb sp!, {r0-r12, lr}
+
+	@; handle exception
+
+	@; resume
+	ldmia sp!, {r0-r12, pc}^ @; ^ is resume spsr to cpsr
+
 irq:
-	b halt
+	@; save spot	
+	ldr sp, =0xC01FEC00 @; stack == 1K
+	stmdb sp!, {r0-r12, lr}
+
+	@; handle exception
+
+	@; resume
+	ldmia sp!, {r0-r12, pc}^ @; ^ is resume spsr to cpsr
+
+fiq:
+	@; save spot	
+	ldr sp, =0xC01FE800 @; stack == 1K
+	stmdb sp!, {r0-r12, lr}
+
+	@; handle exception
+
+	@; resume
+	ldmia sp!, {r0-r12, pc}^ @; ^ is resume spsr to cpsr
 
 reset:
 @; peripheral setting
@@ -75,6 +110,11 @@ reset:
 	mov r1, #0
 	str r1, [r0]
 
+@; exchange to SVC mode
+	mrs r0, cpsr
+	mov r0, #0xd3
+	msr cpsr, r0 
+
 @; set stack size == 8k
 @; 8K is the MAX, but enough
 	ldr sp, =1024 * 8 
@@ -83,16 +123,15 @@ reset:
 	bl clock_init
 	bl uart_init 
 	bl sdram_init
-	bl lcd_init
 
 @; copy data form nand to ddr
 @; by call copy2ddr
 	adr r0, _start  @; nand_start -> 0
 	ldr r1, =_start
-@;	sub r1, r1, #0x70000000 @; ddr_start -> 0x50000000
+	sub r1, r1, #0x70000000 @; ddr_start -> 0x50000000
 
         ldr r2, =bss_start
-@;	sub r2, r2, #0x70000000
+	sub r2, r2, #0x70000000
 	sub r2, r2, r1
 
 @;	cmp r0, r1
@@ -117,19 +156,18 @@ reset:
 @;	bne clean_loop
 
 @; initialize MMU
-@;	bl mmu_init 
+	bl mmu_init 
 
 @; jump into DDR
 on_ddr:
 	@; exchange to user mode 
 	mrs r0, cpsr
-	bic r0, r0, #0x9f
-	orr r0, r0, #0x10
+	mov r0, #0xd0
 	msr cpsr, r0 
 
-	ldr sp, =0x5005F400 @; follow the exception stack
-	
+	ldr sp, =0xC01FE400 @; follow the exception stack
 	ldr pc, =main       @; pc == main link address  
+
 halt:
 	b halt
 
