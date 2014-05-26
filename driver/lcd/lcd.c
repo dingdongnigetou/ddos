@@ -6,6 +6,8 @@
  * The implementation of lcd driver, include 
  * some operations.
  *
+ * It needs 480 * 800 * 4 = 1500KB to store the RGB
+ *
  */
 
 #include <s3c6410.h>
@@ -29,7 +31,7 @@
 
 #define  RightBotX      HOZVAL
 #define  RightBotY      LINEVAL
-#define  FRAME_BUFFER   0x50300000 
+#define  FRAME_BUFFER   0xC0200000 
 
 #define  XSIZE          ((HOZVAL + 1) * 4)
 #define  YSIZE          (LINEVAL + 1)
@@ -89,7 +91,7 @@ static void clean_screen()
 void lcd_init()
 {
 	GPICON = 0xAAAAAAAA;  
-	GPJCON = 0xAAAAAAAA;   		
+	GPJCON = 0xAAAAAAA;   		
 
 	GPECON &= ~(0xf);
 	GPECON |= (0x1);
@@ -129,6 +131,7 @@ void lcd_init()
 	VIDCON0 |= 0x3;       /* display on */
 	WINCON0 |= 1;
 }
+
 
 /*
  * draw a line between (x1, y1) and (x2, y2)
@@ -314,10 +317,12 @@ void lcd_putc(u_char c)
 	/* print ch */
 	for (i = 0; i < 8; i++){
 		line_dots = fontdata_8x8[c * 8 + i];
-
-		for (j = 0; j < 8; j++)
+		for (j = 0; j < 8; j++){
 			if (line_dots & (0x80 >> j))
 				put_pixel(lcd_x + j, lcd_y + i, FRONT); 
+			else
+				put_pixel(lcd_x + j, lcd_y + i, BACKGROUND); 
+		}
 	}
 
 	lcd_x += 8;

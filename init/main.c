@@ -18,8 +18,9 @@ int main()
 	char c;
 
 	while (1){
-		c = getc();
-		putc(c);
+		c = uart_getc();
+		uart_putc(c);
+		ledone_flicker();
 	}
 
 	return 0;
