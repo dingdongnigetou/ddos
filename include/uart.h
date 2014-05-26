@@ -41,5 +41,11 @@ int uart_getc_nowait(u_char *pch);
  */
 int uart_putc_nowait(u_char c);
 
+/*
+ * put string into uart
+ *
+ */
+int uart_puts(const char *s);
+
 #endif /* _SERIAL_H_ */
 

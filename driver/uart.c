@@ -9,6 +9,7 @@
  */
 
 #include <s3c6410.h>
+#include <common.h>
 #include <types.h>
 #include <uart.h>
 
@@ -62,5 +63,18 @@ int uart_putc_nowait(u_char c)
 	UTXH0 = c;
 
 	return 0;
+}
+
+int uart_puts(const char *s)
+{
+	int len;
+
+	for (len = 0; s[len] != '\0'; len++){
+		if (s[len] == NEWLINE)
+			uart_putc(RETURN);
+		uart_putc(s[len]);
+	}
+
+	return (len + 1);
 }
 
