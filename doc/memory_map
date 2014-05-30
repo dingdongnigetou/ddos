@@ -1,12 +1,28 @@
                    (C)  2014  Jindong Huang
 
+* Enable dir and page table (two table modle)
+  dir table keep 4096 page table
+  per page table entry contains 256 page descriptor 
+  per page takes 4K room.
+
+  ++++++++++++++++++++++++++++++++++++++++++++++++
+  + dir (12bits) | page (8bits) | index (12bits) +
+  ++++++++++++++++++++++++++++++++++++++++++++++++
+
+* Why enable two page table?
+  If we use one page table, every process will
+  keep all the page table which takes 4M.
+  But, we can allocate the page table when process 
+  needs them if we enable two page table. It can
+  help us to save table room.
+
 * Suppose the kernel is 128K for now. 
 
 
      -------------------- 0x5001FFFF
      +                  +
      +  exception stack +    (3K)
-     +                  +
+     +                  + 
      -------------------- 0x5001F400
      +                  +
      +    user stack    +
