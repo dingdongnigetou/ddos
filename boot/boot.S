@@ -27,9 +27,20 @@ __irq:
 __fiq:
 	.word fiq
 
+@; memory map value
+#include <mem.h>
+#define  UND_STACK (KERNEL_END - 1)
+#define  SWI_STACK (UND_STACK - 0x400)
+#define  PBT_STACK (SWI_STACK - 0x800)
+#define  DBT_STACK (PBT_STACK - 0x400)
+#define  NUD_STACK (DBT_STACK - 0x400)
+#define  IRQ_STACK (NUD_STACK - 0x400)
+#define  FIQ_STACK (IRQ_STACK - 0x400)
+#define  USR_STACK (FIQ_STACK - 0x400)
+
 undefined_instruction:
 	@; save spot
-	ldr sp, =0xC0200000 @; stack == 1k
+	ldr sp, =UND_STACK @; stack == 1k
 	stmdb sp!, {r0-r12, lr}
 
 	@; handle exception
@@ -39,7 +50,7 @@ undefined_instruction:
 
 swi:
 	@; save spot
-	ldr sp, =0xC01FFC00 @; stack == 2K
+	ldr sp, =SWI_STACK @; stack == 2K
 	stmdb sp!, {r0-r12, lr}  @; lr is the instruction after swi
 
 	@; handle exception
@@ -49,7 +60,7 @@ swi:
 
 prefetch_abort:
 	@; save spot	
-	ldr sp, =0xC01FF800 @; stack == 1K
+	ldr sp, =PBT_STACK @; stack == 1K
 	stmdb sp!, {r0-r12, lr}
 
 	@; handle exception
@@ -59,7 +70,7 @@ prefetch_abort:
 
 data_abort:
 	@; save spot	
-	ldr sp, =0xC01FF400 @; stack == 1K
+	ldr sp, =DBT_STACK @; stack == 1K
 	stmdb sp!, {r0-r12, lr}
 
 	@; handle exception
@@ -69,7 +80,7 @@ data_abort:
 
 not_used:
 	@; save spot	
-	ldr sp, =0xC01FEC00 @; stack == 1K
+	ldr sp, =NUD_STACK @; stack == 1K
 	stmdb sp!, {r0-r12, lr}
 
 	@; handle exception
@@ -79,7 +90,7 @@ not_used:
 
 irq:
 	@; save spot	
-	ldr sp, =0xC01FEC00 @; stack == 1K
+	ldr sp, =IRQ_STACK @; stack == 1K
 	stmdb sp!, {r0-r12, lr}
 
 	@; handle exception
@@ -89,7 +100,7 @@ irq:
 
 fiq:
 	@; save spot	
-	ldr sp, =0xC01FE800 @; stack == 1K
+	ldr sp, =FIQ_STACK @; stack == 1K
 	stmdb sp!, {r0-r12, lr}
 
 	@; handle exception
@@ -141,31 +152,31 @@ reset:
 	cmp r0, #0     @; error
 	bne halt
 
-@;@; clean the bss
-@;clean_bss:
-@;	ldr r0, =bss_start
-@;	sub r0, r0, #0x70000000
-@;	ldr r1, =bss_end
-@;	sub r1, r1, #0x70000000
-@;	mov r3, #0
-@;	cmp r0, r1
-@;	beq on_ddr
-@;clean_loop: 
-@;	str r3, [r0], #4
-@;	cmp r0, r1
-@;	bne clean_loop
-
-@; initialize MMU
-	bl mmu_init 
+@; clean the bss
+clean_bss:
+	ldr r0, =bss_start
+	sub r0, r0, #0x70000000
+	ldr r1, =bss_end
+	sub r1, r1, #0x70000000
+	mov r3, #0
+	cmp r0, r1
+	beq on_ddr
+clean_loop: 
+	str r3, [r0], #4
+	cmp r0, r1
+	bne clean_loop
 
 @; jump into DDR
 on_ddr:
+	@; initialize MMU
+	bl mmu_init 
+
 	@; exchange to user mode 
 	mrs r0, cpsr
 	mov r0, #0xd0
 	msr cpsr, r0 
 
-	ldr sp, =0xC01FE400 @; follow the exception stack
+	ldr sp, =USR_STACK  @; follow the exception stack
 	ldr pc, =main       @; pc == main link address  
 
 halt:
