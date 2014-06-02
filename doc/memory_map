@@ -40,5 +40,19 @@
      +   vector table   +
      +                  +
      -------------------- 0x50000000
+* Details for memory map
 
+  => total the os size is 4M, then we got 252M to map user room.
+
+     0x50000000-(0x50020000-1)  kernel code (SVC)
+            (128K)
+
+     0x50020000-(0x50120000-1)  page table  (ALL)
+             (1M)
+
+     0x50120000-(0x50320000-1)  buffer for display (ALL)
+             (2M)
+
+     0x50320000-(0x50400000-1)  share buffer       (ALL)
+            (896K)
 
