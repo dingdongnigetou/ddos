@@ -17,8 +17,6 @@ int main()
 {	
 	char c;
 
-	lcd_init();
-
 	while (1){
 		c = uart_getc();
 		uart_putc(c);

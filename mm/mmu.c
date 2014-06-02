@@ -13,7 +13,8 @@
  * per page is 4K -> total is 4G
  *
  */
-#define ENABLE_SEMGMENT 1
+
+#include <mem.h>
 
 #ifdef ENABLE_SEMGMENT
 /*
@@ -24,7 +25,7 @@
  * [3] C [2] B [1:0] is 2
  *
  */
-#define MMU_BASE              0x51000000
+#define MMU_BASE              (DIRTABLE_BASE)
 #define MMU_SVC_ACCESS        (0 << 10)  /* only svc accsess */
 #define MMU_FULL_ACCESS       (3 << 10)  /* all can access */
 #define MMU_DOMAIN            (0 << 5)   /* which domain */
@@ -57,7 +58,7 @@
 /*
  * dir entry (16K)
  */
-#define MMU_DIR               0x50600000
+#define MMU_DIR               (DIRTABLE_BASE)
 #define MMU_DOMAIN            (0 << 5)   /* domain 0 */
 #define MMU_SPECIAL           (1 << 4)   /* must be 1 */
 #define MMU_COARSE            (1)        /* coarse page table */
@@ -131,7 +132,7 @@ static void memory_map_L2()
 		       	MMU_COADESC;
 	/* kernel */
 	for (i = 0; i < 3; i++)
-		DIR_TABLE[0xC00 + i] = MMU_PAGE_N(PAGE_KERNEL_BASE + i) | 
+		DIR_TABLE[0xC00 + i] = MMU_PAGE_N((PAGE_KERNEL_BASE + i)) | 
 			MMU_COADESC;
 
 	/*
@@ -148,7 +149,7 @@ static void memory_map_L2()
 	/* kernel */
 	for (i = 0; i < 3; i++)
 		for (j = 0; j < 256; j++)
-			PAGE_TABLE_N(PAGE_KERNEL_BASE + i)[0x00 + j] = 
+			PAGE_TABLE_N((PAGE_KERNEL_BASE + i))[0x00 + j] = 
 				(0x50000000 + (i << 20) + (j << 12)) | MMU_SMALLDESC;
 
 }

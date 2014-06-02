@@ -15,6 +15,7 @@
 #include <common.h>
 #include <types.h>
 #include <lcd.h>
+#include <mem.h>
 
 #define  VSPW           9
 #define  VBPD           1
@@ -31,7 +32,7 @@
 
 #define  RightBotX      HOZVAL
 #define  RightBotY      LINEVAL
-#define  FRAME_BUFFER   0xC0200000 
+#define  FRAME_BUFFER   DISPMEM_BASE /* form mem.h */ 
 
 #define  XSIZE          ((HOZVAL + 1) * 4)
 #define  YSIZE          (LINEVAL + 1)
