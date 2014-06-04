@@ -29,7 +29,7 @@ __fiq:
 
 @; memory map value
 #include <mem.h>
-#define  UND_STACK (KERNEL_END - 1)
+#define  UND_STACK (KERNEL_END)
 #define  SWI_STACK (UND_STACK - 0x400)
 #define  PBT_STACK (SWI_STACK - 0x800)
 #define  DBT_STACK (PBT_STACK - 0x400)
@@ -145,8 +145,8 @@ reset:
 	sub r2, r2, #0x70000000
 	sub r2, r2, r1
 
-@;	cmp r0, r1
-@;	beq clean_bss
+	cmp r0, r1
+	beq clean_bss
 
         bl copy2ddr
 	cmp r0, #0     @; error
@@ -176,7 +176,7 @@ on_ddr:
 	mov r0, #0xd0
 	msr cpsr, r0 
 
-	ldr sp, =USR_STACK  @; follow the exception stack
+	ldr sp, =USR_STACK @; follow the exception stack
 	ldr pc, =main       @; pc == main link address  
 
 halt:
