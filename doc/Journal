@@ -130,3 +130,9 @@ iiiiikjadfkjai
 -Sun Jun 1, 2014
  The L1 and L2 page table work well now. :)
 
+-Wed Jun 4, 2014
+ I set each domain keep it's permission, like kernel is privilege and shared 
+ buffer is all modes can access. And, I add ENABLE_IRQ and DISABLE_IRQ, it 
+ may be useful in the future. New time to code the system call and task 
+ management.
+
