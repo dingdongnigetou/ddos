@@ -26,15 +26,17 @@
  *
  */
 #define MMU_BASE              (DIRTABLE_BASE)
-#define MMU_SVC_ACCESS        (0 << 10)  /* only svc accsess */
-#define MMU_FULL_ACCESS       (3 << 10)  /* all can access */
+#define MMU_PRI_ACCESS        (0 << 10)  /* only privilege mode can accsess */
+#define MMU_ALL_ACCESS        (3 << 10)  /* all modes can access */
 #define MMU_DOMAIN            (0 << 5)   /* which domain */
 #define MMU_SPECIAL           (1 << 4)   /* bit 4 must be 1 */
 #define MMU_WT                (0x2 << 2) /* write through */
 #define MMU_WB                (0x3 << 2) /* write back */
 #define MMU_SEGMENT           (2)        /* segment descriptor */
 
-#define MMU_SECDESC           (MMU_FULL_ACCESS | MMU_DOMAIN | \
+#define MMU_SECDESC_PRI       (MMU_PRI_ACCESS | MMU_DOMAIN | \
+	                       MMU_SPECIAL | MMU_WB | MMU_SEGMENT)
+#define MMU_SECDESC_ALL       (MMU_ALL_ACCESS | MMU_DOMAIN | \
 	                       MMU_SPECIAL | MMU_WB | MMU_SEGMENT)
 
 #define SEG_TABLE             ((volatile unsigned long *)MMU_BASE)
@@ -68,8 +70,8 @@
  */
 #define MMU_PAGE              (MMU_DIR + (16 << 10))
 #define MMU_PAGE_N(N)         (MMU_PAGE + (N << 10))
-#define MMU_FULL_ACCESS       (0xFF << 4)/* all can access */
-#define MMU_SVC_ACCESS        (0x00 << 4)/* only system can access */
+#define MMU_ALL_ACCESS        (0xFF << 4)/* all modes can access */
+#define MMU_PRI_ACCESS        (0x00 << 4)/* only privilege mode can access */
 #define MMU_WT                (0x2 << 2) /* write through */
 #define MMU_WB                (0x3 << 2) /* write back */
 #define MMU_SMALL             (2)        /* small page (second) */
@@ -85,8 +87,8 @@
  * descriptor flags
  */
 #define MMU_COADESC           (MMU_DOMAIN | MMU_SPECIAL | MMU_COARSE)
-
-#define MMU_SMALLDESC         (MMU_FULL_ACCESS | MMU_WB | MMU_SMALL)
+#define MMU_SMALLDESC_PRI     (MMU_PRI_ACCESS | MMU_WB | MMU_SMALL)
+#define MMU_SMALLDESC_ALL     (MMU_ALL_ACCESS | MMU_WB | MMU_SMALL)
 
 #define DIR_TABLE             ((volatile unsigned long *)MMU_DIR)
 #define PAGE_TABLE_N(N)       ((volatile unsigned long *)MMU_PAGE_N(N))
@@ -101,17 +103,28 @@ static void memory_map_seg()
 {
 	int i;
 
-	for (i = 0; i < 256; i++)
-		SEG_TABLE[0x000 + i] = (0x00000000 + (i << 20)) | MMU_SECDESC;
+	/* 
+	 * va 0x00000000 - 0x000FFFFF
+	 * pa 0x00000000 - 0x000FFFFF
+	 */
+	SEG_TABLE[0x000 + i] = (0x00000000 + (i << 20)) | 
+		MMU_SECDESC_ALL;
 
 	/*
 	 * 256M peripheral
+	 * va 0x10000000 - 0x1FFFFFFF
+	 * pa 0x70000000 - 0x7FFFFFFF
 	 */
 	for (i = 0; i < 256; i++)
-		SEG_TABLE[0x100 + i] = (0x70000000 + (i << 20)) | MMU_SECDESC;
+		SEG_TABLE[0x100 + i] = (0x70000000 + (i << 20)) | 
+			MMU_SECDESC_ALL;
 
-	for (i = 0; i < 256; i++)
-		SEG_TABLE[0xC00 + i] = (0x50000000 + (i << 20)) | MMU_SECDESC;
+	/*
+	 * 4M os code
+	 */
+	for (i = 0; i < 4; i++)
+		SEG_TABLE[0xC00 + i] = (0x50000000 + (i << 20)) | 
+			MMU_SECDESC_PRI;
 }
 
 #else
@@ -123,34 +136,44 @@ static void memory_map_L2()
 	int i, j;
 
 	/*
-	 * L1 page entry
+	 * va 0x00000000 - 0x000FFFFF
+	 * pa 0x00000000 - 0x000FFFFF
 	 */
 	DIR_TABLE[0x000] = MMU_PAGE_N(PAGE_0_BASE) | MMU_COADESC;
-	/* 256M peripheral */
+	for (j = 0; j < 256; j++)
+		PAGE_TABLE_N(PAGE_0_BASE)[0x00 + j] = (0x00000000 + 
+				(j << 12)) | MMU_SMALLDESC_ALL;
+
+	/* 
+	 * 256M peripheral 
+	 * va 0x10000000 - 0x1FFFFFFF
+	 * pa 0x70000000 - 0x7FFFFFFF
+	 */
 	for (i = 0; i < 256; i++)
 		DIR_TABLE[0x100 + i] = MMU_PAGE_N((PAGE_PER_BASE + i)) |
 		       	MMU_COADESC;
-	/* kernel */
-	for (i = 0; i < 3; i++)
-		DIR_TABLE[0xC00 + i] = MMU_PAGE_N((PAGE_KERNEL_BASE + i)) | 
-			MMU_COADESC;
-
-	/*
-	 * L2 page entry
-	 */
-	for (j = 0; j < 256; j++)
-		PAGE_TABLE_N(PAGE_0_BASE)[0x00 + j] = (0x00000000 + 
-				(j << 12)) | MMU_SMALLDESC;
-	/* for peripheral */
 	for (i = 0; i < 256; i++)
 		for (j = 0; j < 256; j++)
-			PAGE_TABLE_N((PAGE_PER_BASE + i))[0x00 + j] = (0x70000000 + 
-					(i << 20) + (j << 12)) | MMU_SMALLDESC;
-	/* kernel */
+			PAGE_TABLE_N((PAGE_PER_BASE + i))[0x00 + j] = 
+				(0x70000000 + (i << 20) + (j << 12)) | 
+				MMU_SMALLDESC_ALL;
+	/*
+	 * 4M - 896K(share buffer) = 3200K os code
+	 */
+	for (i = 0; i < 4; i++)
+		DIR_TABLE[0xC00 + i] = MMU_PAGE_N((PAGE_KERNEL_BASE + i)) | 
+			MMU_COADESC;
+	/* 768 * 4K */
 	for (i = 0; i < 3; i++)
 		for (j = 0; j < 256; j++)
 			PAGE_TABLE_N((PAGE_KERNEL_BASE + i))[0x00 + j] = 
-				(0x50000000 + (i << 20) + (j << 12)) | MMU_SMALLDESC;
+				(0x50000000 + (i << 20) + (j << 12)) | 
+				MMU_SMALLDESC_ALL; /* !!!!!! swi !!!!!!! */
+	/* 32 * 4K share buffer */
+	for (j = 0; j < 32; j++)
+		PAGE_TABLE_N((PAGE_KERNEL_BASE + i))[0x00 + j] = 
+			(0x50000000 + (i << 20) + (j << 12)) | 
+			MMU_SMALLDESC_ALL;
 
 }
 #endif /* ENABLE_SEMGMENT */
