@@ -70,7 +70,9 @@ Commenting
 
 Structure
 =========
-     * Use typedef to make it simple when define.
+     * If structure name is too long
+       Use typedef to make it simple when define.
+	  ex:
       typedef struct _SOME{
           /* something; */
       }SOME;

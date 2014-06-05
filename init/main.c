@@ -12,6 +12,7 @@
 #include <led.h>
 #include <uart.h>
 #include <io.h>
+#include <irq.h>
 
 int main()
 {	

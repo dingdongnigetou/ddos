@@ -176,7 +176,7 @@ on_ddr:
 	mov r0, #0xd0
 	msr cpsr, r0 
 
-	ldr sp, =USR_STACK @; follow the exception stack
+	ldr sp, =USR_STACK  @; follow the exception stack
 	ldr pc, =main       @; pc == main link address  
 
 halt:
