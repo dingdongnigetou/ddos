@@ -136,3 +136,8 @@ iiiiikjadfkjai
  may be useful in the future. New time to code the system call and task 
  management.
 
+-Fri Jun 6, 2014
+ Today I play with the system call coding, let the ledop() as system call and
+ add necessary define. Next time to test this system call then turn to coding
+ the process management. :) 
+
