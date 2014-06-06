@@ -8,21 +8,12 @@
  */
 
 #include <s3c6410.h>
-#include <led.h>
 
-void delay()
+/*
+ * turn on or off the led num.
+ */
+int sys_ledop(int num, int op)
 {
-	int i, j;
-	for (i = 0;i < 100;i++)
-		for (j = 0;j < 100;j++);
-}
 
-void ledone_flicker()
-{
-	GPKCON0 = 0x00010000; 
-	GPKDAT  = 0;
-	delay();
-	GPKDAT  = 0xFFFFFFFF;
-	delay();
 }
 
