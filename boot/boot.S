@@ -54,6 +54,9 @@ swi:
 	stmdb sp!, {r0-r12, lr}  @; lr is the instruction after swi
 
 	@; handle exception
+	mrs r0, spsr
+	bic r0, r0, #0x80
+	msr spsr, r0
 
 	@; resume
 	ldmia sp!, {r0-r12, pc}^ @; ^ is resume spsr to cpsr
