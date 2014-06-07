@@ -7,12 +7,14 @@
  *
  */
 #include <unistd.h>
+#include <led.h>
 
 int main()
 {	
 	char c;
+	asm("swi 0\n");
 
-	ledop(1, 1);
+//	ledop(LED1, ON);
 	while(1);
 
 	return 0;

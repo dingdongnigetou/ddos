@@ -1,5 +1,7 @@
 @;                 (C) 2014 Jindong Huang
 
+nr_system_calls = 64
+
 .global _start 
 _start:
 	@; The table of exception vector
@@ -38,6 +40,11 @@ __fiq:
 #define  FIQ_STACK (IRQ_STACK - 0x400)
 #define  USR_STACK (FIQ_STACK - 0x400)
 
+
+bad_sys_call:
+	mov r0, #-1
+	ldmia sp!, {r0-r12, pc}^ @;
+
 undefined_instruction:
 	@; save spot
 	ldr sp, =UND_STACK @; stack == 1k
@@ -53,10 +60,13 @@ swi:
 	ldr sp, =SWI_STACK @; stack == 2K
 	stmdb sp!, {r0-r12, lr}  @; lr is the instruction after swi
 
-	@; handle exception
-	mrs r0, spsr
-	bic r0, r0, #0x80
-	msr spsr, r0
+	@; call corresponding system call
+	mov r0, #0
+	mov r1, #1
+
+	cmp r0, #nr_system_calls-1
+	bhi bad_sys_call @; > 64
+	bl sys_ledop
 
 	@; resume
 	ldmia sp!, {r0-r12, pc}^ @; ^ is resume spsr to cpsr
@@ -110,6 +120,7 @@ fiq:
 
 	@; resume
 	ldmia sp!, {r0-r12, pc}^ @; ^ is resume spsr to cpsr
+
 
 reset:
 @; peripheral setting

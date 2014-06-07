@@ -7,5 +7,5 @@
 #define  _SYSTEMCALL_
 #include <unistd.h>
 
-_syscall2(int, ledop, int, num, int, op);
+_syscall2(int, ledop, int, num, int, op)
 
