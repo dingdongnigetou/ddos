@@ -1,0 +1,16 @@
+                    (C) 2014 Jindong Huang
+
+How system call works ?
+
+    * exchange to system mode by "swi 0" 
+    * call the sys_function
+    * back to User mode
+
+How to add system call ?
+
+    ex: add int test(int op);
+    * add _syscall1(int, test, int, op); to lib/sys.c
+    * add int sys_test(int, op); to sys/sys.c
+    * add fn_ptr sys_test to sys_call_table in include/sys_call.h
+    * add _NR_test to include/unistd.h
+
