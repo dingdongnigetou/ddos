@@ -11,16 +11,18 @@
 #ifdef _SYSTEMCALL_
 
 #define _NR_ledop 0
+#define _NR_test  1
 /* add _NR_##name here */
 
 #define _syscall0(type, name)       \
 type name()                         \
 {                                   \
 	long __res;                     \
-	asm(                            \
+	asm volatile(                   \
+			"mov r3, %[r3]\n"       \
 			"swi 0\n"               \
-			: "=r0"(__res)          \
-			: "r"(_NR_##name)       \
+			: "=r"(__res)          \
+			: [r3]"r"(_NR_##name)   \
 			:                       \
 		   );                       \
 	if (__res >= 0)                 \
@@ -32,11 +34,11 @@ type name()                         \
 type name(atype a)                  \
 {                                   \
 	long __res;                     \
-	asm(                            \
+	asm volatile(                   \
+			"mov r3, %[r3]\n"       \
 			"swi 0\n"               \
 			: "=r" (__res)          \
-			  "r" (_NR_##name),     \
-			  "r" ((long)(a))       \
+			  [r3]"r" (_NR_##name)  \
 		   );                       \
 	if (__res >= 0)                 \
 		return (type) __res;        \
@@ -47,12 +49,11 @@ type name(atype a)                  \
 type name(atype a, btype b)         \
 {                                   \
 	long __res;                     \
-	asm(                            \
+	asm volatile(                   \
+			"mov r3, %[r3]\n"       \
 			"swi 0\n"               \
 			: "=r"(__res)           \
-			: "r"(_NR_##name),      \
-			  "r"((long)(a)),       \
-			  "r"((long)(b))        \
+			: [r3]"r"(_NR_##name)   \
 			:                       \
 		   );                       \
 	if (__res >= 0)                 \
@@ -64,13 +65,11 @@ type name(atype a, btype b)         \
 type name(atype a, btype b, ctype c)\
 {                                   \
 	long __res;                     \
-	asm(                            \
+	asm volatile(                   \
+			"mov r3, %[r3]\n"       \
 			"swi 0\n"               \
 			: "=r"(__res)           \
-			: "r"(_NR_##name),      \
-			  "r"((long)(a)),       \
-			  "r"((long)(b)),       \
-			  "r"((long)(c))        \
+			: [r3]"r"(_NR_##name)   \
 			:                       \
 		   );                       \
 	if (__res >= 0)                 \
@@ -81,6 +80,7 @@ type name(atype a, btype b, ctype c)\
 #endif /* _SYSTEMCALL_ */
 
 int ledop(int num, int op);
+int test();
 /* add system call shell here */
 
 #endif /* _UNISTD_H */

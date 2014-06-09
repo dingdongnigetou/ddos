@@ -8,4 +8,5 @@
 #include <unistd.h>
 
 _syscall2(int, ledop, int, num, int, op)
+_syscall0(int, test)
 
