@@ -28,3 +28,8 @@ int sys_ledop(int num, int op)
 	return 0;
 }
 
+int sys_test()
+{
+	return 0;
+}
+

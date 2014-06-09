@@ -11,11 +11,13 @@
 
 int main()
 {	
-	char c;
-	asm("swi 0\n");
+	ledop(LED1, ON);
+	enirq();
+	enfiq();
 
-//	ledop(LED1, ON);
-	while(1);
+	while(1){
+
+	}
 
 	return 0;
 }

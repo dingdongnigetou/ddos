@@ -10,8 +10,12 @@
 
 #ifdef _SYSTEMCALL_
 
-#define _NR_ledop 0
-#define _NR_test  1
+#define _NR_ledop  0
+#define _NR_test   1
+#define _NR_enirq  2
+#define _NR_disirq 3
+#define _NR_enfiq  4
+#define _NR_disfiq 5
 /* add _NR_##name here */
 
 #define _syscall0(type, name)       \
@@ -81,6 +85,10 @@ type name(atype a, btype b, ctype c)\
 
 int ledop(int num, int op);
 int test();
+int enirq();
+int disirq();
+int enfiq();
+int disfiq();
 /* add system call shell here */
 
 #endif /* _UNISTD_H */

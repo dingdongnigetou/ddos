@@ -33,7 +33,7 @@ __fiq:
 #include <mem.h>
 #define  UND_STACK (KERNEL_END)
 #define  SWI_STACK (UND_STACK - 0x400)
-#define  PBT_STACK (SWI_STACK - 0x800)
+#define  PBT_STACK (SWI_STACK - 0x1000)
 #define  DBT_STACK (PBT_STACK - 0x400)
 #define  NUD_STACK (DBT_STACK - 0x400)
 #define  IRQ_STACK (NUD_STACK - 0x400)
@@ -42,8 +42,8 @@ __fiq:
 
 
 bad_sys_call:
-	mov r0, #-1
-	ldmia sp!, {r0-r12, pc}^ @;
+	mov r4, #-1
+	ldmia sp!, {r5-r12, pc}^ @;
 
 undefined_instruction:
 	@; save spot
@@ -58,18 +58,19 @@ undefined_instruction:
 swi:
 	@; save spot
 	ldr sp, =SWI_STACK @; stack == 2K
-	stmdb sp!, {r0-r12, lr}  @; lr is the instruction after swi
+	stmdb sp!, {r5-r12, lr}  @; lr is the instruction after swi
 
-	@; call corresponding system call
-	mov r0, #0
-	mov r1, #1
+	cmp r3, #nr_system_calls-1
+	bhi bad_sys_call @; > 63
 
-	cmp r0, #nr_system_calls-1
-	bhi bad_sys_call @; > 64
-	bl sys_ledop
+	ldr r5, =sys_call_table
+	ldr r6, [r5, r3, lsl #2] @; sys_call_table[num * 4]
+	blx r6	
+	
+	mov r4, r0 @; return value
 
 	@; resume
-	ldmia sp!, {r0-r12, pc}^ @; ^ is resume spsr to cpsr
+	ldmia sp!, {r5-r12, pc}^ @; ^ is resume spsr to cpsr
 
 prefetch_abort:
 	@; save spot	
@@ -84,7 +85,8 @@ prefetch_abort:
 data_abort:
 	@; save spot	
 	ldr sp, =DBT_STACK @; stack == 1K
-	stmdb sp!, {r0-r12, lr}
+	stmdb sp!, {r0-r12, lr}@; corresponding system call
+
 
 	@; handle exception
 

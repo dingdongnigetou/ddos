@@ -3,22 +3,27 @@
  *
  * driver/irq.c
  *
- * The initialization of interrupt.
- *
  */
 
-#include <s3c6410.h>
-
-void irq_init()
+int sys_enirq()
 {
-	GPNCON &= ~(0xfff);
-	GPNCON |= 0xaaa;
+	asm(                          
+		"mrs r0, spsr\n"
+		"bic r0, r0, #0x80\n" 
+		"msr spsr, r0\n" 
+	   );
 
-	EINT0CON0 &= ~(0xfff);
-	EINT0CON0 |= 0x777;
+	return 0;
+}
 
-	EINT0MASK &= ~(0x3f);
+int sys_disirq()
+{
+	asm(                     
+		"mrs r0, spsr\n"
+		"orr r0, r0, #0x80\n"
+		"msr spsr, r0\n"
+	   );
 
-	VIC0INTENABLE |= (0x3); /* bit0: eint0~3, bit1: eint4~11 */ 
+	return 0;
 }
 

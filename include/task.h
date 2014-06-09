@@ -3,15 +3,23 @@
  *
  * include/task.h
  *
- * structure tcb and interfaces on 
+ * structure pcb and interfaces on 
  * control task
  */
 
 #ifndef _TASK_H
 #define _TASK_H
 
-struct tcb{
+#define NR_TASK 
 
+struct pcb{
+	long state;
+	long counter;
+	long priority;
+	long exit_code;
+	long pid;
+	long ppid;
+	long ptb; /* process table base address */
 };
 
 #endif /* _TASK_H */

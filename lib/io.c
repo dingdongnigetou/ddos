@@ -28,15 +28,15 @@ int scanf(const char * fmt, ...)
 void putc(u_char c)
 {
 	uart_putc(c);
-	lcd_putc(c);
+//	lcd_putc(c);
 
 	if (c == RETURN){
 		uart_putc(NEWLINE);
-		lcd_putc(NEWLINE);
+//		lcd_putc(NEWLINE);
 	}
 	else if (c == NEWLINE){
 		uart_putc(RETURN);
-		lcd_putc(RETURN);
+//		lcd_putc(RETURN);
 	}
 	else if (c == BACKSPACE){
 		uart_putc(SPACE);
