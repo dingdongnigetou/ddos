@@ -141,3 +141,6 @@ iiiiikjadfkjai
  add necessary define. Next time to test this system call then turn to coding
  the process management. :) 
 
+-Mon Jun 9, 2014
+ The system call works well. Let's begin to code task management.
+
