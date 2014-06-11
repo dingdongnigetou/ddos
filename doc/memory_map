@@ -19,17 +19,13 @@
 * Suppose the kernel is 128K for now. 
 
 
-     -------------------- 0x5001FFFF
+     -------------------- 0x50020000
      +                  +
-     +  exception stack +    (3K)
+     +    user stack    +   
      +                  + 
-     -------------------- 0x5001F400
+     -------------------- 0x50010000
      +                  +
-     +    user stack    +
-     +                  +
-     --------------------
-     +                  +
-     +       heap       +
+     +  exception stack +
      +                  +
      --------------------
      +                  +
@@ -44,15 +40,18 @@
 
   => total the os size is 4M, then we got 252M to map user room.
 
-     0x50000000-0x50020000  kernel code (SVC)
-            (128K)
+     0x50000000-0x50010000  kernel code (Pri)
+            (64K)
+
+     0x50020000-0x50020000  User stack  (ALL)
+	    (64K)
 
      0x50020000-0x50120000  page table  (ALL)
-             (1M)
+            (1M)
 
      0x50120000-0x50320000  buffer for display (ALL)
-             (2M)
+            (2M)
 
      0x50320000-0x50400000  share buffer       (ALL)
-            (896K)
+           (896K)
 
