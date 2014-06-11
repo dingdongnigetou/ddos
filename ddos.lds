@@ -4,7 +4,7 @@ SECTIONS {
 	.text :
 	{
 		boot/boot.o
-		* (.text)
+		* (.test)
 	}
 	. = ALIGN(4);
 

@@ -7,15 +7,22 @@
  *
  */
 #include <unistd.h>
+#include <s3c6410.h>
 #include <led.h>
+#include <lcd.h>
+#include <io.h>
 
 int main()
 {	
-	ledop(LED1, ON);
-	enirq();
-	enfiq();
+	GPKCON0 = 0x00010000;
+	GPKDAT  = 0;
+
+	lcd_init();
 
 	while(1){
+		char c;
+	//	c = getc();
+	//	putc(c);
 
 	}
 

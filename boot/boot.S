@@ -31,15 +31,14 @@ __fiq:
 
 @; memory map value
 #include <mem.h>
-#define  UND_STACK (KERNEL_END)
+#define  USR_STACK (KERNEL_END)
+#define  UND_STACK (USR_STACK - 0x10000)
 #define  SWI_STACK (UND_STACK - 0x400)
 #define  PBT_STACK (SWI_STACK - 0x1000)
 #define  DBT_STACK (PBT_STACK - 0x400)
 #define  NUD_STACK (DBT_STACK - 0x400)
 #define  IRQ_STACK (NUD_STACK - 0x400)
 #define  FIQ_STACK (IRQ_STACK - 0x400)
-#define  USR_STACK (FIQ_STACK - 0x400)
-
 
 bad_sys_call:
 	mov r4, #-1
@@ -57,7 +56,7 @@ undefined_instruction:
 
 swi:
 	@; save spot
-	ldr sp, =SWI_STACK @; stack == 2K
+	ldr sp, =SWI_STACK @; stack == 4K
 	stmdb sp!, {r5-r12, lr}  @; lr is the instruction after swi
 
 	cmp r3, #nr_system_calls-1
@@ -125,6 +124,11 @@ fiq:
 
 
 reset:
+@; exchange to SVC mode 
+	mrs r0, cpsr
+	mov r0, #0xd3
+	msr cpsr, r0 
+
 @; peripheral setting
 @; tell CPU peripheral where is  
 @; 256M -> 0x70000000 - 0x7FFFFFFF
@@ -136,11 +140,6 @@ reset:
 	ldr r0, =0x7E004000
 	mov r1, #0
 	str r1, [r0]
-
-@; exchange to SVC mode
-	mrs r0, cpsr
-	mov r0, #0xd3
-	msr cpsr, r0 
 
 @; set stack size == 8k
 @; 8K is the MAX, but enough
@@ -182,17 +181,17 @@ clean_loop:
 	cmp r0, r1
 	bne clean_loop
 
-@; jump into DDR
+ jump into DDR
 on_ddr:
 	@; initialize MMU
 	bl mmu_init 
 
-	@; exchange to user mode 
+	@; exchange to SVC mode 
 	mrs r0, cpsr
-	mov r0, #0xd0
+	mov r0, #0xd3
 	msr cpsr, r0 
 
-	ldr sp, =USR_STACK  @; follow the exception stack
+	ldr sp, =USR_STACK
 	ldr pc, =main       @; pc == main link address  
 
 halt:
