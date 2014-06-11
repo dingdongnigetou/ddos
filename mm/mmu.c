@@ -26,7 +26,7 @@
  *
  */
 #define MMU_BASE              (DIRTABLE_BASE)
-#define MMU_PRI_ACCESS        (0 << 10)  /* only privilege mode can accsess */
+#define MMU_PRI_ACCESS        (1 << 10)  /* only privilege mode can accsess (R/W)*/
 #define MMU_ALL_ACCESS        (3 << 10)  /* all modes can access */
 #define MMU_DOMAIN            (0 << 5)   /* which domain */
 #define MMU_SPECIAL           (1 << 4)   /* bit 4 must be 1 */
@@ -58,7 +58,7 @@
  */
 
 /*
- * dir entry (16K)
+ * dir entry
  */
 #define MMU_DIR               (DIRTABLE_BASE)
 #define MMU_DOMAIN            (0 << 5)   /* domain 0 */
@@ -71,7 +71,7 @@
 #define MMU_PAGE              (MMU_DIR + (16 << 10))
 #define MMU_PAGE_N(N)         (MMU_PAGE + (N << 10))
 #define MMU_ALL_ACCESS        (0xFF << 4)/* all modes can access */
-#define MMU_PRI_ACCESS        (0x00 << 4)/* only privilege mode can access */
+#define MMU_PRI_ACCESS        (0x55 << 4)/* only privilege mode can access (R/W) */
 #define MMU_WT                (0x2 << 2) /* write through */
 #define MMU_WB                (0x3 << 2) /* write back */
 #define MMU_SMALL             (2)        /* small page (second) */
@@ -81,7 +81,7 @@
  */
 #define PAGE_0_BASE           (0)
 #define PAGE_PER_BASE         (1)
-#define PAGE_KERNEL_BASE      (PAGE_PER_BASE + 256)
+#define PAGE_OS_BASE          (PAGE_PER_BASE + 256)
 
 /*
  * descriptor flags
@@ -130,6 +130,7 @@ static void memory_map_seg()
 #else
 /*
  * for L1 and L2 page table mapping
+ * see the details in doc/memory_map
  */
 static void memory_map_L2()
 {
@@ -157,24 +158,34 @@ static void memory_map_L2()
 			PAGE_TABLE_N((PAGE_PER_BASE + i))[0x00 + j] = 
 				(0x70000000 + (i << 20) + (j << 12)) | 
 				MMU_SMALLDESC_ALL;
+
 	/*
-	 * 4M - 896K(share buffer) = 3200K os code
+	 * The os code total is 4M 
 	 */
 	for (i = 0; i < 4; i++)
-		DIR_TABLE[0xC00 + i] = MMU_PAGE_N((PAGE_KERNEL_BASE + i)) | 
+		DIR_TABLE[0xC00 + i] = MMU_PAGE_N((PAGE_OS_BASE + i)) | 
 			MMU_COADESC;
-	/* 768 * 4K */
-	for (i = 0; i < 3; i++)
+	/*
+	 * kernel code
+	 * pa: 0x50000000 - 0x50010000 (64K)
+	 * set as privilege
+	 */
+	for (j = 0; j < 16; j++)
+		PAGE_TABLE_N((PAGE_OS_BASE + 0))[0x00 + j] = 
+			(0x50000000 + (0 << 20) + (j << 12)) | 
+			MMU_SMALLDESC_PRI; 
+	/*
+	 * The rest of os code set as full permissions 
+	 */
+	for (j = 16; j < 256; j++)
+		PAGE_TABLE_N((PAGE_OS_BASE + 0))[0x00 + j] = 
+			(0x50000000 + (0 << 20) + (j << 12)) | 
+			MMU_SMALLDESC_ALL; 
+	for (i = 1; i < 4; i++)
 		for (j = 0; j < 256; j++)
-			PAGE_TABLE_N((PAGE_KERNEL_BASE + i))[0x00 + j] = 
+			PAGE_TABLE_N((PAGE_OS_BASE + i))[0x00 + j] = 
 				(0x50000000 + (i << 20) + (j << 12)) | 
-				MMU_SMALLDESC_ALL; /* !!!!!! swi !!!!!!! */
-	/* 32 * 4K share buffer */
-	for (j = 0; j < 32; j++)
-		PAGE_TABLE_N((PAGE_KERNEL_BASE + i))[0x00 + j] = 
-			(0x50000000 + (i << 20) + (j << 12)) | 
-			MMU_SMALLDESC_ALL;
-
+				MMU_SMALLDESC_ALL; 
 }
 #endif /* ENABLE_SEMGMENT */
 
