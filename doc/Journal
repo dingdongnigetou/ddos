@@ -144,3 +144,7 @@ iiiiikjadfkjai
 -Mon Jun 9, 2014
  The system call works well. Let's begin to code task management.
 
+-Fri Jun 13, 2014
+ I decide to implement preemptive kernel, so first thing to do is initialize
+ the timer interruption.
+
