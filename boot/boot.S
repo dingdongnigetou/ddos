@@ -2,6 +2,7 @@
 
 nr_system_calls = 64
 
+
 .global _start 
 _start:
 	@; The table of exception vector
@@ -44,6 +45,12 @@ bad_sys_call:
 	mov r4, #-1
 	ldmia sp!, {r5-r12, pc}^ @;
 
+tick_process:
+	bl led1
+
+key_process:
+	bl led2
+
 undefined_instruction:
 	@; save spot
 	ldr sp, =UND_STACK @; stack == 1k
@@ -77,7 +84,6 @@ prefetch_abort:
 	stmdb sp!, {r0-r12, lr}
 
 	@; handle exception
-
 	@; resume
 	ldmia sp!, {r0-r12, pc}^ @; ^ is resume spsr to cpsr
 
@@ -103,11 +109,23 @@ not_used:
 	ldmia sp!, {r0-r12, pc}^ @; ^ is resume spsr to cpsr
 
 irq:
+	#include<timer.h>
+	IRQSTAT = 0x11200000 @; VC0
+
 	@; save spot	
 	ldr sp, =IRQ_STACK @; stack == 1K
+	sub lr, lr, #4
 	stmdb sp!, {r0-r12, lr}
 
+	bl led1
+
 	@; handle exception
+	ldr r0, =IRQSTAT
+	ldr r0, [r0]
+	tst r0, #INT_TIMER0
+	beq tick_process
+	tst r0, #INT_KEYPAD
+	beq key_process
 
 	@; resume
 	ldmia sp!, {r0-r12, pc}^ @; ^ is resume spsr to cpsr
@@ -163,9 +181,9 @@ reset:
 	cmp r0, r1
 	beq clean_bss
 
-        bl copy2ddr
-	cmp r0, #0     @; error
-	bne halt
+      	bl copy2ddr
+      	cmp r0, #0     @; error
+      	bne halt
 
 @; clean the bss
 clean_bss:
@@ -180,15 +198,16 @@ clean_loop:
 	str r3, [r0], #4
 	cmp r0, r1
 	bne clean_loop
+	ldr pc, =on_ddr
 
- jump into DDR
+@;jump into DDR
 on_ddr:
 	@; initialize MMU
 	bl mmu_init 
 
-	@; exchange to SVC mode 
+	@; exchange to sys mode 
 	mrs r0, cpsr
-	mov r0, #0xd3
+	mov r0, #0xdf
 	msr cpsr, r0 
 
 	ldr sp, =USR_STACK
