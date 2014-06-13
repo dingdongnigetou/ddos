@@ -12,17 +12,27 @@
 #include <lcd.h>
 #include <io.h>
 
-int main()
-{	
+void led1()
+{
 	GPKCON0 = 0x00010000;
 	GPKDAT  = 0;
+}
 
-	lcd_init();
+void led2()
+{
+	GPKCON0 = 0x00100000;
+	GPKDAT  = 0;
+}
 
+int main()
+{	
+	enirq();
+	enfiq();
+	
 	while(1){
 		char c;
-	//	c = getc();
-	//	putc(c);
+		c = getc();
+		putc(c);
 
 	}
 

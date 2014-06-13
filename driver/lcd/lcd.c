@@ -40,9 +40,6 @@
 #define  FRONT          0xffffff  /* front color */
 #define  BACKGROUND     0x000000  /* background color */
 
-#define FONTDATAMAX 2048
-extern const u_char fontdata_8x8[FONTDATAMAX];
-
 /* global var to store current cursor position */
 static int lcd_x = 2;
 static int lcd_y = 13;
@@ -91,46 +88,46 @@ static void clean_screen()
 
 void lcd_init()
 {
-//	GPICON = 0xAAAAAAAA;  
-//	GPJCON = 0xAAAAAAA;   		
-//
-//	GPECON &= ~(0xf);
-//	GPECON |= (0x1);
-//
-//	MIFPCON &= ~(1<<3);   /* Normal mode */
-//
-//	SPCON   &= ~(0x3);
-//	SPCON   |= 0x1;       /* RGB I/F style */
-//
-//	/* RGB I/F, RGB Parallel format,  */
-//	VIDCON0 &= ~((3<<26) | (3<<17) | (0xff<<6)); 
-//
-//	/* vclk== HCLK / (CLKVAL+1) = 133/(9+1) = 13.3MHz */
-//	VIDCON0 |= ((9<<6) | (1<<4));  
-//
-//	VIDCON1 &= ~(1<<7);
-//	VIDCON1 |= ((1<<6) | (1<<5));
-//
-//	VIDTCON0 = (VBPD << 16) | (VFPD << 8) | (VSPW << 0);
-//	VIDTCON1 = (HBPD << 16) | (HFPD << 8) | (HSPW << 0);
-//	VIDTCON2 = (LINEVAL << 11) | (HOZVAL << 0);
-//
-//	/* 24bits */
-//	WINCON0 &= ~(0xf << 2);
-//	WINCON0 |= (0xb<<2); 
-//
-//	VIDOSD0A = (LeftTopX<<11) | (LeftTopY << 0);
-//	VIDOSD0B = (RightBotX<<11) | (RightBotY << 0);
-//	VIDOSD0C = (LINEVAL + 1) * (HOZVAL + 1);
-//
-//	VIDW00ADD0B0 = FRAME_BUFFER;
-//	VIDW00ADD1B0 = (((HOZVAL + 1) * 4) * (LINEVAL + 1)) & 0xffffff;
-//
-//	clean_screen();
-//
-//	GPEDAT  |= (1 << 0);  /* lcd on */
-//	VIDCON0 |= 0x3;       /* display on */
-//	WINCON0 |= 1;
+	GPICON = 0xAAAAAAAA;  
+	GPJCON = 0xAAAAAAA;   		
+
+	GPECON &= ~(0xf);
+	GPECON |= (0x1);
+
+	MIFPCON &= ~(1<<3);   /* Normal mode */
+
+	SPCON   &= ~(0x3);
+	SPCON   |= 0x1;       /* RGB I/F style */
+
+	/* RGB I/F, RGB Parallel format,  */
+	VIDCON0 &= ~((3<<26) | (3<<17) | (0xff<<6)); 
+
+	/* vclk== HCLK / (CLKVAL+1) = 133/(9+1) = 13.3MHz */
+	VIDCON0 |= ((9<<6) | (1<<4));  
+
+	VIDCON1 &= ~(1<<7);
+	VIDCON1 |= ((1<<6) | (1<<5));
+
+	VIDTCON0 = (VBPD << 16) | (VFPD << 8) | (VSPW << 0);
+	VIDTCON1 = (HBPD << 16) | (HFPD << 8) | (HSPW << 0);
+	VIDTCON2 = (LINEVAL << 11) | (HOZVAL << 0);
+
+	/* 24bits */
+	WINCON0 &= ~(0xf << 2);
+	WINCON0 |= (0xb<<2); 
+
+	VIDOSD0A = (LeftTopX<<11) | (LeftTopY << 0);
+	VIDOSD0B = (RightBotX<<11) | (RightBotY << 0);
+	VIDOSD0C = (LINEVAL + 1) * (HOZVAL + 1);
+
+	VIDW00ADD0B0 = FRAME_BUFFER;
+	VIDW00ADD1B0 = (((HOZVAL + 1) * 4) * (LINEVAL + 1)) & 0xffffff;
+
+	clean_screen();
+
+	GPEDAT  |= (1 << 0);  /* lcd on */
+	VIDCON0 |= 0x3;       /* display on */
+	WINCON0 |= 1;
 }
 
 
@@ -280,6 +277,9 @@ static void show_cursor()
 
 void lcd_putc(u_char c)
 {
+	#define FONTDATAMAX 2048
+	extern const u_char fontdata_8x8[FONTDATAMAX];
+
 	int    i, j;
 	u_char line_dots;
 

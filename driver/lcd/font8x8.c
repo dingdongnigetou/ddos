@@ -7,7 +7,7 @@
 
 #include <types.h>
 
-#define FONTDATAMAX 2048
+#define FONTDATAMAX 4048
 
 const u_char fontdata_8x8[FONTDATAMAX] = {
 

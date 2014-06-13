@@ -21,7 +21,7 @@
 #define DIRTABLE_END   (DIRTABLE_BASE + 0x100000)
 
 /* display memory */
-#define DISPMEM_BASE   (DIRTABLE_END + 0x70000000 + 0X1000000)
+#define DISPMEM_BASE   (DIRTABLE_END + 0x70000000)
 #define DISPMEM_END    (DISPMEM_BASE + 0x200000)
 
 /* shared memory */
