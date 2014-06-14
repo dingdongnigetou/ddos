@@ -8,9 +8,11 @@
 #ifndef _TIMER_H
 #define _TIMER_H
 
-/* which interrupt */
-INT_KEYPAD = 0x00400000 
-INT_TIMER0 = 0x00800000
+#include <types.h>
+
+void system_timer_tick(size_t ms);
+void system_timer_tick_stop();
+void system_wait_timer_tick()
 
 #endif /* _TIMER_H */
 
