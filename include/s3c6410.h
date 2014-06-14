@@ -102,12 +102,13 @@
 #define WIN0_PALENTRY0     (*(volatile unsigned long *)0x17100400)
 
 /* PWM */
-#define TCFG0              (*(volatile unsigned long *)0x1F006008)
+#define TCFG0              (*(volatile unsigned long *)0x1F006000)
 #define TCFG1              (*(volatile unsigned long *)0x1F006004)
 #define TCON               (*(volatile unsigned long *)0x1F006008)
 #define TCNTB0             (*(volatile unsigned long *)0x1F00600C)
 #define TCMPB0             (*(volatile unsigned long *)0x1F006010)
 #define TCNTB3             (*(volatile unsigned long *)0x1F006030)
+#define TCNTB4             (*(volatile unsigned long *)0x1F00603C)
 #define TINT_CSTAT         (*(volatile unsigned long *)0x1F006044)
 
 /* Nand Flash */

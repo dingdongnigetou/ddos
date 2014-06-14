@@ -6,9 +6,10 @@ LCDDIR      = ./lcd
 AR      = arm-linux-ar
 CC      = arm-linux-gcc
 CFLAGS  = -Wall -I$(INCLUDEDIR) -nostdinc
-OBJS    = sdram.o clock.o uart.o led.o pwm.o nand.o \
-	  $(LCDDIR)/bg_light.o $(LCDDIR)/lcd.o      \
-	  $(LCDDIR)/font8x8.o irq.o fiq.o timer.o
+OBJS    = sdram.o clock.o uart.o led.o nand.o  \
+	  $(LCDDIR)/bg_light.o $(LCDDIR)/lcd.o \
+	  $(LCDDIR)/font8x8.o $(LCDDIR)/pwm.o  \
+	  irq.o fiq.o timer.o
 
 %.o:%.c
 	$(CC) $(CFLAGS) -c $< -o $@

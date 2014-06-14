@@ -2,6 +2,22 @@
 
 nr_system_calls = 64
 
+@; which interrupt
+INT_KEYPAD = 0x00400000 
+INT_TIMER0 = 0x00800000
+
+IRQSTAT = 0x11200000 @; VC0
+
+@; memory map value
+#include <mem.h>
+#define  USR_STACK (KERNEL_END)
+#define  UND_STACK (USR_STACK - 0x10000)
+#define  SWI_STACK (UND_STACK - 0x400)
+#define  PBT_STACK (SWI_STACK - 0x1000)
+#define  DBT_STACK (PBT_STACK - 0x400)
+#define  NUD_STACK (DBT_STACK - 0x400)
+#define  IRQ_STACK (NUD_STACK - 0x400)
+#define  FIQ_STACK (IRQ_STACK - 0x400)
 
 .global _start 
 _start:
@@ -29,17 +45,6 @@ __irq:
 	.word irq
 __fiq:
 	.word fiq
-
-@; memory map value
-#include <mem.h>
-#define  USR_STACK (KERNEL_END)
-#define  UND_STACK (USR_STACK - 0x10000)
-#define  SWI_STACK (UND_STACK - 0x400)
-#define  PBT_STACK (SWI_STACK - 0x1000)
-#define  DBT_STACK (PBT_STACK - 0x400)
-#define  NUD_STACK (DBT_STACK - 0x400)
-#define  IRQ_STACK (NUD_STACK - 0x400)
-#define  FIQ_STACK (IRQ_STACK - 0x400)
 
 bad_sys_call:
 	mov r4, #-1
@@ -109,8 +114,6 @@ not_used:
 	ldmia sp!, {r0-r12, pc}^ @; ^ is resume spsr to cpsr
 
 irq:
-	#include<timer.h>
-	IRQSTAT = 0x11200000 @; VC0
 
 	@; save spot	
 	ldr sp, =IRQ_STACK @; stack == 1K

@@ -8,6 +8,7 @@
  */
 #include <unistd.h>
 #include <s3c6410.h>
+#include <timer.h>
 #include <led.h>
 #include <lcd.h>
 #include <io.h>
@@ -26,9 +27,13 @@ void led2()
 
 int main()
 {	
-	enirq();
-	enfiq();
-	
+	timer_tick(2);
+	wait_timer_tick();
+	led1();
+	timer_tick(1000);
+	wait_timer_tick();
+	led2();
+
 	while(1){
 		char c;
 		c = getc();

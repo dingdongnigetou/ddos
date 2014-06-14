@@ -1,7 +1,7 @@
 /*
  * (C) 2014 Jindong Huang
  *
- * driver/pwm.c
+ * driver/lcd/pwm.c
  *
  */
 #include <s3c6410.h>
