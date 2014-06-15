@@ -8,14 +8,19 @@
 #ifndef _UNISTD_H
 #define _UNISTD_H
 
+#include <types.h>
+
 #ifdef _SYSTEMCALL_
 
-#define _NR_ledop  0
-#define _NR_test   1
-#define _NR_enirq  2
-#define _NR_disirq 3
-#define _NR_enfiq  4
-#define _NR_disfiq 5
+#define _NR_ledop                0
+#define _NR_test                 1
+#define _NR_enirq                2
+#define _NR_disirq               3
+#define _NR_enfiq                4
+#define _NR_disfiq               5
+#define _NR_user_timer_tick      6
+#define _NR_user_timer_stop      7
+#define _NR_user_wait_timer_tick 8
 /* add _NR_##name here */
 
 #define _syscall0(type, name)       \
@@ -42,7 +47,8 @@ type name(atype a)                  \
 			"mov r3, %[r3]\n"       \
 			"swi 0\n"               \
 			: "=r" (__res)          \
-			  [r3]"r" (_NR_##name)  \
+			: [r3]"r" (_NR_##name)  \
+			:                       \
 		   );                       \
 	if (__res >= 0)                 \
 		return (type) __res;        \
@@ -89,6 +95,9 @@ int enirq();
 int disirq();
 int enfiq();
 int disfiq();
+int user_timer_tick(size_t ms);
+int user_timer_stop();
+int user_wait_timer_tick();
 /* add system call shell here */
 
 #endif /* _UNISTD_H */
