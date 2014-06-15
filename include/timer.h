@@ -11,8 +11,8 @@
 #include <types.h>
 
 void system_timer_tick(size_t ms);
-void system_timer_tick_stop();
-void system_wait_timer_tick()
+void system_timer_stop();
+void system_wait_timer_tick();
 
 #endif /* _TIMER_H */
 
