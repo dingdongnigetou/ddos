@@ -8,13 +8,21 @@
 #include <s3c6410.h>
 
 #define ENABLE_TIMER4 (1 << 28)
-#define ENABLE_KEYBD  (1 << 22)
+#define ENABLE_EINT   (3 << 0)
 
 static void irq_init(void)
 {
+	GPNCON &= ~(0xfff);
+	GPNCON |= 0xaaa;
+
+	EINT0CON0 &= ~(0xfff);
+	EINT0CON0 |= 0x777;
+
+	EINT0MASK &= ~(0x3f);
+
 	VIC0INTENABLE &= ~(0xFFFFFFFF);
 	VIC0INTENABLE |= ENABLE_TIMER4;
-	VIC0INTENABLE |= ENABLE_KEYBD;
+	VIC0INTENABLE |= ENABLE_EINT;
 }
 
 int sys_enirq()

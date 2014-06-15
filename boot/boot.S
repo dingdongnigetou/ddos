@@ -3,10 +3,11 @@
 nr_system_calls = 64
 
 @; which interrupt
-INT_KEYPAD = 0x00400000 
-INT_TIMER0 = 0x00800000
+INT_EINT   = 0x00000003
+INT_TIMER4 = 0x10000000
 
 VIC0IRQSTATUS = 0x11200000 @; VC0
+EINT0PEND     = 0x1F008924
 
 @; memory map value
 #include <mem.h>
@@ -17,7 +18,7 @@ VIC0IRQSTATUS = 0x11200000 @; VC0
 #define  DBT_STACK (PBT_STACK - 0x400)
 #define  NUD_STACK (DBT_STACK - 0x400)
 #define  IRQ_STACK (NUD_STACK - 0x400)
-#define  FIQ_STACK (IRQ_STACK - 0x400)
+#define  FIQ_STACK (IRQ_STACK - 0x1000)
 
 .global _start 
 _start:
@@ -50,11 +51,9 @@ bad_sys_call:
 	mov r4, #-1
 	ldmia sp!, {r5-r12, pc}^ @;
 
-tick_process:
-	bl led1
+@;tick_process:
 
-key_process:
-	bl led2
+@;key_process:
 
 undefined_instruction:
 	@; save spot
@@ -67,8 +66,8 @@ undefined_instruction:
 	ldmia sp!, {r0-r12, pc}^ @; ^ is resume spsr to cpsr
 
 swi:
-	@; save spot
 	ldr sp, =SWI_STACK @; stack == 4K
+	@; save spot
 	stmdb sp!, {r5-r12, lr}  @; lr is the instruction after swi
 
 	cmp r3, #nr_system_calls-1
@@ -115,19 +114,21 @@ not_used:
 
 irq:
 	@; save spot	
-	ldr sp, =IRQ_STACK @; stack == 1K
+	ldr sp, =IRQ_STACK @; stack == 4K
 	sub lr, lr, #4
 	stmdb sp!, {r0-r12, lr}
-
-	bl led1
 
 	@; handle exception
 	ldr r0, =VIC0IRQSTATUS
 	ldr r0, [r0]
-	tst r0, #INT_TIMER0
-	beq tick_process
-	tst r0, #INT_KEYPAD
-	beq key_process
+	tst r0, #INT_TIMER4
+	blne led1
+	tst r0, #INT_EINT
+	blne led4
+
+	ldr r0, = EINT0PEND
+	ldr r0, [r0]
+	ldr r0, =0x3f
 
 	@; resume
 	ldmia sp!, {r0-r12, pc}^ @; ^ is resume spsr to cpsr
@@ -141,7 +142,6 @@ fiq:
 
 	@; resume
 	ldmia sp!, {r0-r12, pc}^ @; ^ is resume spsr to cpsr
-
 
 reset:
 @; exchange to SVC mode 
