@@ -147,3 +147,7 @@ iiiiikjadfkjai
 -Fri Jun 13, 2014
  I decide to implement preemptive kernel, so first thing to do is initialize
  the timer interruption.
+
+-Sun Jun 15, 2014
+ The irq process can not back to main function.
+
