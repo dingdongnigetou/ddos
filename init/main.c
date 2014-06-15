@@ -32,16 +32,22 @@ void led3()
 	GPKDAT  = 0;
 }
 
+void led4()
+{
+	GPKCON0 = 0x10000000;
+	GPKDAT  = 0;
+}
+
 int main()
 {	
 	enirq();
-	system_timer_tick(1000);
+	user_timer_tick(800);
 
 	while (1){
 		led2();
-		system_wait_timer_tick();
+		user_wait_timer_tick();
 		led3();
-		system_wait_timer_tick();
+		user_wait_timer_tick();
 	}
 
 	return 0;
