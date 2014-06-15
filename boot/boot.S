@@ -6,7 +6,7 @@ nr_system_calls = 64
 INT_KEYPAD = 0x00400000 
 INT_TIMER0 = 0x00800000
 
-IRQSTAT = 0x11200000 @; VC0
+VIC0IRQSTATUS = 0x11200000 @; VC0
 
 @; memory map value
 #include <mem.h>
@@ -114,7 +114,6 @@ not_used:
 	ldmia sp!, {r0-r12, pc}^ @; ^ is resume spsr to cpsr
 
 irq:
-
 	@; save spot	
 	ldr sp, =IRQ_STACK @; stack == 1K
 	sub lr, lr, #4
@@ -123,7 +122,7 @@ irq:
 	bl led1
 
 	@; handle exception
-	ldr r0, =IRQSTAT
+	ldr r0, =VIC0IRQSTATUS
 	ldr r0, [r0]
 	tst r0, #INT_TIMER0
 	beq tick_process

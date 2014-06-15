@@ -5,12 +5,12 @@ INCLUDEDIR  = ../include
 AR      = arm-linux-ar
 CC      = arm-linux-gcc
 CFLAGS  = -Wall -I$(INCLUDEDIR) -nostdinc
-OBJS    = sys.o
+OBJS    = sys_call.o
 
 %.o:%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-sys.a:$(OBJS)
+sys_call.a:$(OBJS)
 	$(AR) rcs $@ $^
 	sync
 clean:

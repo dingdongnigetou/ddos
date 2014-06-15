@@ -16,10 +16,14 @@
 
 void system_timer_tick(size_t ms)
 {
+	/*
+	 * fclk = PCLK / (prescaler + 1) / divider
+	 */
 	TCFG0 &= 0xFF00FF;
-	TCFG0 |= 0xF900;   /* prescaler = 249 */
+	TCFG0 |= 0xA500;   /* prescaler = 165 */
 	TCFG1 &= ~0xF0000;
-	TCFG1 |= 0x20000;  /* divider = 8, 25KHZ */
+	TCFG1 |= 0x40000;  /* divider = 16, 25KHZ */
+
 	TCNTB4 = ms * 25;
 	TINT_CSTAT = TINT_CSTAT_INIMASK(TINT_CSTAT) | 
 		         TIMER4_PENDING_CLEAR;
@@ -33,7 +37,7 @@ void system_timer_tick(size_t ms)
 	TCON |= ((1 << 22) | (1 << 20));
 }
 
-void system_timer_tick_stop()
+void system_timer_stop()
 {
 	TCON &= ~(1 << 8);
 }

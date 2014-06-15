@@ -79,7 +79,7 @@ static void put_pixel(u_int x, u_int y, u_int color)
 
 static void clean_screen()
 {
-	mem32set(FRAME_BUFFER, BACKGROUND, XSIZE * YSIZE);
+	mem32set((void *)FRAME_BUFFER, BACKGROUND, XSIZE * YSIZE);
 
 	/* resume the globals' cursor */
 	lcd_x = 2;
@@ -289,11 +289,11 @@ void lcd_putc(u_char c)
 		lcd_y += 10;
 		if (lcd_y >= YSIZE){
 			lcd_y = YSIZE - 10;
-			mem32move(FRAME_BUFFER, FRAME_BUFFER + 10 * XSIZE, 
-					(YSIZE - 10) * (XSIZE - 2));
+			mem32move((void *)FRAME_BUFFER, (void *)FRAME_BUFFER + 
+					10 * XSIZE, (YSIZE - 10) * (XSIZE - 2));
 			/* keep background */
-			mem32set(FRAME_BUFFER + (YSIZE - 10) * (XSIZE - 2), BACKGROUND, 
-					10 * XSIZE);
+			mem32set((void *)FRAME_BUFFER + (YSIZE - 10) * (XSIZE - 2), 
+					BACKGROUND, 10 * XSIZE);
 		}
 		goto exit;
 	}
@@ -334,11 +334,11 @@ void lcd_putc(u_char c)
 		lcd_y += 10;
 		if (lcd_y >= YSIZE){
 			lcd_y = YSIZE - 10;
-			mem32move(FRAME_BUFFER, FRAME_BUFFER + 10 * XSIZE, 
-					(YSIZE - 10) * (XSIZE - 2));
+			mem32move((void *)FRAME_BUFFER, (void *)FRAME_BUFFER + 
+					10 * XSIZE, (YSIZE - 10) * (XSIZE - 2));
 			/* keep background */
-			mem32set(FRAME_BUFFER + (YSIZE - 10) * (XSIZE - 2), BACKGROUND, 
-					10 * XSIZE);
+			mem32set((void *)FRAME_BUFFER + (YSIZE - 10) * (XSIZE - 2), 
+					BACKGROUND, 10 * XSIZE);
 		}
 	}
 

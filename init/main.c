@@ -6,8 +6,9 @@
  * Initialize the os after boot.
  *
  */
-#include <unistd.h>
+
 #include <s3c6410.h>
+#include <unistd.h>
 #include <timer.h>
 #include <led.h>
 #include <lcd.h>
@@ -25,20 +26,22 @@ void led2()
 	GPKDAT  = 0;
 }
 
+void led3()
+{
+	GPKCON0 = 0x01000000;
+	GPKDAT  = 0;
+}
+
 int main()
 {	
-	timer_tick(2);
-	wait_timer_tick();
-	led1();
-	timer_tick(1000);
-	wait_timer_tick();
-	led2();
+	enirq();
+	system_timer_tick(1000);
 
-	while(1){
-		char c;
-		c = getc();
-		putc(c);
-
+	while (1){
+		led2();
+		system_wait_timer_tick();
+		led3();
+		system_wait_timer_tick();
 	}
 
 	return 0;

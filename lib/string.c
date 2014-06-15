@@ -59,7 +59,7 @@ void *mem32set(void *dest, int data, size_t size)
 
 void *memcpy(void *dest, const void *src, size_t size)
 {
-	int       *d = (char *)dest;
+	char *d = (char *)dest;
 	const char *s = (const char *)src;
 
 	while (size--) 
@@ -91,8 +91,8 @@ void *mem32move(void *dest, const void *src, size_t size)
 
 void *memmove(void *dest, const void *src, size_t size)
 {
-	char       *d = (char *)dest;
-	const u_int *s = (const char *)src;
+	char *d = (char *)dest;
+	const char *s = (const char *)src;
 
 	/* from the front */
 	if (src > dest)

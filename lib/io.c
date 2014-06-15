@@ -54,11 +54,8 @@ int puts(const char *s)
 {
 	int len;
 
-	for (len = 0; s[len] != '\0'; len++){
-		if (s[len] == NEWLINE)
-			putc(RETURN);
+	for (len = 0; s[len] != '\0'; len++)
 		putc(s[len]);
-	}
 
 	return (len + 1);
 }
