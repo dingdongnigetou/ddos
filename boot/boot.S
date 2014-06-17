@@ -7,10 +7,9 @@ INT_EINT   = 0x00000003
 INT_TIMER4 = 0x10000000
 
 VIC0IRQSTATUS = 0x11200000 @; VC0
-EINT0PEND     = 0x1F008924
 
 @; memory map value
-#include <mem.h>
+#include <mm/mem.h>
 #define  USR_STACK (KERNEL_END)
 #define  UND_STACK (USR_STACK - 0x10000)
 #define  SWI_STACK (UND_STACK - 0x400)
@@ -116,19 +115,16 @@ irq:
 	@; save spot	
 	ldr sp, =IRQ_STACK @; stack == 4K
 	sub lr, lr, #4
+	mov r1, lr
 	stmdb sp!, {r0-r12, lr}
 
 	@; handle exception
 	ldr r0, =VIC0IRQSTATUS
 	ldr r0, [r0]
 	tst r0, #INT_TIMER4
-	blne led1
+	blne sys_timer_process
 	tst r0, #INT_EINT
-	blne led4
-
-	ldr r0, = EINT0PEND
-	ldr r0, [r0]
-	ldr r0, =0x3f
+	blne eint_process
 
 	@; resume
 	ldmia sp!, {r0-r12, pc}^ @; ^ is resume spsr to cpsr
@@ -206,6 +202,7 @@ clean_loop:
 on_ddr:
 	@; initialize MMU
 	bl mmu_init 
+	bl irq_init
 
 	@; exchange to sys mode 
 	mrs r0, cpsr
