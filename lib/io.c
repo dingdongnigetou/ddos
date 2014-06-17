@@ -11,8 +11,8 @@
 #include <io_format.h>
 #include <string.h>
 #include <common.h>
-#include <uart.h>
-#include <lcd.h>
+#include <driver/uart.h>
+#include <driver/lcd.h>
 #include <io.h>
 
 int printf(const char *fmt, ...)

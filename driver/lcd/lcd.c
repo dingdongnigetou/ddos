@@ -14,8 +14,8 @@
 #include <string.h>
 #include <common.h>
 #include <types.h>
-#include <lcd.h>
-#include <mem.h>
+#include <driver/lcd.h>
+#include <mm/mem.h>
 
 #define  VSPW           9
 #define  VBPD           1

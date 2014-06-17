@@ -14,7 +14,7 @@
  *
  */
 
-#include <mem.h>
+#include <mm/mem.h>
 
 #ifdef ENABLE_SEMGMENT
 /*

@@ -9,9 +9,9 @@
 
 #include <s3c6410.h>
 #include <unistd.h>
-#include <timer.h>
-#include <led.h>
-#include <lcd.h>
+#include <driver/timer.h>
+#include <driver/led.h>
+#include <driver/lcd.h>
 #include <io.h>
 
 void led1()
@@ -41,13 +41,13 @@ void led4()
 int main()
 {	
 	enirq();
-	user_timer_tick(800);
+	system_timer_tick(800);
 
 	while (1){
 		led2();
-		user_wait_timer_tick();
+		system_wait_timer_tick();
 		led3();
-		user_wait_timer_tick();
+		system_wait_timer_tick();
 	}
 
 	return 0;

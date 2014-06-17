@@ -8,10 +8,10 @@
  */
 
 #include <s3c6410.h>
-#include <bg_light.h>
 #include <common.h>
 #include <types.h>
-#include <pwm.h>
+#include <driver/bg_light.h>
+#include <driver/pwm.h>
 
 static u_char crc8(u_int v, u_int len)
 {

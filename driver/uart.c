@@ -11,7 +11,7 @@
 #include <s3c6410.h>
 #include <common.h>
 #include <types.h>
-#include <uart.h>
+#include <driver/uart.h>
 
 #define UART_CLK        PCLK
 #define UART_BAUD_RATE  115200

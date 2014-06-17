@@ -8,7 +8,7 @@
  */
 
 #include <s3c6410.h>
-#include <sys_call.h>
+#include <sys/sys_call.h>
 
 /*
  * turn on or off the led num.
