@@ -151,3 +151,7 @@ iiiiikjadfkjai
 -Sun Jun 15, 2014
  The irq process can not back to main function.
 
+-Tue Jun 17, 2014
+ The irq process of the os work well now, but it is so simply that only
+ can handle one isr per time. Next time I want to make it more strong.
+
