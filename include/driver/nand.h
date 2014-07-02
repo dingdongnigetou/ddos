@@ -24,5 +24,10 @@ void nand_erase_all();
  */
 void nand_write(u_int nand_start, u_char *buf, u_int len);
 
+/*
+ * read data form nand flash to buf
+ */
+int nand_read(u_int nand_start, u_char *buf, u_int len);
+
 #endif /* _NAND_H_ */
 

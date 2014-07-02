@@ -58,7 +58,7 @@ static void nand_reset()
 	nand_deselect(); /* cancel selection */
 }
 
-static void nand_init()
+void nand_init()
 {
 	/* xm0csn2 is the chip select pin of nand flash cs0 */
 	MEM_SYS_CFG &= ~(1<<1);
@@ -86,7 +86,7 @@ static void nand_send_addr(u_int addr)
 }
 
 /* read data form nand flash to ddr */
-static int nand_read(u_int nand_start, u_int ddr_start, u_int len)
+static int nand_read2ddr(u_int nand_start, u_int ddr_start, u_int len)
 {
 	u_int addr = nand_start;
 	int i ;
@@ -140,7 +140,6 @@ void nand_erase_all()
 
 void nand_write(u_int nand_start, u_char * buf, u_int len)
 {
-	nand_init();
 	u_long count = 0;
 	u_long addr  = nand_start;
 	int i = nand_start % 2048; /* form which page */
@@ -165,13 +164,38 @@ void nand_write(u_int nand_start, u_char * buf, u_int len)
 	nand_deselect();
 }
 
+int nand_read(u_int nand_start, u_char *buf, u_int len)
+{
+	u_int addr = nand_start;
+	int i ;
+	int count = 0;
+	
+	nand_select();
+
+	while (count < len)
+	{
+		nand_cmd(0x00);
+		nand_send_addr(addr);
+		nand_cmd(0x30);
+		wait_ready();
+
+		/* read data */
+		for (i = 0; i < 2048 && count < len; i++)
+			buf[count++] = nand_get_data();
+
+		addr += 2048;
+	}
+
+	nand_deselect();
+	return 0;
+}
+
 /* called at boot.S */
 int copy2ddr(u_int nand_start, u_int ddr_start, u_int len)
 {
 	int ret;
 
-	nand_init();
-	ret =  nand_read(nand_start, ddr_start, len);
+	ret =  nand_read2ddr(nand_start, ddr_start, len);
 
 	return ret;
 }

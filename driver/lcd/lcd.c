@@ -44,6 +44,11 @@
 static int lcd_x = 2;
 static int lcd_y = 13;
 
+int lcd_test()
+{
+	return 0;
+}
+
 /*
  * LCD controller fetch 24bits data from here
  * but not frame_buffer. frame_buffer store the

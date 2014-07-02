@@ -5,7 +5,6 @@ nr_system_calls = 64
 @; which interrupt
 INT_EINT   = 0x00000003
 INT_TIMER4 = 0x10000000
-
 VIC0IRQSTATUS = 0x11200000 @; VC0
 
 @; memory map value
@@ -22,14 +21,14 @@ VIC0IRQSTATUS = 0x11200000 @; VC0
 .global _start 
 _start:
 	@; The table of exception vector
-	b reset  @; 0x00
-	ldr pc, __undefined_instruction @; 0x04 miss undefined instruction 
-	ldr pc, __swi            @; 0x08 when run swi      
-	ldr pc, __prefetch_abort @; 0x0C prefetch abort exception
-	ldr pc, __data_abort     @; 0x10 data access exception
-	ldr pc, __not_used       @; 0x14 not used 
-	ldr pc, __irq            @; 0x18 interrupt exception 
-	ldr pc, __fiq            @; 0x1C fast interrupt exception 
+	B reset  @; 0x00
+	LDR pc, __undefined_instruction @; 0x04 miss undefined instruction 
+	LDR pc, __swi            @; 0x08 when run swi      
+	LDR pc, __prefetch_abort @; 0x0C prefetch abort exception
+	LDR pc, __data_abort     @; 0x10 data access exception
+	LDR pc, __not_used       @; 0x14 not used 
+	LDR pc, __irq            @; 0x18 interrupt exception 
+	LDR pc, __fiq            @; 0x1C fast interrupt exception 
 
 __undefined_instruction:
 	.word undefined_instruction
@@ -47,171 +46,172 @@ __fiq:
 	.word fiq
 
 bad_sys_call:
-	mov r4, #-1
-	ldmia sp!, {r5-r12, pc}^ @;
-
-@;tick_process:
-
-@;key_process:
+	MOV   r4, #-1
+	LDMIA sp!, {r5-r12, pc}^ @;
 
 undefined_instruction:
 	@; save spot
-	ldr sp, =UND_STACK @; stack == 1k
-	stmdb sp!, {r0-r12, lr}
+	LDR sp, =UND_STACK @; stack == 1k
+	STMDB sp!, {r0-r12, lr}
 
 	@; handle exception
 
 	@; resume
-	ldmia sp!, {r0-r12, pc}^ @; ^ is resume spsr to cpsr
+	LDMIA sp!, {r0-r12, pc}^ @; ^ is resume spsr to cpsr
 
 swi:
-	ldr sp, =SWI_STACK @; stack == 4K
+	LDR sp, =SWI_STACK @; stack == 4K
 	@; save spot
-	stmdb sp!, {r5-r12, lr}  @; lr is the instruction after swi
+	STMDB sp!, {r5-r12, lr}  @; lr is the instruction after swi
 
-	cmp r3, #nr_system_calls-1
-	bhi bad_sys_call @; > 63
+	CMP r3, #nr_system_calls-1
+	BHI bad_sys_call @; > 63
 
-	ldr r5, =sys_call_table
-	ldr r6, [r5, r3, lsl #2] @; sys_call_table[num * 4]
-	blx r6	
+	LDR r5, =sys_call_table
+	LDR r6, [r5, r3, lsl #2] @; sys_call_table[num * 4]
+	BLX r6	
 	
-	mov r4, r0 @; return value
+	MOV r4, r0 @; return value
 
 	@; resume
-	ldmia sp!, {r5-r12, pc}^ @; ^ is resume spsr to cpsr
+	LDMIA sp!, {r5-r12, pc}^ @; ^ is resume spsr to cpsr
 
 prefetch_abort:
 	@; save spot	
-	ldr sp, =PBT_STACK @; stack == 1K
-	stmdb sp!, {r0-r12, lr}
+	LDR sp, =PBT_STACK @; stack == 1K
+@;	SUB lr, lr, #4
+	STMDB sp!, {r0-r12, lr}
 
 	@; handle exception
+
 	@; resume
-	ldmia sp!, {r0-r12, pc}^ @; ^ is resume spsr to cpsr
+	LDMIA sp!, {r0-r12, pc}^ @; ^ is resume spsr to cpsr
 
 data_abort:
 	@; save spot	
-	ldr sp, =DBT_STACK @; stack == 1K
-	stmdb sp!, {r0-r12, lr}@; corresponding system call
+	LDR sp, =DBT_STACK @; stack == 1K
+	SUB lr, lr, #8
+	STMDB sp!, {r0-r12, lr}@; corresponding system call
 
 
 	@; handle exception
 
 	@; resume
-	ldmia sp!, {r0-r12, pc}^ @; ^ is resume spsr to cpsr
+	LDMIA sp!, {r0-r12, pc}^ @; ^ is resume spsr to cpsr
 
 not_used:
 	@; save spot	
-	ldr sp, =NUD_STACK @; stack == 1K
-	stmdb sp!, {r0-r12, lr}
+	LDR sp, =NUD_STACK @; stack == 1K
+	STMDB sp!, {r0-r12, lr}
 
 	@; handle exception
 
 	@; resume
-	ldmia sp!, {r0-r12, pc}^ @; ^ is resume spsr to cpsr
+	LDMIA sp!, {r0-r12, pc}^ @; ^ is resume spsr to cpsr
 
 irq:
 	@; save spot	
-	ldr sp, =IRQ_STACK @; stack == 4K
-	sub lr, lr, #4
-	mov r1, lr
-	stmdb sp!, {r0-r12, lr}
+	LDR sp, =IRQ_STACK @; stack == 4K
+	SUB lr, lr, #4
+	MOV r1, lr
+	STMDB sp!, {r0-r12, lr}
 
 	@; handle exception
-	ldr r0, =VIC0IRQSTATUS
-	ldr r0, [r0]
-	tst r0, #INT_TIMER4
-	blne sys_timer_process
-	tst r0, #INT_EINT
-	blne eint_process
+	LDR r0, =VIC0IRQSTATUS
+	LDR r0, [r0]
+	TST r0, #INT_TIMER4
+	BLNE sys_timer_process
+	TST r0, #INT_EINT
+	BLNE eint_process
 
 	@; resume
-	ldmia sp!, {r0-r12, pc}^ @; ^ is resume spsr to cpsr
+	LDMIA sp!, {r0-r12, pc}^ @; ^ is resume spsr to cpsr
 
 fiq:
 	@; save spot	
-	ldr sp, =FIQ_STACK @; stack == 1K
-	stmdb sp!, {r0-r12, lr}
+	LDR sp, =FIQ_STACK @; stack == 1K
+	SUB lr, lr, #4
+	STMDB sp!, {r0-r12, lr}
 
 	@; handle exception
 
 	@; resume
-	ldmia sp!, {r0-r12, pc}^ @; ^ is resume spsr to cpsr
+	LDMIA sp!, {r0-r12, pc}^ @; ^ is resume spsr to cpsr
 
 reset:
 @; exchange to SVC mode 
-	mrs r0, cpsr
-	mov r0, #0xd3
-	msr cpsr, r0 
+	MRS r0, cpsr
+	MOV r0, #0xd3
+	MSR cpsr, r0 
 
 @; peripheral setting
 @; tell CPU peripheral where is  
 @; 256M -> 0x70000000 - 0x7FFFFFFF
-	ldr r0, =0x70000000 @; SROM_BW
-	orr r0,r0,#0x13
-	mcr p15,0,r0,c15,c2,4
+	LDR r0, =0x70000000 @; SROM_BW
+	ORR r0,r0,#0x13
+	MCR p15,0,r0,c15,c2,4
 
 @; disable the watch dog
-	ldr r0, =0x7E004000
-	mov r1, #0
-	str r1, [r0]
+	LDR r0, =0x7E004000
+	MOV r1, #0
+	STR r1, [r0]
 
 @; set stack size == 8k
 @; 8K is the MAX, but enough
-	ldr sp, =1024 * 8 
+	LDR sp, =1024 * 8 
 
 @; initialization
-	bl clock_init
-	bl uart_init 
-	bl sdram_init
+	BL clock_init
+	BL uart_init 
+	BL sdram_init
+	BL nand_init
 
 @; copy data form nand to ddr
 @; by call copy2ddr
-	adr r0, _start  @; nand_start -> 0
-	ldr r1, =_start
-	sub r1, r1, #0x70000000 @; ddr_start -> 0x50000000
+	ADR r0, _start  @; nand_start -> 0
+	LDR r1, =_start
+	SUB r1, r1, #0x70000000 @; ddr_start -> 0x50000000
 
-        ldr r2, =bss_start
-	sub r2, r2, #0x70000000
-	sub r2, r2, r1
+        LDR r2, =bss_start
+	SUB r2, r2, #0x70000000
+	SUB r2, r2, r1
 
-	cmp r0, r1
-	beq clean_bss
+	CMP r0, r1
+	BEQ clean_bss
 
-      	bl copy2ddr
-      	cmp r0, #0     @; error
-      	bne halt
+      	BL copy2ddr
+      	CMP r0, #0     @; error
+      	BNE halt
 
 @; clean the bss
 clean_bss:
-	ldr r0, =bss_start
-	sub r0, r0, #0x70000000
-	ldr r1, =bss_end
-	sub r1, r1, #0x70000000
-	mov r3, #0
-	cmp r0, r1
-	beq on_ddr
+	LDR r0, =bss_start
+	SUB r0, r0, #0x70000000
+	LDR r1, =bss_end
+	SUB r1, r1, #0x70000000
+	MOV r3, #0
+	CMP r0, r1
+	BEQ on_ddr
 clean_loop: 
-	str r3, [r0], #4
-	cmp r0, r1
-	bne clean_loop
-	ldr pc, =on_ddr
+	STR r3, [r0], #4
+	CMP r0, r1
+	BNE clean_loop
+	LDR pc, =on_ddr
 
 @;jump into DDR
 on_ddr:
 	@; initialize MMU
-	bl mmu_init 
-	bl irq_init
+	BL mmu_init 
+	BL irq_init
 
 	@; exchange to sys mode 
-	mrs r0, cpsr
-	mov r0, #0xdf
-	msr cpsr, r0 
+	MRS r0, cpsr
+	MOV r0, #0xdf
+	MSR cpsr, r0 
 
-	ldr sp, =USR_STACK
-	ldr pc, =main       @; pc == main link address  
+	LDR sp, =USR_STACK
+	LDR pc, =main       @; pc == main link address  
 
 halt:
-	b halt
+	B halt
 

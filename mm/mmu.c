@@ -16,6 +16,8 @@
 
 #include <mm/mem.h>
 
+//#define ENABLE_SEMGMENT
+
 #ifdef ENABLE_SEMGMENT
 /*
  * Only L1 table page (Segment)
@@ -80,7 +82,7 @@
  * which page table 
  */
 #define PAGE_0_BASE           (0)
-#define PAGE_PER_BASE         (1)
+#define PAGE_PER_BASE         (PAGE_0_BASE + 1)
 #define PAGE_OS_BASE          (PAGE_PER_BASE + 256)
 
 /*
@@ -124,7 +126,7 @@ static void memory_map_seg()
 	 */
 	for (i = 0; i < 4; i++)
 		SEG_TABLE[0xC00 + i] = (0x50000000 + (i << 20)) | 
-			MMU_SECDESC_PRI;
+			MMU_SECDESC_ALL;
 }
 
 #else
@@ -140,10 +142,11 @@ static void memory_map_L2()
 	 * va 0x00000000 - 0x000FFFFF
 	 * pa 0x00000000 - 0x000FFFFF
 	 */
-	DIR_TABLE[0x000] = MMU_PAGE_N(PAGE_0_BASE) | MMU_COADESC;
+	DIR_TABLE[0x000] = MMU_PAGE_N(PAGE_0_BASE) | 
+			MMU_COADESC;
 	for (j = 0; j < 256; j++)
 		PAGE_TABLE_N(PAGE_0_BASE)[0x00 + j] = (0x00000000 + 
-				(j << 12)) | MMU_SMALLDESC_ALL;
+			(j << 12)) | MMU_SMALLDESC_ALL;
 
 	/* 
 	 * 256M peripheral 
