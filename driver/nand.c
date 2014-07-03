@@ -11,6 +11,9 @@
 #include <types.h>
 #include <driver/nand.h>
 
+/* avoid fight with DRAM */
+#define MEM_SYS_CFG        (*(volatile unsigned long *)0x1E00F120)
+
 #define TACLS     0
 #define TWRPH0    2  /* shit me long time... */
 #define TWRPH1    0
@@ -113,9 +116,9 @@ static int nand_read2ddr(u_int nand_start, u_int ddr_start, u_int len)
 	return 0;
 }
 
-static void nand_erase_block(u_int addr)
+void nand_erase_block(u_int num)
 {
-	int page = addr / 2048;
+	int page = num / 2048;
 	
 	nand_select();
 	nand_cmd(0x60);
@@ -130,15 +133,7 @@ static void nand_erase_block(u_int addr)
 	nand_deselect();
 }
 
-void nand_erase_all()
-{
-	int i;
-
-	for (i = 0; i < 128 * 1024; i++) 
-		nand_erase_block(i);
-}
-
-void nand_write(u_int nand_start, u_char * buf, u_int len)
+int nand_write(u_int nand_start, u_char *buf, u_int len)
 {
 	u_long count = 0;
 	u_long addr  = nand_start;
@@ -162,13 +157,17 @@ void nand_write(u_int nand_start, u_char * buf, u_int len)
 	}
 
 	nand_deselect();
+
+	return 0;
 }
 
-int nand_read(u_int nand_start, u_char *buf, u_int len)
+int nand_read()
 {
-	u_int addr = nand_start;
+	u_int addr = 0;
 	int i ;
 	int count = 0;
+	char buf[10];
+	int len = 10;
 	
 	nand_select();
 
@@ -187,6 +186,7 @@ int nand_read(u_int nand_start, u_char *buf, u_int len)
 	}
 
 	nand_deselect();
+
 	return 0;
 }
 

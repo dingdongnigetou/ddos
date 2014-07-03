@@ -13,21 +13,22 @@
 #include <types.h>
 
 /*
- * erase all the block of nandfalsh
+ * erase the block of nandfalsh
+ * form 0 to num
  *
  */
-void nand_erase_all();
+void nand_erase_block(u_int num);
 
 /*
  * write data from buf into nandflash
  *
  */
-void nand_write(u_int nand_start, u_char *buf, u_int len);
+int nand_write(u_int nand_start, u_char *buf, u_int len);
 
 /*
  * read data form nand flash to buf
  */
-int nand_read(u_int nand_start, u_char *buf, u_int len);
+int nand_read();
 
 #endif /* _NAND_H_ */
 

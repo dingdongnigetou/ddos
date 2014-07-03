@@ -16,8 +16,6 @@
 
 #include <mm/mem.h>
 
-//#define ENABLE_SEMGMENT
-
 #ifdef ENABLE_SEMGMENT
 /*
  * Only L1 table page (Segment)
@@ -165,7 +163,7 @@ static void memory_map_L2()
 	/*
 	 * The os code total is 4M 
 	 */
-	for (i = 0; i < 256; i++)
+	for (i = 0; i < 4; i++)
 		DIR_TABLE[0xC00 + i] = MMU_PAGE_N((PAGE_OS_BASE + i)) | 
 			MMU_COADESC;
 	/*
@@ -184,7 +182,7 @@ static void memory_map_L2()
 		PAGE_TABLE_N((PAGE_OS_BASE + 0))[0x00 + j] = 
 			(0x50000000 + (0 << 20) + (j << 12)) | 
 			MMU_SMALLDESC_ALL; 
-	for (i = 1; i < 256; i++)
+	for (i = 1; i < 4; i++)
 		for (j = 0; j < 256; j++)
 			PAGE_TABLE_N((PAGE_OS_BASE + i))[0x00 + j] = 
 				(0x50000000 + (i << 20) + (j << 12)) | 
