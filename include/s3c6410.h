@@ -10,21 +10,15 @@
 #ifndef _S3C6410_H_
 #define _S3C6410_H_
 
-/* GPIO */
-#define GPFCON             (*(volatile unsigned long *)0x1F0080A0)
-#define GPFDAT             (*(volatile unsigned long *)0x1F0080A4)
-#define PRIORITY           (*(volatile unsigned long *)0x1F008280)
-#define SERVICE            (*(volatile unsigned long *)0x1F008284)
-#define SERVICEPEND        (*(volatile unsigned long *)0x1F008288)
-#define GPNCON             (*(volatile unsigned long *)0x1F008830)
-#define GPNDAT             (*(volatile unsigned long *)0x1F008834)
-#define EINT0CON0          (*(volatile unsigned long *)0x1F008900)
-#define EINT0MASK          (*(volatile unsigned long *)0x1F008920)
-#define EINT0PEND          (*(volatile unsigned long *)0x1F008924)
-
-/* Led */
-#define GPKCON0            (*(volatile unsigned long *)0x1F008800)
-#define GPKDAT             (*(volatile unsigned long *)0x1F008808)
+/* clock */
+#define APLL_LOCK          (*(volatile unsigned long *)0x7E00F000)
+#define MPLL_LOCK          (*(volatile unsigned long *)0x7E00F004)
+#define EPLL_LOCK          (*(volatile unsigned long *)0x7E00F008)
+#define APLL_CON           (*(volatile unsigned long *)0x7E00F00C)
+#define MPLL_CON           (*(volatile unsigned long *)0x7E00F010)
+#define CLK_SRC            (*(volatile unsigned long *)0x7E00F01C)
+#define CLK_DIV0           (*(volatile unsigned long *)0x7E00F020)
+#define OTHERS             (*(volatile unsigned long *)0x7E00F900)
 
 /* DRAM */
 #define MEMCCMD	           (*(volatile unsigned long *)0x7E001004)
@@ -53,27 +47,33 @@
 #define P1DIRECTCMD        (*(volatile unsigned long *)0x7E001008)
 
 /* UART */
-#define GPACON             (*(volatile unsigned long *)0x7F008000)     
-#define GPADAT             (*(volatile unsigned long *)0x7F008004)
-#define GPAPUD             (*(volatile unsigned long *)0x7F008008)
-#define ULCON0             (*(volatile unsigned long *)0x7F005000)
-#define UCON0              (*(volatile unsigned long *)0x7F005004)
-#define UFCON0             (*(volatile unsigned long *)0x7F005008)
-#define UMCON0             (*(volatile unsigned long *)0x7F00500c)
+#define GPACON             (*(volatile unsigned long *)0x1F008000)     
+#define GPADAT             (*(volatile unsigned long *)0x1F008004)
+#define GPAPUD             (*(volatile unsigned long *)0x1F008008)
+#define ULCON0             (*(volatile unsigned long *)0x1F005000)
+#define UCON0              (*(volatile unsigned long *)0x1F005004)
+#define UFCON0             (*(volatile unsigned long *)0x1F005008)
+#define UMCON0             (*(volatile unsigned long *)0x1F00500c)
 #define UFSTAT0            (*(volatile unsigned long *)0x1F005018)
 #define UTXH0              (*(volatile unsigned char *)0x1F005020)
 #define URXH0              (*(volatile unsigned char *)0x1F005024)
-#define UBRDIV0            (*(volatile unsigned long *)0x7F005028)
+#define UBRDIV0            (*(volatile unsigned long *)0x1F005028)
 
-/* clock */
-#define APLL_LOCK          (*(volatile unsigned long *)0x7E00F000)
-#define MPLL_LOCK          (*(volatile unsigned long *)0x7E00F004)
-#define EPLL_LOCK          (*(volatile unsigned long *)0x7E00F008)
-#define APLL_CON           (*(volatile unsigned long *)0x7E00F00C)
-#define MPLL_CON           (*(volatile unsigned long *)0x7E00F010)
-#define CLK_SRC            (*(volatile unsigned long *)0x7E00F01C)
-#define CLK_DIV0           (*(volatile unsigned long *)0x7E00F020)
-#define OTHERS             (*(volatile unsigned long *)0x7E00F900)
+/* GPIO */
+#define GPFCON             (*(volatile unsigned long *)0x1F0080A0)
+#define GPFDAT             (*(volatile unsigned long *)0x1F0080A4)
+#define PRIORITY           (*(volatile unsigned long *)0x1F008280)
+#define SERVICE            (*(volatile unsigned long *)0x1F008284)
+#define SERVICEPEND        (*(volatile unsigned long *)0x1F008288)
+#define GPNCON             (*(volatile unsigned long *)0x1F008830)
+#define GPNDAT             (*(volatile unsigned long *)0x1F008834)
+#define EINT0CON0          (*(volatile unsigned long *)0x1F008900)
+#define EINT0MASK          (*(volatile unsigned long *)0x1F008920)
+#define EINT0PEND          (*(volatile unsigned long *)0x1F008924)
+
+/* Led */
+#define GPKCON0            (*(volatile unsigned long *)0x1F008800)
+#define GPKDAT             (*(volatile unsigned long *)0x1F008808)
 
 /* LCD */
 #define GPECON             (*(volatile unsigned long *)0x1F008080)
@@ -113,13 +113,12 @@
 #define TINT_CSTAT         (*(volatile unsigned long *)0x1F006044)
 
 /* Nand Flash */
-#define MEM_SYS_CFG        (*(volatile unsigned long *)0x7E00F120)
-#define NFCONF             (*(volatile unsigned long *)0x70200000)
-#define NFCONT             (*(volatile unsigned long *)0x70200004)
-#define NFCMMD             (*(volatile unsigned long *)0x70200008)
-#define NFADDR             (*(volatile unsigned long *)0x7020000C)
-#define NFDATA             (*(volatile unsigned char *)0x70200010)
-#define NFSTAT             (*(volatile unsigned long *)0x70200028)
+#define NFCONF             (*(volatile unsigned long *)0x10200000)
+#define NFCONT             (*(volatile unsigned long *)0x10200004)
+#define NFCMMD             (*(volatile unsigned long *)0x10200008)
+#define NFADDR             (*(volatile unsigned long *)0x1020000C)
+#define NFDATA             (*(volatile unsigned char *)0x10200010)
+#define NFSTAT             (*(volatile unsigned long *)0x10200028)
 
 /* Vector Interrupt */
 #define VIC0IRQSTATUS      (*(volatile unsigned long *)0x11200000)

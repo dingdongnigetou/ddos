@@ -1,11 +1,7 @@
 @;                 (C) 2014 Jindong Huang
+@; boot/boot.S
 
 nr_system_calls = 64
-
-@; which interrupt
-INT_EINT   = 0x00000003
-INT_TIMER4 = 0x10000000
-VIC0IRQSTATUS = 0x11200000 @; VC0
 
 @; memory map value
 #include <mm/mem.h>
@@ -79,7 +75,7 @@ swi:
 prefetch_abort:
 	@; save spot	
 	LDR sp, =PBT_STACK @; stack == 1K
-@;	SUB lr, lr, #4
+	SUB lr, lr, #4
 	STMDB sp!, {r0-r12, lr}
 
 	@; handle exception
@@ -115,14 +111,16 @@ irq:
 	SUB lr, lr, #4
 	MOV r1, lr
 	STMDB sp!, {r0-r12, lr}
+	
+	BL irq_handler
 
-	@; handle exception
-	LDR r0, =VIC0IRQSTATUS
-	LDR r0, [r0]
-	TST r0, #INT_TIMER4
-	BLNE sys_timer_process
-	TST r0, #INT_EINT
-	BLNE eint_process
+@;	@; handle exception
+@;	LDR r0, =VIC0IRQSTATUS
+@;	LDR r0, [r0]
+@;	TST r0, #INT_TIMER4
+@;	BLNE sys_timer_process
+@;	TST r0, #INT_EINT
+@;	BLNE eint_process
 
 	@; resume
 	LDMIA sp!, {r0-r12, pc}^ @; ^ is resume spsr to cpsr
@@ -162,33 +160,31 @@ reset:
 
 @; initialization
 	BL clock_init
-	BL uart_init 
 	BL sdram_init
+	BL mmu_init   @; after mapped
+	BL uart_init 
 	BL nand_init
+	BL irq_init
 
 @; copy data form nand to ddr
 @; by call copy2ddr
 	ADR r0, _start  @; nand_start -> 0
 	LDR r1, =_start
-	SUB r1, r1, #0x70000000 @; ddr_start -> 0x50000000
 
-        LDR r2, =bss_start
-	SUB r2, r2, #0x70000000
+	LDR r2, =bss_start
 	SUB r2, r2, r1
 
 	CMP r0, r1
 	BEQ clean_bss
 
-      	BL copy2ddr
-      	CMP r0, #0     @; error
-      	BNE halt
+	BL copy2ddr
+	CMP r0, #0     @; error
+	BNE halt
 
 @; clean the bss
 clean_bss:
 	LDR r0, =bss_start
-	SUB r0, r0, #0x70000000
 	LDR r1, =bss_end
-	SUB r1, r1, #0x70000000
 	MOV r3, #0
 	CMP r0, r1
 	BEQ on_ddr
@@ -200,10 +196,6 @@ clean_loop:
 
 @;jump into DDR
 on_ddr:
-	@; initialize MMU
-	BL mmu_init 
-	BL irq_init
-
 	@; exchange to sys mode 
 	MRS r0, cpsr
 	MOV r0, #0xdf
