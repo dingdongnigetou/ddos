@@ -44,11 +44,6 @@ int main()
 //	enirq();
 //	system_timer_tick(800);
 
-	u_char buf[12] = "hello world";
-
-	nand_write(10, buf, 12);
-	nand_read(10, buf, 12);
-	puts(buf);
 	led3();
 
 	while (1){

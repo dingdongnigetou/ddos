@@ -14,7 +14,7 @@ nr_system_calls = 64
 #define  IRQ_STACK (NUD_STACK - 0x400)
 #define  FIQ_STACK (IRQ_STACK - 0x1000)
 
-.global _start 
+.global _start
 _start:
 	@; The table of exception vector
 	B reset  @; 0x00
