@@ -2,11 +2,15 @@
 
 * Enable dir and page table (two table modle)
   dir table keep 4096 page table
-  per page table entry contains 256 page descriptor 
-  per page takes 4K room.
+  per page table entry contains 256 or 1024 page descriptor 
+  per page takes 4K or 1K room.
 
   ++++++++++++++++++++++++++++++++++++++++++++++++
   + dir (12bits) | page (8bits) | index (12bits) +
+  ++++++++++++++++++++++++++++++++++++++++++++++++
+
+  ++++++++++++++++++++++++++++++++++++++++++++++++
+  + dir (12bits) | page (10bits) | index (10bits)+
   ++++++++++++++++++++++++++++++++++++++++++++++++
 
 * Why enable two page table?
