@@ -9,7 +9,11 @@
  * 4096 L1 page descriptor, per is 1M.
  *
  * L1 and L2 page table
+ * [coarse]
  * 4096 L1 page descriptor, 256 L2 
+ * per page is 4K -> total is 4G
+ * [fine]
+ * 4096 L1 page descriptor, 1024 l2
  * per page is 4K -> total is 4G
  *
  */
@@ -45,16 +49,6 @@
 /*
  * L1 and L2 page table
  *
- * dir entry descriptor (Coarse)
- * [31:10] coarse base address
- * [8:5] Domain, [4] must be 1
- * [1:0] is 1 
- *
- * page entry descriptor (Small)
- * [31:12] small page base address
- * [11:4] ap(3-0) per ap take 2 bits
- * [3] C  [2] B [1:0] is 2
- *
  */
 
 /*
@@ -64,6 +58,7 @@
 #define MMU_DOMAIN            (0 << 5)   /* domain 0 */
 #define MMU_SPECIAL           (1 << 4)   /* must be 1 */
 #define MMU_COARSE            (1)        /* coarse page table */
+#define MMU_FINE              (3)        /* fine page table */
 
 /*
  * page table entry
@@ -74,7 +69,8 @@
 #define MMU_PRI_ACCESS        (0x55 << 4)/* only privilege mode can access (R/W) */
 #define MMU_WT                (0x2 << 2) /* write through */
 #define MMU_WB                (0x3 << 2) /* write back */
-#define MMU_SMALL             (2)        /* small page (second) */
+#define MMU_SMALL             (2)        /* small page (second) 4K */
+#define MMU_TINY              (3)        /* tiny page (second) 1K */
 
 /*
  * which page table 
@@ -87,8 +83,11 @@
  * descriptor flags
  */
 #define MMU_COADESC           (MMU_DOMAIN | MMU_SPECIAL | MMU_COARSE)
+#define MMU_FINDESC           (MMU_DOMAIN | MMU_SPECIAL | MMU_FINE)
 #define MMU_SMALLDESC_PRI     (MMU_PRI_ACCESS | MMU_WB | MMU_SMALL)
 #define MMU_SMALLDESC_ALL     (MMU_ALL_ACCESS | MMU_WB | MMU_SMALL)
+#define MMU_TINYDESC_PRI      (MMU_PRI_ACCESS | MMU_WB | MMU_TINY)
+#define MMU_TINYDESC_ALL      (MMU_ALL_ACCESS | MMU_WB | MMU_TINY)
 
 #define DIR_TABLE             ((volatile unsigned long *)MMU_DIR)
 #define PAGE_TABLE_N(N)       ((volatile unsigned long *)MMU_PAGE_N(N))
