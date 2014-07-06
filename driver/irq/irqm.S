@@ -58,9 +58,9 @@ disable_lower:
 	LDR  r14, =VIC0INTENABLE
 	LDR  r12, [r14]
 	AND  r12, r12, r10
-	STR  r12, [r14]  /* enable irq */
+	STR  r12, [r14]  /* enable extra irq */
 	MRS  r14, cpsr
-	BIC  r14, r14, #0x80 /* enable irq */
+	BIC  r14, r14, #0x80 /* enable inner irq */
 	MSR  cpsr_c, r14
 	LDR  pc, [pc, r11, LSL #2]
 	NOP
@@ -83,14 +83,40 @@ priority_table:
 
 system_timer_service:
 	STMFD r13!, {r0-r9}
-	/* service */
+	BL    do_system_timer_service
 	LDMFD r13!, {r0-r10}
 	MRS   r11, cpsr
-	ORR
+	ORR   r11, r11, #0x80 /* disable irq */
+	MSR   cpsr_c, r11
+	LDR   r11, =VIC0INTENABLE
+	STR   r12, [r11] /* enable irq */
+	LDMFD r13!, {r11, r12, r14}
+	MSR   spsr_cxsf, r14
+	LDMFD r13!, {pc}^
 
 key_service:
-	NOP
+	STMFD r13!, {r0-r9}
+	BL    do_key_service
+	LDMFD r13!, {r0-r10}
+	MRS   r11, cpsr
+	ORR   r11, r11, #0x80 /* disable irq */
+	MSR   cpsr_c, r11
+	LDR   r11, =VIC0INTENABLE
+	STR   r12, [r11] /* enable irq */
+	LDMFD r13!, {r11, r12, r14}
+	MSR   spsr_cxsf, r14
+	LDMFD r13!, {pc}^
 
 user_timer_service:
-	NOP
+	STMFD r13!, {r0-r9}
+	BL    do_user_timer_service
+	LDMFD r13!, {r0-r10}
+	MRS   r11, cpsr
+	ORR   r11, r11, #0x80 /* disable irq */
+	MSR   cpsr_c, r11
+	LDR   r11, =VIC0INTENABLE
+	STR   r12, [r11] /* enable irq */
+	LDMFD r13!, {r11, r12, r14}
+	MSR   spsr_cxsf, r14
+	LDMFD r13!, {pc}^
 
