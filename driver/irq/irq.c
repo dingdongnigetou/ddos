@@ -65,7 +65,7 @@ void do_key_service()
 		if (EINT0PEND & (1<<i)){
 			/* release */
 			if (GPNDAT & (1<<i))
-				;
+				led4();
 			/* press */
 			else
 				;
@@ -80,7 +80,8 @@ void do_key_service()
 /* for test */
 void delay(int x)
 {
-	for (int y = 1000; y >= 0; y--)
+	int y;
+	for (y = 1000; y >= 0; y--)
 		for (; x >= 0; x--);
 }
 
@@ -91,7 +92,8 @@ void delay(int x)
 void do_system_timer_service()
 {
 	/* do schedule() */
-	delay(100);
+//	delay(100);
+	led1();
 
 	TINT_CSTAT &= 0x1F;
 	TINT_CSTAT |= TIMER4_PENDING_CLEAR;

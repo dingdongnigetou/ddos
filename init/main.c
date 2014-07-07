@@ -41,18 +41,12 @@ void led4()
 
 int main()
 {	
-//	enirq();
-//	system_timer_tick(800);
-
-	led3();
+	enirq();
+	system_timer_tick(800);
 
 	while (1){
 		char c = getc();
 		putc(c);
-//		led2();
-//		system_wait_timer_tick();
-//		led3();
-//		system_wait_timer_tick();
 	}
 
 	return 0;
