@@ -11,14 +11,23 @@
 #define INT_TIMER2  (1 << 25)
 #define INT_TIMER4  (1 << 28)
 
+#define EINT   3
+#define TIMER2 25
+#define TIMER4 28
+
 #define VIC0IRQSTATUS   0x11200000
 #define VIC0INTENABLE   0x11200010
 #define VIC0INTENCLEAR  0x11200014
 
-#define PRIORITY_0   28
-#define PRIORITY_1   3
-#define PRIORITY_2   25
-#define PRIORITY_3   3
+#define PRIORITY_0   TIMER2  /* 2 */
+#define PRIORITY_1   EINT    /* 1 */
+#define PRIORITY_2   TIMER4  /* 0 */
+#define PRIORITY_3   3       /* 3 */
+
+#define MAP_PRI_0    2
+#define MAP_PRI_1    1
+#define MAP_PRI_2    0
+#define MAP_PRI_3    3
 
 #define BINARY_0   (1 << PRIORITY_0)
 #define BINARY_1   (1 << PRIORITY_1)
@@ -64,7 +73,6 @@ disable_lower:
 	MSR  cpsr_c, r14
 	LDR  pc, [pc, r11, LSL #2]
 	NOP
-
 	.word system_timer_service
 	.word key_service
 	.word user_timer_service
@@ -76,10 +84,10 @@ priority_masks:
 	.word MASK_3
 
 priority_table:
-	.word PRIORITY_0
-	.word PRIORITY_1
-	.word PRIORITY_2
-	.word PRIORITY_3
+	.byte MAP_PRI_0
+	.byte MAP_PRI_1
+	.byte MAP_PRI_2
+	.byte MAP_PRI_3
 
 system_timer_service:
 	STMFD r13!, {r0-r9}
