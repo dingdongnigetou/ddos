@@ -65,10 +65,10 @@ void do_key_service()
 		if (EINT0PEND & (1<<i)){
 			/* release */
 			if (GPNDAT & (1<<i))
-				led4();
+				puts("key release\n");
 			/* press */
 			else
-				;
+				puts("key press\n");
 		}
 	}
 
@@ -81,7 +81,7 @@ void do_key_service()
 void delay(int x)
 {
 	int y;
-	for (y = 1000; y >= 0; y--)
+	for (y = 100000; y >= 0; y--)
 		for (; x >= 0; x--);
 }
 
@@ -92,8 +92,7 @@ void delay(int x)
 void do_system_timer_service()
 {
 	/* do schedule() */
-//	delay(100);
-	led1();
+	puts("system timer interrupt\n");
 
 	TINT_CSTAT &= 0x1F;
 	TINT_CSTAT |= TIMER4_PENDING_CLEAR;
@@ -103,6 +102,7 @@ void do_system_timer_service()
 void do_user_timer_service()
 {
 	/* do something */
+	putc("user timer interrupt\n");
 
 	TINT_CSTAT &= 0x1F;
 	TINT_CSTAT |= TIMER2_PENDING_CLEAR;
