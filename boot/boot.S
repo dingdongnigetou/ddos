@@ -27,25 +27,25 @@ _start:
 	LDR pc, __fiq            @; 0x1C fast interrupt exception 
 
 __undefined_instruction:
-	.word undefined_instruction
+	.word undefined_instruction_handler
 __swi:
-	.word swi
+	.word swi_handler
 __prefetch_abort:
-	.word prefetch_abort
+	.word prefetch_abort_handler
 __data_abort:
-	.word data_abort
+	.word data_abort_handler
 __not_used:
-	.word not_used
+	.word not_used_handler
 __irq:
-	.word irq
+	.word irq_handler_prioriry
 __fiq:
-	.word fiq
+	.word fiq_handler
 
 bad_sys_call:
 	MOV   r4, #-1
 	LDMIA sp!, {r5-r12, pc}^ @;
 
-undefined_instruction:
+undefined_instruction_handler:
 	@; save spot
 	LDR sp, =UND_STACK @; stack == 1k
 	STMDB sp!, {r0-r12, lr}
@@ -55,7 +55,7 @@ undefined_instruction:
 	@; resume
 	LDMIA sp!, {r0-r12, pc}^ @; ^ is resume spsr to cpsr
 
-swi:
+swi_handler:
 	LDR sp, =SWI_STACK @; stack == 4K
 	@; save spot
 	STMDB sp!, {r5-r12, lr}  @; lr is the instruction after swi
@@ -72,7 +72,7 @@ swi:
 	@; resume
 	LDMIA sp!, {r5-r12, pc}^ @; ^ is resume spsr to cpsr
 
-prefetch_abort:
+prefetch_abort_handler:
 	@; save spot	
 	LDR sp, =PBT_STACK @; stack == 1K
 	SUB lr, lr, #4
@@ -83,7 +83,7 @@ prefetch_abort:
 	@; resume
 	LDMIA sp!, {r0-r12, pc}^ @; ^ is resume spsr to cpsr
 
-data_abort:
+data_abort_handler:
 	@; save spot	
 	LDR sp, =DBT_STACK @; stack == 1K
 	SUB lr, lr, #8
@@ -95,7 +95,7 @@ data_abort:
 	@; resume
 	LDMIA sp!, {r0-r12, pc}^ @; ^ is resume spsr to cpsr
 
-not_used:
+not_used_handler:
 	@; save spot	
 	LDR sp, =NUD_STACK @; stack == 1K
 	STMDB sp!, {r0-r12, lr}
@@ -105,27 +105,30 @@ not_used:
 	@; resume
 	LDMIA sp!, {r0-r12, pc}^ @; ^ is resume spsr to cpsr
 
-irq:
+irq_handler_simple:
 	@; save spot	
 	LDR sp, =IRQ_STACK @; stack == 4K
 	SUB lr, lr, #4
-	MOV r1, lr
 	STMDB sp!, {r0-r12, lr}
-	
-	BL irq_handler
 
-@;	@; handle exception
-@;	LDR r0, =VIC0IRQSTATUS
-@;	LDR r0, [r0]
-@;	TST r0, #INT_TIMER4
-@;	BLNE sys_timer_process
-@;	TST r0, #INT_EINT
-@;	BLNE eint_process
+#define VIC0IRQSTATUS   0x11200000
+#define INT_EINT        (0x3)
+#define INT_TIMER2      (1 << 25)
+#define INT_TIMER4      (1 << 28)
+
+	LDR r0, =VIC0IRQSTATUS
+	LDR r0, [r0]
+	TST r0, #INT_TIMER4
+	BLNE do_system_timer_service
+	TST r0, #INT_EINT
+	BLNE do_key_service
+	TST r0, #INT_TIMER2
+	BLNE do_user_timer_service
 
 	@; resume
 	LDMIA sp!, {r0-r12, pc}^ @; ^ is resume spsr to cpsr
 
-fiq:
+fiq_handler:
 	@; save spot	
 	LDR sp, =FIQ_STACK @; stack == 1K
 	SUB lr, lr, #4
