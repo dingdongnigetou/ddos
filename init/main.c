@@ -42,11 +42,11 @@ void led4()
 int main()
 {	
 	enirq();
-	system_timer_tick(800);
+	system_timer_tick(1000);
 
+	puts("welcome\n");
 	while (1){
-		char c = getc();
-		putc(c);
+		led1();
 	}
 
 	return 0;
