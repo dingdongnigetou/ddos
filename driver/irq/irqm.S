@@ -3,30 +3,26 @@
 
 
 /* which interrupt */
-#define INT_EINT0   (1 << 0)
-#define INT_EINT1   (1 << 1)
-#define INT_TIMER2  (1 << 25)
-#define INT_TIMER4  (1 << 28)
 
-#define EINT0   0  /* 0 - 3 */
-#define EINT1   1  /* 4 - 11 */
-#define TIMER2 25
-#define TIMER4 28
+#define INT_EINT0   0  /* 0 - 3 */
+#define INT_EINT1   1  /* 4 - 11 */
+#define INT_TIMER2 25
+#define INT_TIMER4 28
 
 #define VIC0IRQSTATUS   0x11200000
 #define VIC0INTENABLE   0x11200010
 #define VIC0INTENCLEAR  0x11200014
 
 /* 0 -> lowest priority */
-#define PRIORITY_0   2
-#define PRIORITY_1   1
-#define PRIORITY_2   0
-#define PRIORITY_3   3
+#define PRIORITY_0   0  /* TIMER4 */
+#define PRIORITY_1   1  /* EINT0 */
+#define PRIORITY_2   2  /* TIMER2 */
+#define PRIORITY_3   3  /* EINT1 */
 
-#define BINARY_0   (1 << TIMER2)
-#define BINARY_1   (1 << EINT0)
-#define BINARY_2   (1 << TIMER4)
-#define BINARY_3   (1 << EINT1)
+#define BINARY_0   (1 << INT_TIMER4)
+#define BINARY_1   (1 << INT_EINT0)
+#define BINARY_2   (1 << INT_TIMER2)
+#define BINARY_3   (1 << INT_EINT1)
 
 /* mask <= self's priority */
 #define MASK_3  (BINARY_3)
@@ -74,30 +70,36 @@ disable_lower:
 	LDR  r12, [r14]
 	AND  r12, r12, r10
 	LDR  r14, =VIC0INTENCLEAR
-	STR  r12, [r14]      @; mask irq
-	MRS  r14, cpsr
-	BIC  r14, r14, #0x80 @; enable inner irq
+	STR  r12, [r14]  @; mask irq
 
-//////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////
+@; It's funny, without this, irq can't well work...
+@; And I don't know why... :)
+@; Maybe you can figure out...
 	STMDB sp!, {r14}
 	STMDB sp!, {r0-r9}
-	mov r0, #0x31
-	BL   putc
+	mov   r0, #0
+	BL    putc
 	LDMIA sp!, {r0-r9}
 	LDMIA sp!, {r14}
+///////////////////////////////////////////////////////
 
+	MRS  r14, cpsr
+	BIC  r14, r14, #0x80 @; enable inner irq
 	MSR  cpsr_c, r14
+
 	LDR  pc, [pc, r11, LSL #2]
 	NOP
 
 	.word system_timer_service
 	.word key_service
 	.word user_timer_service
+	.word key_service
 
 priority_masks:
-	.word MASK_2
-	.word MASK_1
 	.word MASK_0
+	.word MASK_1
+	.word MASK_2
 	.word MASK_3
 
 priority_table:

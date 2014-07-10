@@ -43,6 +43,7 @@ int main()
 {	
 	enirq();
 	system_timer_tick(1000);
+	user_timer_tick(500);
 
 	puts("welcome\n");
 	while (1){

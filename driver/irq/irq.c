@@ -8,12 +8,10 @@
 #include <s3c6410.h>
 
 /* VIC0INTENABLE */
+#define ENABLE_TIMER2 (1 << 25)
 #define ENABLE_TIMER4 (1 << 28)
-#define ENABLE_EINT   (3 << 0)
-
-/* VIC0INTENCLEAR */
-#define CLEAR_TIMER4  (1 << 28)
-#define CLEAR_EINT    (3 << 0)
+#define ENABLE_EINT0  (1 << 0)
+#define ENABLE_EINT1  (1 << 1)
 
 /* clear int pending status */
 #define TIMER2_PENDING_CLEAR    (1 << 7)
@@ -33,7 +31,9 @@ void irq_init(void)
 
 	VIC0INTENABLE &= ~(0xFFFFFFFF);
 	VIC0INTENABLE |= ENABLE_TIMER4;
-	VIC0INTENABLE |= ENABLE_EINT;
+	VIC0INTENABLE |= ENABLE_TIMER2;
+	VIC0INTENABLE |= ENABLE_EINT0;
+	VIC0INTENABLE |= ENABLE_EINT1;
 }
 
 int sys_enirq()
@@ -102,7 +102,7 @@ void do_system_timer_service()
 void do_user_timer_service()
 {
 	/* do something */
-	putc("user timer interrupt\n");
+	puts("user timer interrupt\n");
 
 	TINT_CSTAT &= 0x1F;
 	TINT_CSTAT |= TIMER2_PENDING_CLEAR;
