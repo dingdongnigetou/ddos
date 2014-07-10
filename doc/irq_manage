@@ -1,0 +1,30 @@
+			(C)  2014  Jindong Huang
+
+* Here I set four irq for kernel, they are timer4 and
+  ent0 and timer2 and ent1 corresponding.
+  
+  [priority 0 - 3]
+	timer4   0
+	eint0    1
+	timer3   2
+	eint1    3
+
+* I give the kernel two ways to handle the irq. The one 
+  is simple way, but another with each irq's priority. 
+
+  ->Simple Way   [boot/boot.S]
+    First Coming First Service
+
+  ->Priority Way [driver/irq/irqm.S]
+    When the irq coming then turn to disable itself and
+    lower priority irq. Then enable the inner irq, And 
+    do_service. Return when service is done
+
+    This way takes less timer to reply the irq interrupt.
+    And more "real time" because the higher priority irq
+    can preempt the lower one, but the lower one can not
+    interrupt the higher one.
+
+* You can enable the irq you want modify driver/irq/irq.c
+  and driver/irq/irqm.S
+
