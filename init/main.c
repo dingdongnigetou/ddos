@@ -12,6 +12,7 @@
 #include <driver/timer.h>
 #include <driver/led.h>
 #include <driver/lcd.h>
+#include <driver/rtc.h>
 #include <types.h>
 #include <io.h>
 
@@ -30,7 +31,7 @@ void led2()
 void led3()
 {
 	GPKCON0 = 0x01000000;
-	GPKDAT  = 0;
+	GPKDAT  = 0; 
 }
 
 void led4()
@@ -41,11 +42,14 @@ void led4()
 
 int main()
 {	
-	enirq();
-	system_timer_tick(1000);
-	user_timer_tick(500);
+//	enirq();
+//	system_timer_tick(1000);
+//	user_timer_tick(500);
+//
+//	puts("welcome\n");
+	
+//	show_rtc_time();
 
-	puts("welcome\n");
 	while (1){
 		led1();
 	}

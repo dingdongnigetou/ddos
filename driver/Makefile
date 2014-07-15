@@ -11,7 +11,7 @@ OBJS    = sdram.o clock.o uart.o led.o nand.o  \
 	  $(LCDDIR)/bg_light.o $(LCDDIR)/lcd.o \
 	  $(LCDDIR)/font8x8.o $(LCDDIR)/pwm.o  \
 	  $(IRQDIR)/irq.o $(IRQDIR)/irqm.o     \
-	  fiq.o timer.o
+	  fiq.o timer.o rtc.o
 
 %.o:%.c
 	$(CC) $(CFLAGS) -c $< -o $@

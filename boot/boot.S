@@ -87,7 +87,7 @@ data_abort_handler:
 	@; save spot	
 	LDR sp, =DBT_STACK @; stack == 1K
 	SUB lr, lr, #8
-	STMDB sp!, {r0-r12, lr}@; corresponding system call
+	STMDB sp!, {r0-r12, lr} @; corresponding system call
 
 
 	@; handle exception
@@ -112,6 +112,7 @@ irq_handler_simple:
 	STMDB sp!, {r0-r12, lr}
 
 #define VIC0IRQSTATUS   0x11200000
+//#define VIC0IRQSTATUS   0x71200000
 #define INT_EINT0       (1 << 0)
 #define INT_EINT1       (1 << 1)
 #define INT_TIMER2      (1 << 25)
@@ -171,6 +172,7 @@ reset:
 	BL uart_init 
 	BL nand_init
 	BL irq_init
+@;	BL rtc_timer_init
 
 @; copy data form nand to ddr
 @; by call copy2ddr

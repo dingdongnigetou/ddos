@@ -84,7 +84,14 @@ static void put_pixel(u_int x, u_int y, u_int color)
 
 static void clean_screen()
 {
-	mem32set((void *)FRAME_BUFFER, BACKGROUND, XSIZE * YSIZE);
+//	mem32set((void *)FRAME_BUFFER, BACKGROUND, XSIZE * YSIZE);
+	
+	int x, y, cnt;
+
+	volatile unsigned long*p = (volatile unsigned long*)FRAME_BUFFER;
+	for (x = 0; x <= XSIZE; x++)
+		for (y = 0; y <= YSIZE; y++)
+			p[cnt++] = BACKGROUND;
 
 	/* resume the globals' cursor */
 	lcd_x = 2;

@@ -38,7 +38,7 @@ void irq_init(void)
 
 int sys_enirq()
 {
-__asm__(                          
+asm(                          
 	"mrs r0, spsr\n"
 	"bic r0, r0, #0x80\n" 
 	"msr spsr, r0\n" 
@@ -49,7 +49,7 @@ __asm__(
 
 int sys_disirq()
 {
-__asm__(                     
+asm(                     
 	"mrs r0, spsr\n"
 	"orr r0, r0, #0x80\n"
 	"msr spsr, r0\n"
