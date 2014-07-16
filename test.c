@@ -1,10 +1,8 @@
-#include <unistd.h>
-#include <led.h>
+#include <stdio.h>
 
 int main()
 {
-	ledop(LED4, ON);
-	
+	printf("%c", 0x30);
+
 	return 0;
 }
-

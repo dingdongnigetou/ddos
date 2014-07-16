@@ -6,6 +6,7 @@
  */
 
 #include <s3c6410.h>
+#include <driver/rtc.h>
 
 /* VIC0INTENABLE */
 #define ENABLE_TIMER2 (1 << 25)
@@ -65,10 +66,10 @@ void do_key_service()
 		if (EINT0PEND & (1<<i)){
 			/* release */
 			if (GPNDAT & (1<<i))
-				puts("key release\n");
+				show_rtc_time();
 			/* press */
 			else
-				puts("key press\n");
+				;
 		}
 	}
 

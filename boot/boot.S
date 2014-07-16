@@ -172,7 +172,6 @@ reset:
 	BL uart_init 
 	BL nand_init
 	BL irq_init
-@;	BL rtc_timer_init
 
 @; copy data form nand to ddr
 @; by call copy2ddr
