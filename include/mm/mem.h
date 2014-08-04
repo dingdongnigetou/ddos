@@ -21,7 +21,7 @@
  * so -0x70000000 to convert it. 
  */
 #define DIRTABLE_BASE  (KERNEL_END - 0x70000000)
-#define DIRTABLE_END   (DIRTABLE_BASE + 0x100000)
+#define DIRTABLE_END   (DIRTABLE_BASE + 0x200000)
 
 /* display memory */
 #define DISPMEM_BASE   (DIRTABLE_END + 0x70000000)
@@ -29,7 +29,9 @@
 
 /* shared memory */
 #define SHAREMEM_BASE  (DISPMEM_END)
-#define SHAREMEM_END   (KERNEL_BASE + 0x400000)
+#define SHAREMEM_END   (KERNEL_BASE + 0x500000)
+
+//////////////////////////////////////////////////////
 
 #else /* disable map */
 
@@ -46,6 +48,16 @@
 #define SHAREMEM_END   (KERNEL_BASE + 0x400000)
 
 #endif /* ENABLE_MAP */
+
+/* stack */
+#define  USR_STACK (KERNEL_END)
+#define  UND_STACK (USR_STACK - 0x10000)
+#define  SWI_STACK (UND_STACK - 0x400)
+#define  PBT_STACK (SWI_STACK - 0x1000)
+#define  DBT_STACK (PBT_STACK - 0x400)
+#define  NUD_STACK (DBT_STACK - 0x400)
+#define  IRQ_STACK (NUD_STACK - 0x400)
+#define  FIQ_STACK (IRQ_STACK - 0x1000)
 
 #endif /* _MEM_H_ */
 
