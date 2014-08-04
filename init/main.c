@@ -48,7 +48,7 @@ int main()
 //
 //	puts("welcome\n");
 	
-	show_rtc_time();
+//	show_rtc_time();
 
 	while (1){
 		led1();

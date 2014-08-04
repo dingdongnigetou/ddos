@@ -65,7 +65,7 @@ void do_key_service()
 	for (i = 0; i < 6; i ++){
 		if (EINT0PEND & (1<<i)){
 			/* release */
-			if (GPNDAT & (1<<i))
+			if ((GPNDAT & (1<<i)) && i == 0)
 				show_rtc_time();
 			/* press */
 			else

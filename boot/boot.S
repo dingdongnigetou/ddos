@@ -1,18 +1,9 @@
 @;                 (C) 2014 Jindong Huang
 @; boot/boot.S
 
-nr_system_calls = 64
-
-@; memory map value
 #include <mm/mem.h>
-#define  USR_STACK (KERNEL_END)
-#define  UND_STACK (USR_STACK - 0x10000)
-#define  SWI_STACK (UND_STACK - 0x400)
-#define  PBT_STACK (SWI_STACK - 0x1000)
-#define  DBT_STACK (PBT_STACK - 0x400)
-#define  NUD_STACK (DBT_STACK - 0x400)
-#define  IRQ_STACK (NUD_STACK - 0x400)
-#define  FIQ_STACK (IRQ_STACK - 0x1000)
+
+nr_system_calls = 64
 
 .global _start
 _start:
@@ -37,7 +28,7 @@ __data_abort:
 __not_used:
 	.word not_used_handler
 __irq:
-	.word irq_handler_prioriry
+	.word irq_handler_simple
 __fiq:
 	.word fiq_handler
 
@@ -156,10 +147,23 @@ reset:
 	ORR r0,r0,#0x13
 	MCR p15,0,r0,c15,c2,4
 
+@; disable interrupt
+	MOV r1, #0x0  
+	LDR r0, =0x71200010
+	STR r1, [r0]  
+	LDR r0, =0x71300010 
+	STR r1, [r0]
+
 @; disable the watch dog
 	LDR r0, =0x7E004000
 	MOV r1, #0
 	STR r1, [r0]
+
+@; disable mmu
+	MCR p15, 0, r0, c7, c7, 0    
+	MRC p15, 0, r0, c1, c0, 0    
+	BIC r0, r0, #0x00000007    
+	MCR p15, 0, r0, c1, c0, 0  
 
 @; set stack size == 8k
 @; 8K is the MAX, but enough
@@ -169,9 +173,7 @@ reset:
 	BL clock_init
 	BL sdram_init
 	BL mmu_init   @; after mapped
-	BL uart_init 
 	BL nand_init
-	BL irq_init
 
 @; copy data form nand to ddr
 @; by call copy2ddr
@@ -194,7 +196,7 @@ clean_bss:
 	LDR r1, =bss_end
 	MOV r3, #0
 	CMP r0, r1
-	BEQ on_ddr
+	LDREQ pc, =on_ddr
 clean_loop: 
 	STR r3, [r0], #4
 	CMP r0, r1
@@ -209,6 +211,11 @@ on_ddr:
 	MSR cpsr, r0 
 
 	LDR sp, =USR_STACK
+
+	BL uart_init 
+	BL irq_init
+//	BL rtc_timer_init
+
 	LDR pc, =main       @; pc == main link address  
 
 halt:

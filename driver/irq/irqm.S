@@ -1,9 +1,9 @@
  @;                                (C) 2014 Jindong Huang
  @; driver/irq/irqm.c
 
+#include <mm/mem.h>
 
 /* which interrupt */
-
 #define INT_EINT0   0  /* 0 - 3 */
 #define INT_EINT1   1  /* 4 - 11 */
 #define INT_TIMER2 25
@@ -29,17 +29,6 @@
 #define MASK_2  (MASK_3 + BINARY_2)
 #define MASK_1  (MASK_2 + BINARY_1)
 #define MASK_0  (MASK_1 + BINARY_0)
-
-/* memory map value */
-#include <mm/mem.h>
-#define  USR_STACK (KERNEL_END)
-#define  UND_STACK (USR_STACK - 0x10000)
-#define  SWI_STACK (UND_STACK - 0x400)
-#define  PBT_STACK (SWI_STACK - 0x1000)
-#define  DBT_STACK (PBT_STACK - 0x400)
-#define  NUD_STACK (DBT_STACK - 0x400)
-#define  IRQ_STACK (NUD_STACK - 0x400)
-#define  FIQ_STACK (IRQ_STACK - 0x1000)
 
 .global irq_handler_prioriry
 irq_handler_prioriry:

@@ -2,7 +2,10 @@
 
 int main()
 {
-	printf("%c", 0x30);
+	char test[3][6] = { "hello", "world", "hello" };
+
+	puts(test[1]);
 
 	return 0;
 }
+

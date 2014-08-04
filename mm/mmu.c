@@ -61,6 +61,7 @@
 #define MMU_DIR               (DIRTABLE_BASE)
 #define MMU_DOMAIN            (0 << 5)   /* domain 0 */
 #define MMU_SPECIAL           (1 << 4)   /* must be 1 */
+#define MMU_SBZ_FINE          (0 << 9)   /* should be zero */
 #define MMU_COARSE            (1)        /* coarse page table */
 #define MMU_FINE              (3)        /* fine page table */
 
@@ -72,12 +73,14 @@
 #define MMU_FINE_PAGE_N(N)    (MMU_PAGE + (N << 12))
 #define MMU_ALL_ACCESS_SMALL  (0xFF << 4)/* all modes can access */
 #define MMU_PRI_ACCESS_SMALL  (0x55 << 4)/* only privilege mode can access (R/W) */
-#define MMU_ALL_ACCESS_TINY   (0x3 << 4) /* all modes can access */
-#define MMU_PRI_ACCESS_TINY   (0x1 << 4) /* only privilege mode can access (R/W) */
-#define MMU_WT                (0x2 << 2) /* write through */
-#define MMU_WB                (0x3 << 2) /* write back */
+#define MMU_ALL_ACCESS_TINY   (3 << 4)   /* all modes can access */
+#define MMU_PRI_ACCESS_TINY   (1 << 4)   /* only privilege mode can access (R/W) */
+#define MMU_WT                (2 << 2)   /* write through */
+#define MMU_WB                (3 << 2)   /* write back */
+#define MMU_SBZ_TINY          (0x0 << 6) /* should be zero */
 #define MMU_SMALL             (2)        /* small page (second) 4K */
 #define MMU_TINY              (3)        /* tiny page (second) 1K */
+
 
 /*
  * which page table 
@@ -90,11 +93,11 @@
  * descriptor flags
  */
 #define MMU_COADESC           (MMU_DOMAIN | MMU_SPECIAL | MMU_COARSE)
-#define MMU_FINDESC           (MMU_DOMAIN | MMU_SPECIAL | MMU_FINE)
+#define MMU_FINDESC           (MMU_DOMAIN | MMU_SBZ_FINE | MMU_SPECIAL | MMU_FINE)
 #define MMU_SMALLDESC_PRI     (MMU_PRI_ACCESS_SMALL | MMU_WB | MMU_SMALL)
 #define MMU_SMALLDESC_ALL     (MMU_ALL_ACCESS_SMALL | MMU_WB | MMU_SMALL)
-#define MMU_TINYDESC_PRI      (MMU_PRI_ACCESS_TINY | MMU_WB | MMU_TINY)
-#define MMU_TINYDESC_ALL      (MMU_ALL_ACCESS_TINY | MMU_WB | MMU_TINY)
+#define MMU_TINYDESC_PRI      (MMU_PRI_ACCESS_TINY | MMU_SBZ_TINY | MMU_WB | MMU_TINY)
+#define MMU_TINYDESC_ALL      (MMU_ALL_ACCESS_TINY | MMU_SBZ_TINY | MMU_WB | MMU_TINY)
 
 #define DIR_TABLE              ((volatile unsigned long *)MMU_DIR)
 #define COARSE_PAGE_TABLE_N(N) ((volatile unsigned long *)MMU_COARSE_PAGE_N(N))
@@ -147,85 +150,87 @@ static void memory_map_L2()
 	 * va 0x00000000 - 0x000FFFFF
 	 * pa 0x00000000 - 0x000FFFFF
 	 */
-	DIR_TABLE[0x000] = MMU_COARSE_PAGE_N(PAGE_0_BASE) | 
-			MMU_COADESC;
-	for (j = 0; j < 256; j++)
-		COARSE_PAGE_TABLE_N(PAGE_0_BASE)[0x00 + j] = (0x00000000 + 
-			(j << 12)) | MMU_SMALLDESC_ALL;
+//	DIR_TABLE[0x000] = MMU_COARSE_PAGE_N(PAGE_0_BASE) | 
+//			MMU_COADESC;
+//	for (j = 0; j < 256; j++)
+//		COARSE_PAGE_TABLE_N(PAGE_0_BASE)[0x00 + j] = (0x00000000 + 
+//			(j << 12)) | MMU_SMALLDESC_ALL;
 
-//	DIR_TABLE[0x000] = MMU_FINE_PAGE_N(PAGE_0_BASE) |
-//			MMU_FINDESC;
-//	for (j = 0; j < 1024; j++)
-//		FINE_PAGE_TABLE_N(PAGE_0_BASE)[j] = (0x00000000 +
-//				(j << 10)) | MMU_TINYDESC_ALL;
+	DIR_TABLE[0x000] = MMU_FINE_PAGE_N(PAGE_0_BASE) |
+			MMU_FINDESC;
+	for (j = 0; j < 1024; j++)
+		FINE_PAGE_TABLE_N(PAGE_0_BASE)[j] = (0x00000000 +
+				(j << 10)) | MMU_TINYDESC_ALL;
+
 
 	/* 
 	 * 256M peripheral 
 	 * va 0x10000000 - 0x1FFFFFFF
 	 * pa 0x70000000 - 0x7FFFFFFF
 	 */
-	for (i = 0; i < 256; i++)
-		DIR_TABLE[0x100 + i] = MMU_COARSE_PAGE_N((PAGE_PER_BASE + i)) |
-		       	MMU_COADESC;
-	for (i = 0; i < 256; i++)
-		for (j = 0; j < 256; j++)
-			COARSE_PAGE_TABLE_N((PAGE_PER_BASE + i))[0x00 + j] = 
-				(0x70000000 + (i << 20) + (j << 12)) | 
-				MMU_SMALLDESC_ALL;
+//	for (i = 0; i < 256; i++)
+//		DIR_TABLE[0x100 + i] = MMU_COARSE_PAGE_N((PAGE_PER_BASE + i)) |
+//		       	MMU_COADESC;
+//	for (i = 0; i < 256; i++)
+//		for (j = 0; j < 256; j++)
+//			COARSE_PAGE_TABLE_N((PAGE_PER_BASE + i))[0x00 + j] = 
+//				(0x70000000 + (i << 20) + (j << 12)) | 
+//				MMU_SMALLDESC_ALL;
 
-//	for (i = 0; i < 256; i++)
-//		DIR_TABLE[0x100 + i] = MMU_FINE_PAGE_N((PAGE_PER_BASE + i)) |
-//			MMU_FINDESC;
-//	for (i = 0; i < 256; i++)
-//		for (j = 0; j < 1024; j++)
-//			FINE_PAGE_TABLE_N((PAGE_PER_BASE + i))[j] =
-//				(0x70000000 + (i << 20) + (j << 10)) |
-//				MMU_TINYDESC_ALL;
-//
+	for (i = 0; i < 256; i++)
+		DIR_TABLE[0x100 + i] = MMU_FINE_PAGE_N((PAGE_PER_BASE + i)) |
+			MMU_FINDESC;
+	for (i = 0; i < 256; i++)
+		for (j = 0; j < 1024; j++)
+			FINE_PAGE_TABLE_N((PAGE_PER_BASE + i))[j] =
+				(0x70000000 + (i << 20) + (j << 10)) |
+				MMU_TINYDESC_ALL;
+
 	/*
 	 * The os code total is 4M 
 	 */
-	for (i = 0; i < 4; i++)
-		DIR_TABLE[0xC00 + i] = MMU_COARSE_PAGE_N((PAGE_OS_BASE + i)) | 
-			MMU_COADESC;
 //	for (i = 0; i < 4; i++)
-//		DIR_TABLE[0xC00 + i] = MMU_FINE_PAGE_N((PAGE_OS_BASE + i)) | 
-//			MMU_FINDESC;
+//		DIR_TABLE[0xC00 + i] = MMU_COARSE_PAGE_N((PAGE_OS_BASE + i)) | 
+//			MMU_COADESC;
+	for (i = 0; i < 4; i++)
+		DIR_TABLE[0xC00 + i] = MMU_FINE_PAGE_N((PAGE_OS_BASE + i)) | 
+			MMU_FINDESC;
 	/*
 	 * kernel code
 	 * pa: 0x50000000 - 0x50010000 (64K)
 	 * set as privilege
 	 */
-	for (j = 0; j < 16; j++)
-		COARSE_PAGE_TABLE_N((PAGE_OS_BASE + 0))[0x00 + j] = 
-			(0x50000000 + (0 << 20) + (j << 12)) | 
-			MMU_SMALLDESC_PRI; 
-
 //	for (j = 0; j < 16; j++)
-//		FINE_PAGE_TABLE_N((PAGE_PER_BASE) + 0)[j] =
-//			(0x50000000 + (0 << 20) + (j << 10)) | MMU_TINYDESC_ALL;
+//		COARSE_PAGE_TABLE_N((PAGE_OS_BASE + 0))[0x00 + j] = 
+//			(0x50000000 + (0 << 20) + (j << 12)) | 
+//			MMU_SMALLDESC_PRI; 
+
+	for (j = 0; j < 16; j++)
+		FINE_PAGE_TABLE_N((PAGE_OS_BASE + 0))[j] =
+			(0x50000000 + (0 << 20) + (j << 10)) | 
+			MMU_TINYDESC_ALL;
 	/*
 	 * The rest of os code set as full permissions 
 	 */
-	for (j = 16; j < 256; j++)
-		COARSE_PAGE_TABLE_N((PAGE_OS_BASE + 0))[0x00 + j] = 
-			(0x50000000 + (0 << 20) + (j << 12)) | 
-			MMU_SMALLDESC_ALL; 
-	for (i = 1; i < 4; i++)
-		for (j = 0; j < 256; j++)
-			COARSE_PAGE_TABLE_N((PAGE_OS_BASE + i))[0x00 + j] = 
-				(0x50000000 + (i << 20) + (j << 12)) | 
-				MMU_SMALLDESC_ALL;
-
-//	for (j = 16; j < 1024; j++)
-//			FINE_PAGE_TABLE_N((PAGE_OS_BASE + 0))[j] = 
-//				(0x50000000 + (0 << 20) + (j << 10)) |
-//				MMU_TINYDESC_ALL;
+//	for (j = 16; j < 256; j++)
+//		COARSE_PAGE_TABLE_N((PAGE_OS_BASE + 0))[0x00 + j] = 
+//			(0x50000000 + (0 << 20) + (j << 12)) | 
+//			MMU_SMALLDESC_ALL; 
 //	for (i = 1; i < 4; i++)
-//		for (j = 0; j < 1024; j++)
-//			FINE_PAGE_TABLE_N((PAGE_OS_BASE + i))[j] = 
-//				(0x50000000 + (i << 20) + (j << 10)) |
-//				MMU_TINYDESC_ALL;
+//		for (j = 0; j < 256; j++)
+//			COARSE_PAGE_TABLE_N((PAGE_OS_BASE + i))[0x00 + j] = 
+//				(0x50000000 + (i << 20) + (j << 12)) | 
+//				MMU_SMALLDESC_ALL;
+
+	for (j = 16; j < 1024; j++)
+			FINE_PAGE_TABLE_N((PAGE_OS_BASE + 0))[j] = 
+				(0x50000000 + (0 << 20) + (j << 10)) |
+				MMU_TINYDESC_ALL;
+	for (i = 1; i < 4; i++)
+		for (j = 0; j < 1024; j++)
+			FINE_PAGE_TABLE_N((PAGE_OS_BASE + i))[j] = 
+				(0x50000000 + (i << 20) + (j << 10)) |
+				MMU_TINYDESC_ALL;
 }
 #endif /* ENABLE_SEMGMENT */
 
