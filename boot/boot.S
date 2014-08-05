@@ -172,7 +172,7 @@ reset:
 @; initialization
 	BL clock_init
 	BL sdram_init
-	BL mmu_init   @; after mapped
+@;	BL mmu_init   @; after mapped
 	BL nand_init
 
 @; copy data form nand to ddr

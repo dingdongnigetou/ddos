@@ -39,8 +39,7 @@ int sys_user_timer_tick(size_t ms)
 }
 
 int sys_user_timer_stop()
-{
-	TCON &= ~(1 << 12);
+{ TCON &= ~(1 << 12);
 
 	return 0;
 }
