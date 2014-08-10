@@ -71,6 +71,7 @@ typedef struct
 //Region kernel_region = {};
 //Region shared_region = {};
 //Region dismem_region = {};
+//Region pagetable_region = {};
 //Region periph_region = {};
 //Region task1_region = {};
 //Region task2_region = {};
