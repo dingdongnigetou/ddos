@@ -21,8 +21,8 @@ typedef struct
 	unsigned int va_addr;
 	unsigned int page_size;
 	unsigned int num_pages;
-	unsigned int ap;
-	unsigned int cb;
+	unsigned int AP;
+	unsigned int CB;
 	unsigned int phy_addr;
 	Pagetable    *pt;
 } Region;
@@ -39,7 +39,7 @@ typedef struct
 #define TINY     3
 
 /* page size */
-#define LAEGEPAGE (64 << 10) /* 64KB */
+#define LARGEPAGE (64 << 10) /* 64KB */
 #define SMALLPAGE (4  << 10) /* 4KB */
 #define TINYPAGE  (1  << 10) /* 1KB */
 
@@ -61,18 +61,18 @@ typedef struct
 #define WB   0x3
 
 /* page table */
-//Pagetable master_pt = {};
+Pagetable master_pt = {0xC0000000, 0x50400000, 0x50400000, MASTER, 3};
 //Pagetable system_pt  = {};
 //Pagetable task1_pt   = {};
 //Pagetable task2_pt   = {};
 //Pagetable task3_pt   = {};
 //
 ///* region */
-//Region kernel_region = {};
-//Region shared_region = {};
-//Region dismem_region = {};
-//Region pagetable_region = {};
-//Region periph_region = {};
+Region kernel_region =    {0xC0000000, 1024, 4, RWRW, WT, 0x50000000, &master_pt};
+Region pagetable_region = {0x50400000, 1024, 2, RWRW, WT, 0x50400000, &master_pt};
+//Region dismem_region =    {0xC0220000, 1024, 256, RWRW, WT, 0x50220000, &master_pt};
+//Region shared_region =    {0xC0420000, 1024, 256, RWRW, WT, 0x50420000, &master_pt};
+Region periph_region =    {0x10000000, 1024, 256, RWRW, WT, 0x70000000, &master_pt};
 //Region task1_region = {};
 //Region task2_region = {};
 //Region task3_region = {};

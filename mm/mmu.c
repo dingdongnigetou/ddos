@@ -88,13 +88,13 @@ static void mmu_map_master_table_region(Region *region)
 	unsigned int *pte_ptr, pte;
 
 	pte_ptr = (unsigned int *)region->pt->pt_addr;
-	pte_ptr = region->va_addr >> 20; /* first page */
-	pte_ptr = region->num_pages - 1; /* last page */
+	pte_ptr += region->va_addr >> 20; /* first page */
+	pte_ptr += region->num_pages - 1; /* last page */
 
 	pte = region->phy_addr & 0xfff00000;
-	pte |= (region->ap & 0x3) << 10;
+	pte |= (region->AP & 0x3) << 10;
 	pte |= (region->pt->dom)  << 5;
-	pte |= (region->cb & 0x3) << 2;
+	pte |= (region->CB & 0x3) << 2;
 	pte |= 0x12;
 
 	for (i = region->num_pages - 1; i >= 0; i--)
@@ -106,13 +106,13 @@ static int mmu_map_coarse_table_region(Region *region)
 {
 	int i, j;
 	unsigned int *pte_ptr, pte;
-	unsigned int temp_ap = region->ap & 0x3;
+	unsigned int temp_ap = region->AP & 0x3;
 
 	pte_ptr = (unsigned int *)region->pt->pt_addr;
 
 	switch (region->page_size)
 	{
-	case LAEGEPAGE:
+	case LARGEPAGE:
 		pte_ptr += (region->va_addr & 0x000ff000) >> 12; /* first page */
 		pte_ptr += (region->num_pages * 16) - 1; /* last page */
 
@@ -121,7 +121,7 @@ static int mmu_map_coarse_table_region(Region *region)
 		pte |= temp_ap << 8;
 		pte |= temp_ap << 6;
 		pte |= temp_ap << 4;
-		pte |= (region->cb & 0x3) << 2;
+		pte |= (region->CB & 0x3) << 2;
 		pte |= 0x1; /* set as large page */
 
 		for (i = region->num_pages - 1; i >= 0; i--)
@@ -138,7 +138,7 @@ static int mmu_map_coarse_table_region(Region *region)
 		pte |= temp_ap << 8;
 		pte |= temp_ap << 6;
 		pte |= temp_ap << 4;
-		pte |= (region->cb & 0x3) << 2;
+		pte |= (region->CB & 0x3) << 2;
 		pte |= 0x2; /* set as small page */
 
 		for (i = region->num_pages - 1; i >= 0; i--)
@@ -156,7 +156,7 @@ static int mmu_map_fine_table_region(Region *region)
 {
 	int i, j;
 	unsigned int *pte_ptr, pte;
-	unsigned int temp_ap = region->ap & 0x3;
+	unsigned int temp_ap = region->AP & 0x3;
 
 	pte_ptr = (unsigned int *)region->pt->pt_addr;
 
@@ -171,7 +171,7 @@ static int mmu_map_fine_table_region(Region *region)
 		pte |= temp_ap << 8;
 		pte |= temp_ap << 6;
 		pte |= temp_ap << 4;
-		pte |= (region->cb & 0x3) << 2;
+		pte |= (region->CB & 0x3) << 2;
 		pte |= 0x1;
 			
 		for (i = region->num_pages - 1; i >= 0; i--)
@@ -189,7 +189,7 @@ static int mmu_map_fine_table_region(Region *region)
 		pte |= temp_ap << 8;
 		pte |= temp_ap << 6;
 		pte |= temp_ap << 4;
-		pte |= (region->cb & 0x3) << 2;
+		pte |= (region->CB & 0x3) << 2;
 		pte |= 0x2;
 
 		for (i = region->num_pages - 1; i >=0; i--)
@@ -204,7 +204,7 @@ static int mmu_map_fine_table_region(Region *region)
 
 		pte = region->phy_addr & 0xfffffc00;
 		pte |= temp_ap << 4;
-		pte |= (region->cb & 0x3) << 2;
+		pte |= (region->CB & 0x3) << 2;
 		pte |= 0x3;
 
 		for (i = region->num_pages - 1; i >= 0; i--)
@@ -231,7 +231,11 @@ static int mmu_attch_pt(Pagetable *pt)
 	switch (pt->type)
 	{
 	case MASTER:
-		__asm__ (MCR p15, 0, ttb, c2, c0, 0);
+		__asm__ (
+			"MCR p15, 0, %[ttb], c2, c0, 0\n"
+			:
+			:[ttb]"r"(ttb)
+			);
 		break;
 
 	case COARSE:
@@ -259,10 +263,34 @@ static void domain_access_set(unsigned int value, unsigned int mask)
 {
 	unsigned int c3format;
 
-	__asm__ (MRC p15, 0, c3format, c3, c0, 0);
+	__asm__ (
+		"MRC p15, 0, r4, c3, c0, 0\n"
+		:"=r" (c3format)
+		);
 	c3format &= ~mask;
 	c3format &= value;
-	__asm__ (MCR p15, 0, c3format, c3, c0, 0);
+	__asm__ (
+		"MCR p15, 0, %[c3format], c3, c0, 0\n"
+		:
+		:[c3format]"r"(c3format)
+		);
+}
+
+static void control_set(unsigned int value, unsigned int mask)
+{
+	unsigned int c1format;
+
+	__asm__ (
+		"MRC p15, 0, r4, c1, c0, 0\n"
+		:"=r" (c1format)
+	        ); /* read */
+	c1format &= ~mask;
+	c1format |= value;
+	__asm__ (
+		"MCR p15, 0, %[c1format], c1, c0, 0\n"
+		:
+		:[c1format]"r"(c1format)
+		); /* write */
 }
 
 #define DOM3CLT           0x00000040
@@ -271,6 +299,7 @@ static void domain_access_set(unsigned int value, unsigned int mask)
 #define ENABLEMMU         0x00000001
 #define ENABLEDCACHE      0x00000004
 #define ENABLEICACHE      0x00001000
+#define ROUNDROBINREP     0x00004000
 #define CHANGEMMU         0x00000001
 #define CHANGEDCACHE      0x00000004
 #define CHANGEICACHE      0x00001000
@@ -282,27 +311,30 @@ void mmu_init()
 	unsigned int enable, change;	
 
 	mmu_init_pt(&master_pt);
-	mmu_init_pt(&system_pt);
-	mmu_init_pt(&task3_pt);
-	mmu_init_pt(&task2_pt);
-	mmu_init_pt(&task1_pt);
+//	mmu_init_pt(&system_pt);
+//	mmu_init_pt(&task3_pt);
+//	mmu_init_pt(&task2_pt);
+//	mmu_init_pt(&task1_pt);
 
 	mmu_map_region(&kernel_region);
-	mmu_map_region(&shared_region);
-	mmu_map_region(&pagetable_region);
-	mmu_map_region(&dismem_region);
-	mmu_map_region(&periph_region);
+//	mmu_map_region(&shared_region);
+//	mmu_map_region(&pagetable_region);
+//	mmu_map_region(&dismem_region);
+//	mmu_map_region(&periph_region);
 
-	mmu_map_region(&task3_region);
-	mmu_map_region(&task2_region);
-	mmu_map_region(&task1_region);
+//	mmu_map_region(&task3_region);
+//	mmu_map_region(&task2_region);
+//	mmu_map_region(&task1_region);
 
 	mmu_attch_pt(&master_pt);
-	mmu_attch_pt(&system_pt);
-	mmu_attch_pt(&task1_pt);
+//	mmu_attch_pt(&system_pt);
+//	mmu_attch_pt(&task1_pt);
 
 	domain_access_set(DOM3CLT, CHANGEALLDOM);
 
-}
+	enable = ENABLEMMU | ENABLEICACHE | ENABLEDCACHE | ROUNDROBINREP;
+	change = CHANGEMMU | CHANGEICACHE | CHANGEDCACHE;
 
+	control_set(enable, change);
+}
 
