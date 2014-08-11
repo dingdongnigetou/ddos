@@ -42,13 +42,13 @@ void led4()
 
 int main()
 {	
-	enirq();
-	system_timer_tick(1000);
-	user_timer_tick(500);
-
-	puts("welcome\n");
-      
-	show_rtc_time();
+//	enirq();
+//	system_timer_tick(1000);
+//	user_timer_tick(500);
+//
+//	puts("welcome\n");
+//      
+//	show_rtc_time();
 
 	while (1){
 		led1();

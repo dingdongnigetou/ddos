@@ -54,7 +54,7 @@ swi_handler:
 	CMP r3, #nr_system_calls-1
 	BHI bad_sys_call @; > 63
 
-	LDR r5, =sys_call_table
+@;	LDR r5, =sys_call_table
 	LDR r6, [r5, r3, lsl #2] @; sys_call_table[num * 4]
 	BLX r6	
 	
@@ -112,13 +112,13 @@ irq_handler_simple:
 	LDR r0, =VIC0IRQSTATUS
 	LDR r0, [r0]
 	TST r0, #INT_TIMER4
-	BLNE do_system_timer_service
+@;	BLNE do_system_timer_service
 	TST r0, #INT_EINT0
-	BLNE do_key_service
+@;	BLNE do_key_service
 	TST r0, #INT_TIMER2
-	BLNE do_user_timer_service
+@;	BLNE do_user_timer_service
 	TST r0, #INT_EINT1
-	BLNE do_key_service
+@;	BLNE do_key_service
 
 	@; resume
 	LDMIA sp!, {r0-r12, pc}^ @; ^ is resume spsr to cpsr
@@ -172,7 +172,7 @@ reset:
 @; initialization
 	BL clock_init
 	BL sdram_init
-@;	BL mmu_init   @; after mapped
+	BL mmu_init   @; after mapped
 	BL nand_init
 
 @; copy data form nand to ddr
@@ -212,9 +212,9 @@ on_ddr:
 
 	LDR sp, =USR_STACK
 
-	BL uart_init 
-	BL irq_init
-//	BL rtc_timer_init
+@;	BL uart_init 
+@;	BL irq_init
+@;	BL rtc_timer_init
 
 	LDR pc, =main       @; pc == main link address  
 
