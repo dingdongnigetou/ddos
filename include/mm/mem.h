@@ -59,5 +59,14 @@
 #define  IRQ_STACK (NUD_STACK - 0x400)
 #define  FIQ_STACK (IRQ_STACK - 0x1000)
 
+/* size of region (K) */
+#define KERNELSIZE    128
+#define PAGETABLESIZE 1024
+#define DISMEMSIZE    2048
+#define SHAREBUFSIZE  896
+
+#define PERIPHSIZE    256 * 1024
+#define ZEROSIZE      1024
+
 #endif /* _MEM_H_ */
 

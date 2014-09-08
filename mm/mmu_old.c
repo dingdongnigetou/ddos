@@ -18,6 +18,8 @@
  *
  */
 
+#define ENABLE_SEMGMENT
+
 #include <mm/mem.h>
 
 #define ENABLE_MAP
@@ -117,8 +119,7 @@ static void memory_map_seg()
 	 * va 0x00000000 - 0x000FFFFF
 	 * pa 0x00000000 - 0x000FFFFF
 	 */
-	SEG_TABLE[0x000 + i] = (0x00000000 + (i << 20)) | 
-		MMU_SECDESC_ALL;
+	SEG_TABLE[0x000] = 0x00000000 | MMU_SECDESC_ALL;
 
 	/*
 	 * 256M peripheral
@@ -133,7 +134,7 @@ static void memory_map_seg()
 	 * 4M os code
 	 */
 	for (i = 0; i < 4; i++)
-		SEG_TABLE[0xC00 + i] = (0x50000000 + (i << 20)) | 
+		SEG_TABLE[0x400 + i] = (0x50000000 + (i << 20)) | 
 			MMU_SECDESC_ALL;
 }
 
