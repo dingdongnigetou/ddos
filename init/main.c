@@ -15,6 +15,7 @@
 #include <driver/rtc.h>
 #include <types.h>
 #include <io.h>
+#include <pm/mutex.h>
 
 void led1()
 {
@@ -51,7 +52,10 @@ int main()
 //	show_rtc_time();
 
 	while (1){
+		mutex_try_lock();
 		led1();
+		mutex_try_lock();
+		led2();
 	}
 
 	return 0;
