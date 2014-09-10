@@ -87,6 +87,10 @@ typedef struct
 //Region task2_region = {};
 //Region task3_region = {};
 
+/*
+ * Interface
+ */
+void mmu_init();
 
 #endif /* _MMU_H_ */
 

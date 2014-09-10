@@ -28,7 +28,7 @@ __data_abort:
 __not_used:
 	.word not_used_handler
 __irq:
-	.word irq_handler_simple
+@;	.word irq_handler_prioriry @; driver/irq/irqm.S
 __fiq:
 	.word fiq_handler
 
@@ -52,7 +52,7 @@ swi_handler:
 	STMDB sp!, {r5-r12, lr}  @; lr is the instruction after swi
 
 	CMP r3, #nr_system_calls-1
-	BHI bad_sys_call @; > 63
+@;	BHI bad_sys_call @; > 63
 
 @;	LDR r5, =sys_call_table
 	LDR r6, [r5, r3, lsl #2] @; sys_call_table[num * 4]
@@ -96,14 +96,14 @@ not_used_handler:
 	@; resume
 	LDMIA sp!, {r0-r12, pc}^ @; ^ is resume spsr to cpsr
 
-irq_handler_simple:
+@; first come first server
+irq_handler_fcfs:
 	@; save spot	
 	LDR sp, =IRQ_STACK @; stack == 4K
 	SUB lr, lr, #4
 	STMDB sp!, {r0-r12, lr}
 
 #define VIC0IRQSTATUS   0x11200000
-//#define VIC0IRQSTATUS   0x71200000
 #define INT_EINT0       (1 << 0)
 #define INT_EINT1       (1 << 1)
 #define INT_TIMER2      (1 << 25)
@@ -113,11 +113,11 @@ irq_handler_simple:
 	LDR r0, [r0]
 	TST r0, #INT_TIMER4
 @;	BLNE do_system_timer_service
-	TST r0, #INT_EINT0
+@;	TST r0, #INT_EINT0
 @;	BLNE do_key_service
-	TST r0, #INT_TIMER2
+@;	TST r0, #INT_TIMER2
 @;	BLNE do_user_timer_service
-	TST r0, #INT_EINT1
+@;	TST r0, #INT_EINT1
 @;	BLNE do_key_service
 
 	@; resume
@@ -212,9 +212,9 @@ on_ddr:
 
 	LDR sp, =USR_STACK
 
-@;	BL uart_init 
-@;	BL irq_init
-@;	BL rtc_timer_init
+//	BL uart_init 
+//	BL irq_init
+//	BL rtc_timer_init
 
 	LDR pc, =main       @; pc == main link address  
 

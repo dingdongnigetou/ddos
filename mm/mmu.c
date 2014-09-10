@@ -329,16 +329,16 @@ void mmu_init()
 
 	Pagetable master_pt =  {
 		.va_addr = 0x00000000,
-		.pt_addr = 0x50020000,
-		.master_addr = 0x50020000,
+		.pt_addr = DIRTABLE_BASE,
+		.master_addr = DIRTABLE_BASE,
 		.type = MASTER,
 //		.dom = 0
 	}; 
 
 	Pagetable system_pt =  {
-		.va_addr = 0xC0000000,
-		.pt_addr = 0x50024000,
-		.master_addr = 0x50020000,
+		.va_addr = KERNEL_BASE,
+		.pt_addr = PTTABLE_BASE,
+		.master_addr = DIRTABLE_BASE,
 		.type = COARSE,
 //		.dom = 0
 	}; 
@@ -365,7 +365,7 @@ void mmu_init()
 
 	Region kernel_region = {
 		.phy_addr = 0x50000000,
-		.va_addr = 0xC0000000,
+		.va_addr = KERNEL_BASE,
 		.num_pages = KERNELSIZE / SMALLPAGE,
 		.page_size = SMALLPAGE,
 		.AP = RWNA, /* only sys can access */
@@ -375,7 +375,7 @@ void mmu_init()
 
 	Region dismem_region = {
 		.phy_addr = 0x50120000,
-		.va_addr = 0xC0120000,
+		.va_addr = DISPMEM_BASE,
 		.num_pages = DISMEMSIZE / SMALLPAGE,
 		.page_size = SMALLPAGE,
 		.AP = RWRW,
@@ -385,7 +385,7 @@ void mmu_init()
 
 	Region sharebuf_region = {
 		.phy_addr = 0x50320000,
-		.va_addr = 0xC0320000,
+		.va_addr = SHAREMEM_BASE,
 		.num_pages = SHAREBUFSIZE / SMALLPAGE,
 		.page_size = SMALLPAGE,
 		.AP = RWRW,

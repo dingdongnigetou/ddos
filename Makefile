@@ -6,6 +6,7 @@ INCLUDEDIR  = ./include
 DRIVERDIR   = ./driver
 LIBDIR      = ./lib
 MMDIR       = ./mm
+PMDIR       = ./pm
 SYSDIR      = ./sys
 LDSFILE     = ddos.lds
 
@@ -26,7 +27,7 @@ ddos.bin:ddos.elf
 	$(OBJDUMP) $(ODFLAGS) ddos.elf > ddos.dis
 
 ddos.elf:$(BOOTDIR)/boot.o $(INITDIR)/main.o $(DRIVERDIR)/drivers.a \
-	 $(LIBDIR)/lib.a $(MMDIR)/mm.a $(SYSDIR)/sys_call.a
+	 $(LIBDIR)/lib.a $(MMDIR)/mm.a $(SYSDIR)/sys_call.a $(PMDIR)/pm.a
 	$(LD) $(LDFLAGS) $^ -o $@
 
 %.o:%.S
@@ -44,6 +45,9 @@ $(LIBDIR)/lib.a:
 $(MMDIR)/mm.a:
 	(cd $(MMDIR); make)
 
+$(PMDIR)/pm.a:
+	(cd $(PMDIR); make)
+
 $(SYSDIR)/sys_call.a:
 	(cd $(SYSDIR); make)
 
@@ -53,4 +57,5 @@ clean:
 	(cd $(LIBDIR); make clean)
 	(cd $(MMDIR); make clean)
 	(cd $(SYSDIR); make clean)
+	(cd $(PMDIR); make clean)
 
