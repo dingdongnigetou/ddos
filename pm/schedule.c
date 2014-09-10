@@ -14,3 +14,11 @@ int schedule()
 	return 0;
 }
 
+/*
+ * swich task which nr is next to run
+ */
+static int swich_to(int next)
+{
+
+}
+
