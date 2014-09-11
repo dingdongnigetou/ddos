@@ -7,6 +7,7 @@
 
 #include <s3c6410.h>
 #include <driver/rtc.h>
+#include <task.h>
 
 /* VIC0INTENABLE */
 #define ENABLE_TIMER2 (1 << 25)
@@ -18,6 +19,8 @@
 #define TIMER2_PENDING_CLEAR    (1 << 7)
 #define TIMER4_PENDING_CLEAR    (1 << 9)
 #define EINT_PENDING_CLEAR      (0x3F)
+
+size_t jiffies = 0;
 
 void irq_init(void)
 {
@@ -93,7 +96,7 @@ void delay(int x)
 void do_system_timer_service()
 {
 	/* do schedule() */
-	puts("system timer interrupt\n");
+	schedule();
 
 	TINT_CSTAT &= 0x1F;
 	TINT_CSTAT |= TIMER4_PENDING_CLEAR;

@@ -22,5 +22,7 @@ struct pcb{
 	long ptb; /* process table base address */
 };
 
+int schedule();
+
 #endif /* _TASK_H */
 
