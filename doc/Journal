@@ -82,7 +82,7 @@ iiiiikjadfkjai
 
 -Sun Apr 27, 2014
  I drop the vsprintf.c today because I don't want to use other's code. I 
- make up my mind that write it by ourself. Yes, I ask my friend for help
+ make up my mind that write it by ourself. Yes, I ask my friend for helping
  so that we can work on this OS together. It's better than I fight alone. 
  Today I finish the gets() and puts(). And, I decide to write the document  
  for the OS, such as driver and so on if I finish their coding. So, welcome  
@@ -153,5 +153,5 @@ iiiiikjadfkjai
 
 -Tue Jun 17, 2014
  The irq process of the os work well now, but it is so simply that only
- can handle one isr per time. Next time I want to make it more strong.
+ can handle one isr per time. Next time I want to make it more stronger.
 

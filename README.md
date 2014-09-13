@@ -1,14 +1,14 @@
                                          (C)  2014  Jindong Huang
 
 ## DESCRIPTION
-  It is a simple OS for S3C6410. (Tiny6410-A)
+  It's a simple kernel for S3C6410. (Tiny6410-A)
 
 ## INSTALLATION
   * make clean
   * make install
 
 ## DOCUMENTATION
-  Not finish
+  See doc/
 
 ## CONTRIBUTERS
   * Jindong Huang

@@ -1,7 +1,8 @@
                      (C) 2014 Jindong Huang
 
-* We get two timer in running. First is the Timer 4, which
+* We get four timer in running. First is the Timer 4, which
   for system timer tick. The other one is Timer 2 that 
   used by user. So I set Timer 2 as system call. These two
-  Timers both count in ms.
+  Timers both count in ms. Timer 3 is used by lcd for the 
+  bg light.
 
