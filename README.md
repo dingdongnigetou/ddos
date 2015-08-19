@@ -1,8 +1,4 @@
                                          (C)  2014  Jindong Huang
-
-## DESCRIPTION
-  It's a simple kernel for S3C6410. (Tiny6410-A)
-
 ## INSTALLATION
   * make clean
   * make install
